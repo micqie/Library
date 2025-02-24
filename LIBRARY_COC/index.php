@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Attendance</title>
+
+    <!-- Bootstrap & Font-Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- mga libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.3.3/adapter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
+    <script src="https://cdn.rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container mt-5 position-relative">
+    <!-- Laptop Icon -->
+    <a href="admin_login.php" class="laptop-icon">
+        <i class="fas fa-laptop"></i>
+    </a>
+        
+        <h2 class="text-center text-primary">QR Code Attendance System</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6 scanner-container">
+                <video id="preview" class="w-100"></video>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form id="qr-form" action="insert1.php" method="post" class="form-container">
+                    <label class="form-label">SCAN QR CODE</label>
+                    <input type="text" name="text" id="text" readonly placeholder="Scan QR Code" class="form-control text-center">
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/scan.js"></script>
+
+</body>
+</html>

@@ -24,27 +24,39 @@
     <a href="admin_login.html" class="laptop-icon">
         <i class="fas fa-laptop"></i>
     </a>
-        
-        <h2 class="text-center text-primary">QR Code Attendance System</h2>
+    <h2 class="text-center text-success">QR Code Attendance System</h2>
+    
+    <!-- Real-time Date and Time -->
+    <div class="text-center mb-3">
+        <h4 id="realTimeClock" class="text-primary"></h4>
+    </div>
+    
 
-        <div class="row justify-content-center">
-            <div class="col-md-6 scanner-container">
-                <video id="preview" class="w-100"></video>
-            </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 scanner-container">
+            <video id="preview" class="w-100"></video>
         </div>
-
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form id="qr-form" action="insert1.php" method="post" class="form-container">
-                    <label class="form-label">SCAN QR CODE</label>
-                    <input type="text" name="text" id="text" readonly placeholder="Scan QR Code" class="form-control text-center">
-                </form>
-            </div>
-        </div>
-
     </div>
 
-    <script src="js/scan.js"></script>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form id="qr-form" action="insert1.php" method="post" class="form-container">
+                <label class="form-label">SCAN QR CODE</label>
+                <input type="text" id="text" placeholder="Scan QR Code" readonly="">
+                <div id="studentInfo" data-student-id="">
+                    <!-- Student details will be inserted here -->
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script src="js/scan.js"></script>
+<script src="js/real-time.js"></script>
 
 </body>
 </html>

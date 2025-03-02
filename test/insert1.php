@@ -30,12 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // Read JSON input
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!isset($data['text']) || empty($data['text'])) {
+if (!isset($data['studentInfo']) || empty($data['studentInfo'])) {
     echo json_encode(["error" => "Missing required fields"]);
     exit;
 }
 
-$student_id = $conn->real_escape_string($data['text']);
+$student_id = $conn->real_escape_string($data['studentInfo']);
 $current_time = date('Y-m-d H:i:s');
 
 // Get the latest log entry for the student for today

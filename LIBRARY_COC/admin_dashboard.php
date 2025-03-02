@@ -55,36 +55,36 @@ if (!isset($_SESSION['admin_id'])) {
                         </tr>
                     </thead>
                     <tbody>
-    <?php
-        $server = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "librarysystem_db";
+                        <?php
+                            $server = "localhost";
+                            $username = "root";
+                            $password = "";
+                            $dbname = "librarysystem_db";
 
-        $conn = new mysqli($server, $username, $password, $dbname);
+                            $conn = new mysqli($server, $username, $password, $dbname);
 
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
+                            if ($conn->connect_error) {
+                                die("Connection failed: " . $conn->connect_error);
+                            }
 
-        $sql = "SELECT ID, STUDENTID, TIMEIN, TIMEOUT, 
-                       DATE(TIMEOUT) AS DATEOUT 
-                FROM lib_logs 
-                WHERE DATE(TIMEIN) = CURDATE()";
+                            $sql = "SELECT ID, STUDENTID, TIMEIN, TIMEOUT, 
+                                        DATE(TIMEOUT) AS DATEOUT 
+                                    FROM lib_logs 
+                                    WHERE DATE(TIMEIN) = CURDATE()";
 
-        $query = $conn->query($sql);
+                            $query = $conn->query($sql);
 
-        while ($row = $query->fetch_assoc()) {
-            echo "<tr>
-                    <td>{$row['ID']}</td>
-                    <td>{$row['STUDENTID']}</td>
-                    <td>{$row['TIMEIN']}</td>
-                    <td>" . (!empty($row['TIMEOUT']) ? $row['TIMEOUT'] : '<span class="status-inside">Still Inside</span>') . "</td>
-                    <td>" . (!empty($row['TIMEOUT']) ? $row['DATEOUT'] : date('Y-m-d')) . "</td>
-                </tr>";
-        }
-    ?>
-</tbody>
+                            while ($row = $query->fetch_assoc()) {
+                                echo "<tr>
+                                        <td>{$row['ID']}</td>
+                                        <td>{$row['STUDENTID']}</td>
+                                        <td>{$row['TIMEIN']}</td>
+                                        <td>" . (!empty($row['TIMEOUT']) ? $row['TIMEOUT'] : '<span class="status-inside">Still Inside</span>') . "</td>
+                                        <td>" . (!empty($row['TIMEOUT']) ? $row['DATEOUT'] : date('Y-m-d')) . "</td>
+                                    </tr>";
+                            }
+                        ?>
+                    </tbody>
 
                 </table>
             </div>

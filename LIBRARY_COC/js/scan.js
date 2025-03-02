@@ -1,52 +1,44 @@
 let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
 
-Instascan.Camera.getCameras().then(function(cameras) {
+Instascan.Camera.getCameras().then(function (cameras) {
     if (cameras.length > 0) {
         scanner.start(cameras[0]);
     } else {
         alert('No cameras found');
     }
-}).catch(function(e) {
+}).catch(function (e) {
     console.error(e);
 });
 
-scanner.addListener('scan', function(c) {
-    document.getElementById('text').value = c; // Set input value
-    checkTimeIn(c); // Check if at least 1 minute has passed
+scanner.addListener('scan', function (STUDENTID) {
+    document.getElementById('text').value = STUDENTID; // Set input value
+    processScan(STUDENTID); // Process scan
 });
 
-function checkTimeIn(qrCode) {
-    axios.post('http://localhost/test/check_timein.php', { text: qrCode }, {
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(function(response) {
-        if (response.data.canTimeout) {
-            sendData(qrCode);
-        } else {
-            showMessage("Timeout must be at least 1 minute after time in.", "error");
-        }
-    })
-    .catch(function(error) {
-        showMessage("Error checking time in.", "error");
-        console.error("Error:", error);
-    });
-}
+// Process Scan - Sends QR Code to PHP API
+function processScan(qrCode) {
+    console.log("📤 Sending QR Code to insert1.php:", qrCode); // Debugging
 
-// Function to send data for time in or time out
-function sendData(qrCode) {
     axios.post('http://localhost/test/insert1.php', { text: qrCode }, {
         headers: { 'Content-Type': 'application/json' }
     })
-    .then(function(response) {
-        showMessage("Scanned Data Successfully!", "success");
+    .then(function (response) {
+        console.log("✅ API Response:", response.data); // Log response
+
+        if (response.data.message) {
+            showMessage(response.data.message, "success"); // Show success message
+        } else if (response.data.error) {
+            showMessage(response.data.error, "error"); // Show error message
+            console.error("🚨 Insert Error:", response.data.error);
+        }
     })
-    .catch(function(error) {
+    .catch(function (error) {
         showMessage("Failed to insert data.", "error");
-        console.error("Error:", error);
+        console.error("❌ Error:", error);
     });
 }
 
-// Function to display success/error message
+// Display success/error messages
 function showMessage(message, type) {
     let messageDiv = document.getElementById('message');
 

@@ -15,7 +15,6 @@ scanner.addListener('scan', function(c) {
     checkTimeIn(c); // Check if at least 1 minute has passed
 });
 
-// Function to check the last time in before allowing time out
 function checkTimeIn(qrCode) {
     axios.post('http://localhost/test/check_timein.php', { text: qrCode }, {
         headers: { 'Content-Type': 'application/json' }
@@ -39,7 +38,7 @@ function sendData(qrCode) {
         headers: { 'Content-Type': 'application/json' }
     })
     .then(function(response) {
-        showMessage("Inserting Data Successfully!", "success");
+        showMessage("Scanned Data Successfully!", "success");
     })
     .catch(function(error) {
         showMessage("Failed to insert data.", "error");

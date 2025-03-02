@@ -27,7 +27,7 @@ if (!isset($_SESSION['admin_id'])) {
         <ul>
             <li><a href="admin_dashboard.php"><i class="fas fa-home"></i> Dashboard</a></li>
             <li><a href="transactions.php"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
-            <li><a href="index.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
 

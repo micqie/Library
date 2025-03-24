@@ -6,50 +6,63 @@ body {
     padding: 20px;
     height: 100vh;
     display: flex;
-    flex-direction: column;
+    gap: 20px;
 }
 .clock-container {
     background: #2c3e50;
     color: white;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
-    margin-bottom: 20px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 .clock {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     font-weight: bold;
     margin: 0;
 }
 .date {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     opacity: 0.9;
+    margin-top: 10px;
 }
 .content-container {
-    display: flex;
-    gap: 20px;
     flex: 1;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 50%;
+}
+.right-section {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 .scanner-section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: calc(100vh - 40px);
+}
+.info-section {
     flex: 1;
+    overflow-y: auto;
     background: white;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.info-section {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
-}
 .video-container {
     width: 100%;
-    height: 300px;
+    height: 400px;
     overflow: hidden;
     border-radius: 8px;
     background: #000;
+    margin-bottom: 20px;
 }
 #preview {
     width: 100%;

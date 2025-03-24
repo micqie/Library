@@ -6,6 +6,7 @@ let activeUsers = new Map(); // Store active users and their timeouts
 let cooldownUsers = new Map(); // Store users in cooldown
 let cooldownIntervals = new Map(); // Store cooldown intervals
 
+
 function showMessage(message, type = 'info', countdown = null) {
     const messageContainer = document.getElementById('messageContainer');
     const messageElement = document.createElement('div');
@@ -62,6 +63,8 @@ function showMessage(message, type = 'info', countdown = null) {
     }
 }
 
+
+
 function showCooldownMessage(userId) {
     const message = document.getElementById('cooldownMessage');
     const timer = document.getElementById('cooldownTimer');
@@ -85,6 +88,7 @@ function showCooldownMessage(userId) {
 
     cooldownIntervals.set(userId, interval);
 }
+
 
 function createUserCard(userData, isTimeout = false) {
     const cardId = `user-${Date.now()}`;
@@ -140,6 +144,8 @@ function createUserCard(userData, isTimeout = false) {
     return cardId;
 }
 
+
+
 // Update the scanner initialization code
 Instascan.Camera.getCameras().then(function (cameras) {
     if (cameras.length > 0) {
@@ -174,6 +180,7 @@ Instascan.Camera.getCameras().then(function (cameras) {
         manualInput.placeholder = 'Camera access failed. Please enter ID manually';
     }
 });
+
 
 // Add error handling to the scanner
 scanner.addListener('scan-error', function (error) {
@@ -222,7 +229,7 @@ async function handleManualEntry(schoolId) {
     try {
         const response = await axios.post('./api/time_in.php', {
             user_schoolId: schoolId,
-            is_manual: true  // Add this flag to indicate manual entry
+            is_manual: true
         });
 
         console.log('API Response:', response.data);
@@ -230,8 +237,9 @@ async function handleManualEntry(schoolId) {
         if (response.data.user_data) {
             if (response.data.is_timeout) {
                 const card = createUserCard(response.data.user_data, true);
-                showMessage('Manual Time-out successful!');
-                
+                showMessage('Time-out successful!');
+
+                // Fade out the card after timeout
                 setTimeout(() => {
                     const cardElement = document.getElementById(card);
                     if (cardElement) {
@@ -243,8 +251,9 @@ async function handleManualEntry(schoolId) {
                 }, 5000);
             } else {
                 const card = createUserCard(response.data.user_data);
-                showMessage('Manual Time-in successful!');
-                
+                showMessage('Time-in successful!');
+
+                // Fade out the card after successful time-in
                 setTimeout(() => {
                     const cardElement = document.getElementById(card);
                     if (cardElement) {
@@ -265,7 +274,10 @@ async function handleManualEntry(schoolId) {
             request: error.request
         });
         
-        if (error.response?.data?.error) {
+        if (error.response?.data?.is_early_timeout) {
+            const remainingSeconds = error.response.data.remaining_seconds;
+            showMessage('', 'info', remainingSeconds);
+        } else if (error.response?.data?.error) {
             showMessage(error.response.data.error);
         } else {
             showMessage('Invalid user ID. Please try again.');
@@ -287,24 +299,16 @@ schoolIdInput.addEventListener('keypress', function (e) {
 
 // Keep the original handleScan function for QR scanning
 async function handleScan(schoolId) {
-    // Check cooldown only for QR scans
-    if (cooldownUsers.has(schoolId)) {
-        const timeLeft = Math.ceil((COOLDOWN_DURATION - (Date.now() - cooldownUsers.get(schoolId)) / 1000));
-        showMessage(`Please wait ${timeLeft} seconds before scanning again.`);
-        return;
-    }
-
     try {
         const response = await axios.post('./api/time_in.php', {
             user_schoolId: schoolId,
-            is_manual: false  // Add this flag to indicate QR scan
+            is_manual: false
         });
 
-        console.log('API Response:', response.data); // Add this for debugging
+        console.log('API Response:', response.data);
 
         if (response.data.user_data) {
             if (response.data.is_timeout) {
-                // Handle timeout
                 const card = createUserCard(response.data.user_data, true);
                 showMessage('Time-out successful!');
 
@@ -319,7 +323,6 @@ async function handleScan(schoolId) {
                     }
                 }, 5000);
             } else {
-                // Handle time-in
                 const card = createUserCard(response.data.user_data);
                 showMessage('Time-in successful!');
 

@@ -11,7 +11,7 @@ $db = $database->getConnection();
 
 try {
     $filter = isset($_GET['filter']) ? $_GET['filter'] : 'today';
-    $search = isset($_GET['search']) ? $_GET['search'] : '';
+    $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
     // Build the date filter condition
     switch ($filter) {
@@ -28,17 +28,29 @@ try {
             $dateFilter = "1=1"; // All time
     }
 
-    // Build the search condition
+    // Build the search condition (Case-insensitive and supports full names)
     $searchCondition = "";
+    $params = []; // Store parameters for binding
+    
     if (!empty($search)) {
         $searchCondition = "AND (
-            u.user_schoolId LIKE :search 
-            OR u.user_firstname LIKE :search 
-            OR u.user_lastname LIKE :search
-            OR u.user_middlename LIKE :search
+            LOWER(u.user_schoolId) LIKE :search 
+            OR LOWER(u.user_firstname) LIKE :search 
+            OR LOWER(u.user_lastname) LIKE :search
+            OR LOWER(u.user_middlename) LIKE :search
+            OR LOWER(CONCAT(u.user_firstname, ' ', u.user_lastname)) LIKE :search
+            OR LOWER(CONCAT(u.user_firstname, ' ', u.user_middlename, ' ', u.user_lastname)) LIKE :search
         )";
+        $params[':search'] = "%" . strtolower($search) . "%"; // Convert input to lowercase
+    }
+    
+    // Ensure WHERE clause is valid
+    $whereClause = "WHERE $dateFilter"; 
+    if (!empty($searchCondition)) {
+        $whereClause .= " $searchCondition";
     }
 
+    // SQL Query
     $query = "SELECT 
                 l.*, 
                 u.user_firstname, 
@@ -51,16 +63,16 @@ try {
             JOIN lib_users u ON l.user_schoolId = u.user_schoolId
             LEFT JOIN lib_departments d ON u.user_departmentId = d.department_id
             LEFT JOIN lib_courses c ON u.user_courseId = c.course_id
-            WHERE $dateFilter $searchCondition
+            $whereClause
             ORDER BY l.time_in DESC";
-
+    
     $stmt = $db->prepare($query);
     
-    if (!empty($search)) {
-        $searchParam = "%$search%";
-        $stmt->bindParam(':search', $searchParam);
+    // Bind parameters
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value, PDO::PARAM_STR);
     }
-
+    
     $stmt->execute();
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -77,4 +89,4 @@ try {
         "message" => $e->getMessage()
     ]);
 }
-?> 
+?>

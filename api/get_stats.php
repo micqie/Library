@@ -11,41 +11,35 @@ try {
     // Get period from request (day, week, month)
     $period = isset($_GET['period']) ? $_GET['period'] : 'day';
 
-    // Get top visitors stats
-    $topVisitorsQuery = "SELECT 
-        u.user_schoolId,
-        u.user_firstname,
-        u.user_lastname,
-        u.user_middlename,
+    // Get department visit stats
+    $deptVisitsQuery = "SELECT 
         d.department_name,
-        c.course_name,
-        COUNT(*) as visit_count
+        COUNT(*) as visit_count,
+        COUNT(DISTINCT l.user_schoolId) as unique_visitors
     FROM lib_logs l
     JOIN lib_users u ON l.user_schoolId = u.user_schoolId
-    LEFT JOIN lib_departments d ON u.user_departmentId = d.department_id
-    LEFT JOIN lib_courses c ON u.user_courseId = c.course_id
+    JOIN lib_departments d ON u.user_departmentId = d.department_id
     WHERE ";
 
     // Add date condition based on period
     switch($period) {
         case 'day':
-            $topVisitorsQuery .= "DATE(l.time_in) = CURDATE()";
+            $deptVisitsQuery .= "DATE(l.time_in) = CURDATE()";
             break;
         case 'week':
-            $topVisitorsQuery .= "YEARWEEK(l.time_in, 1) = YEARWEEK(CURDATE(), 1)";
+            $deptVisitsQuery .= "YEARWEEK(l.time_in, 1) = YEARWEEK(CURDATE(), 1)";
             break;
         case 'month':
-            $topVisitorsQuery .= "YEAR(l.time_in) = YEAR(CURDATE()) AND MONTH(l.time_in) = MONTH(CURDATE())";
+            $deptVisitsQuery .= "YEAR(l.time_in) = YEAR(CURDATE()) AND MONTH(l.time_in) = MONTH(CURDATE())";
             break;
     }
 
-    $topVisitorsQuery .= " GROUP BY u.user_schoolId
-        ORDER BY visit_count DESC
-        LIMIT 5";
+    $deptVisitsQuery .= " GROUP BY d.department_id
+        ORDER BY visit_count DESC";
 
-    $stmt = $db->prepare($topVisitorsQuery);
+    $stmt = $db->prepare($deptVisitsQuery);
     $stmt->execute();
-    $topVisitors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $departmentStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Get total visits for the period
     $totalVisitsQuery = "SELECT COUNT(*) as total FROM lib_logs WHERE ";
@@ -77,7 +71,7 @@ try {
             "period" => $period,
             "totalVisits" => $totalVisits,
             "activeVisitors" => $activeVisitors,
-            "topVisitors" => $topVisitors
+            "departmentStats" => $departmentStats
         ]
     ]);
 

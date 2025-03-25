@@ -5,7 +5,7 @@ function loadDashboardStats() {
         .then(response => response.json())
         .then(response => {
             if (response.status === 'success') {
-                const { totalVisits, activeVisitors, topVisitors } = response.data;
+                const { totalVisits, activeVisitors, departmentStats } = response.data;
                 
                 // Update total visits
                 document.getElementById('totalVisits').textContent = totalVisits;
@@ -13,15 +13,15 @@ function loadDashboardStats() {
                 // Update active visitors
                 document.getElementById('activeVisitors').textContent = activeVisitors;
                 
-                // Update top visitors list
+                // Update department stats list
                 const topVisitorsList = document.getElementById('topVisitors');
-                topVisitorsList.innerHTML = topVisitors.map(visitor => `
+                topVisitorsList.innerHTML = departmentStats.map(dept => `
                     <div class="visitor-item">
                         <div class="visitor-info">
-                            <p class="visitor-name">${visitor.user_firstname} ${visitor.user_lastname}</p>
-                            <p class="visitor-details">${visitor.department_name || 'N/A'} - ${visitor.course_name || 'N/A'}</p>
+                            <p class="visitor-name">${dept.department_name}</p>
+                            <p class="visitor-details">${dept.unique_visitors} unique visitors</p>
                         </div>
-                        <span class="visit-count">${visitor.visit_count} visits</span>
+                        <span class="visit-count">${dept.visit_count} visits</span>
                     </div>
                 `).join('');
             }

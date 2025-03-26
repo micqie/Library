@@ -9,23 +9,27 @@ body {
     gap: 20px;
 }
 .clock-container {
-    background: #189f39;
+    background: #155f37;
     color: white;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 6px 12px;
+    border-radius: 6px;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(21, 95, 55, 0.2);
+    margin-top: auto;
+    width: 100%;
+    align-self: center;
 }
 .clock {
-    font-size: 3.5rem;
+    font-size: 25px;
     font-weight: bold;
     margin: 0;
+    letter-spacing: 0.5px;
 }
 .date {
-    font-size: 1.4rem;
+    font-size: 0.85rem;
     opacity: 0.9;
-    margin-top: 10px;
+    margin: 0;
+    font-weight: 500;
 }
 .content-container {
     flex: 1;
@@ -40,6 +44,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
+    background: transparent;
+    border-radius: 10px;
+    box-shadow: none;
 }
 .scanner-section {
     background: white;
@@ -51,10 +59,12 @@ body {
 .info-section {
     flex: 1;
     overflow-y: auto;
-    background: white;
+    background: transparent;
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+    position: relative;
+    z-index: 2;
 }
 .video-container {
     width: 100%;
@@ -151,4 +161,16 @@ body {
     .video-container {
         height: 250px;
     }
+}
+
+.logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0.3;
+    pointer-events: none;
+    width: 90%;
+    height: auto;
 }

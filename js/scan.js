@@ -89,6 +89,47 @@ function showCooldownMessage(userId) {
     cooldownIntervals.set(userId, interval);
 }
 
+// Helper function to format time in 12-hour format
+function formatTime(date) {
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours || 12; // Convert 0 to 12
+    
+    return `${hours}:${minutes}:${seconds} ${ampm}`;
+}
+
+// Update clock function
+function updateClock() {
+    const now = new Date();
+    const timeString = formatTime(now);
+    
+    const dateString = now.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+    });
+    
+    document.getElementById('clock').textContent = timeString;
+    document.getElementById('date').textContent = dateString;
+}
+
+// For user card times
+function formatTimeTo12Hour(dateStr) {
+    if (!dateStr) return '';
+    
+    // If it's already a Date object
+    if (dateStr instanceof Date) {
+        return formatTime(dateStr);
+    }
+
+    // If it's a string from database, return as is since it's already formatted
+    return dateStr;
+}
 
 function createUserCard(userData, isTimeout = false) {
     const cardId = `user-${Date.now()}`;
@@ -97,8 +138,9 @@ function createUserCard(userData, isTimeout = false) {
     card.id = cardId;
     card.setAttribute('data-user-id', userData.user_schoolId);
 
-    const timeIn = userData.time_in || new Date().toLocaleTimeString();
-    const timeOut = userData.time_out || '';
+    // Format the times
+    const timeIn = formatTimeTo12Hour(userData.time_in);
+    const timeOut = isTimeout ? formatTimeTo12Hour(userData.time_out) : '';
 
     card.innerHTML = `
         <div class="card-header ${isTimeout ? 'bg-danger' : 'bg-success'} text-white">
@@ -112,7 +154,7 @@ function createUserCard(userData, isTimeout = false) {
                 <p><strong>Department:</strong> ${userData.department_name || 'N/A'}</p>
                 <p><strong>Course:</strong> ${userData.course_name || 'N/A'}</p>
                 <p><strong>Time In:</strong> ${timeIn}</p>
-                <p><strong>Time Out:</strong> <span class="countdown">${isTimeout ? timeOut : ''}</span></p>
+                <p><strong>Time Out:</strong> <span class="countdown">${timeOut}</span></p>
             </div>
         </div>
     `;
@@ -124,11 +166,10 @@ function createUserCard(userData, isTimeout = false) {
         const countdownElement = card.querySelector('.countdown');
         const timeoutId = setTimeout(() => {
             card.classList.add('timeout');
-            countdownElement.textContent = new Date().toLocaleTimeString();
+            countdownElement.textContent = formatTimeTo12Hour(new Date());
             cooldownUsers.set(userData.user_schoolId, Date.now());
             showCooldownMessage(userData.user_schoolId);
 
-            // Fade out and remove the card after timeout
             setTimeout(() => {
                 card.classList.add('fade-out');
                 setTimeout(() => {
@@ -137,7 +178,6 @@ function createUserCard(userData, isTimeout = false) {
             }, 5000);
         }, TIMEOUT_DURATION * 1000);
 
-        // Store the timeout ID
         activeUsers.set(cardId, timeoutId);
     }
 
@@ -232,56 +272,9 @@ async function handleManualEntry(schoolId) {
             is_manual: true
         });
 
-        console.log('API Response:', response.data);
-
-        if (response.data.user_data) {
-            if (response.data.is_timeout) {
-                const card = createUserCard(response.data.user_data, true);
-                showMessage('Time-out successful!');
-
-                // Fade out the card after timeout
-                setTimeout(() => {
-                    const cardElement = document.getElementById(card);
-                    if (cardElement) {
-                        cardElement.classList.add('fade-out');
-                        setTimeout(() => {
-                            cardElement.remove();
-                        }, 500);
-                    }
-                }, 5000);
-            } else {
-                const card = createUserCard(response.data.user_data);
-                showMessage('Time-in successful!');
-
-                // Fade out the card after successful time-in
-                setTimeout(() => {
-                    const cardElement = document.getElementById(card);
-                    if (cardElement) {
-                        cardElement.classList.add('fade-out');
-                        setTimeout(() => {
-                            cardElement.remove();
-                        }, 500);
-                    }
-                }, 5000);
-            }
-        } else {
-            showMessage('Invalid user ID or no data received.');
-        }
+        handleApiResponse(response);
     } catch (error) {
-        console.error('API Error Details:', {
-            message: error.message,
-            response: error.response,
-            request: error.request
-        });
-        
-        if (error.response?.data?.is_early_timeout) {
-            const remainingSeconds = error.response.data.remaining_seconds;
-            showMessage('', 'info', remainingSeconds);
-        } else if (error.response?.data?.error) {
-            showMessage(error.response.data.error);
-        } else {
-            showMessage('Invalid user ID. Please try again.');
-        }
+        handleApiError(error);
     }
 }
 
@@ -305,80 +298,79 @@ async function handleScan(schoolId) {
             is_manual: false
         });
 
-        console.log('API Response:', response.data);
-
-        if (response.data.user_data) {
-            if (response.data.is_timeout) {
-                const card = createUserCard(response.data.user_data, true);
-                showMessage('Time-out successful!');
-
-                // Fade out the card after timeout
-                setTimeout(() => {
-                    const cardElement = document.getElementById(card);
-                    if (cardElement) {
-                        cardElement.classList.add('fade-out');
-                        setTimeout(() => {
-                            cardElement.remove();
-                        }, 500);
-                    }
-                }, 5000);
-            } else {
-                const card = createUserCard(response.data.user_data);
-                showMessage('Time-in successful!');
-
-                // Fade out the card after successful time-in
-                setTimeout(() => {
-                    const cardElement = document.getElementById(card);
-                    if (cardElement) {
-                        cardElement.classList.add('fade-out');
-                        setTimeout(() => {
-                            cardElement.remove();
-                        }, 500);
-                    }
-                }, 5000);
-            }
-        } else {
-            showMessage('Invalid user ID or no data received.');
-        }
+        handleApiResponse(response);
     } catch (error) {
-        console.error('API Error Details:', {
-            message: error.message,
-            response: error.response,
-            request: error.request
-        });
-        
-        if (error.response?.data?.is_early_timeout) {
-            const remainingSeconds = error.response.data.remaining_seconds;
-            showMessage('', 'info', remainingSeconds);
-        } else if (error.response?.data?.error) {
-            showMessage(error.response.data.error);
-        } else {
-            showMessage('Invalid user ID. Please try again.');
-        }
+        handleApiError(error);
     }
 }
 
-// Add this at the beginning of your script section
-function updateClock() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', {
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
-    const dateString = now.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+// Helper function to handle API responses
+function handleApiResponse(response) {
+    console.log('API Response:', response.data);
 
-    document.getElementById('clock').textContent = timeString;
-    document.getElementById('date').textContent = dateString;
+    if (response.data.user_data) {
+        if (response.data.is_timeout) {
+            const card = createUserCard(response.data.user_data, true);
+            showMessage('Time-out successful!');
+            fadeOutCard(card);
+        } else {
+            const card = createUserCard(response.data.user_data);
+            showMessage('Time-in successful!');
+            fadeOutCard(card);
+        }
+    } else {
+        showMessage('Invalid user ID or no data received.');
+    }
 }
 
-// Update clock every second
+// Helper function to handle API errors
+function handleApiError(error) {
+    console.error('API Error Details:', {
+        message: error.message,
+        response: error.response,
+        request: error.request
+    });
+    
+    if (error.response?.data?.is_early_timeout) {
+        const remainingSeconds = error.response.data.remaining_seconds;
+        showMessage('', 'info', remainingSeconds);
+    } else if (error.response?.data?.error) {
+        showMessage(error.response.data.error);
+    } else {
+        showMessage('Invalid user ID. Please try again.');
+    }
+}
+
+// Helper function to fade out cards
+function fadeOutCard(cardId) {
+    setTimeout(() => {
+        const cardElement = document.getElementById(cardId);
+        if (cardElement) {
+            cardElement.classList.add('fade-out');
+            setTimeout(() => {
+                cardElement.remove();
+            }, 500);
+        }
+    }, 5000);
+}
+
+// Start the clock update
 setInterval(updateClock, 1000);
 updateClock(); // Initial call
-updateClock(); // Initial call
+
+// Configure Axios defaults if needed
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+// Add Axios interceptor for common error handling
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 404) {
+            showMessage('Resource not found. Please try again.');
+        } else if (error.response?.status === 500) {
+            showMessage('Server error. Please try again later.');
+        }
+        return Promise.reject(error);
+    }
+);

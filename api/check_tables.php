@@ -7,7 +7,7 @@ try {
     $db = $database->getConnection();
     
     // Tables to check
-    $tables = ['lib_users', 'lib_logs', 'lib_departments', 'lib_courses'];
+    $tables = ['tbl_users', 'lib_logs', 'tbl_departments', 'tbl_courses'];
     $results = [];
     
     foreach ($tables as $table) {
@@ -18,8 +18,8 @@ try {
     }
     
     // If lib_users exists, check if it has any records
-    if ($results['lib_users']) {
-        $query = "SELECT COUNT(*) as count FROM lib_users";
+    if ($results['tbl_users']) {
+        $query = "SELECT COUNT(*) as count FROM tbl_users";
         $stmt = $db->prepare($query);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);

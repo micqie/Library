@@ -318,6 +318,7 @@ function handleApiResponse(response) {
             showMessage('Time-in successful!');
             fadeOutCard(card);
         }
+        updateTitleWithName(response.data.user_data);
     } else {
         showMessage('Invalid user ID or no data received.');
     }
@@ -374,3 +375,19 @@ axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+// Add this function to your existing scan.js
+function updateTitleWithName(userData) {
+    const titleElement = document.getElementById('titleText');
+    const defaultTitle = "Attendance Monitoring System";
+    
+    // Set the name
+    titleElement.textContent = `${userData.user_firstname} ${userData.user_lastname}`;
+    titleElement.classList.add('fade-effect');
+    
+    // After animation, remove the class and reset to default title
+    setTimeout(() => {
+        titleElement.classList.remove('fade-effect');
+        titleElement.textContent = defaultTitle;
+    }, 4000); // 4 seconds matches the animation duration
+}

@@ -17,8 +17,8 @@ try {
         COUNT(*) as visit_count,
         COUNT(DISTINCT l.user_schoolId) as unique_visitors
     FROM lib_logs l
-    JOIN lib_users u ON l.user_schoolId = u.user_schoolId
-    JOIN lib_departments d ON u.user_departmentId = d.department_id
+    JOIN tbl_users u ON l.user_schoolId = u.user_schoolId
+    JOIN tbl_departments d ON u.user_departmentId = d.department_id
     WHERE ";
 
     // Add date condition based on period

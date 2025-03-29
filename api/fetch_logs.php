@@ -48,9 +48,9 @@ try {
                 c.course_name,
                 DATE(l.time_in) as log_date
             FROM lib_logs l
-            JOIN lib_users u ON l.user_schoolId = u.user_schoolId
-            LEFT JOIN lib_departments d ON u.user_departmentId = d.department_id
-            LEFT JOIN lib_courses c ON u.user_courseId = c.course_id
+            JOIN tbl_users u ON l.user_schoolId = u.user_schoolId
+            LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
+            LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
             WHERE $dateFilter $searchCondition
             ORDER BY l.time_in DESC";
 

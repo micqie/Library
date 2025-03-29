@@ -18,7 +18,7 @@ if (!$conn) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT * FROM lib_users WHERE user_schoolId = :student_id");
+$stmt = $conn->prepare("SELECT * FROM tbl_users WHERE user_schoolId = :student_id");
 $stmt->bindParam(':student_id', $data['student_id']);
 $stmt->execute();
 

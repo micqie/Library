@@ -174,3 +174,41 @@ body {
     width: 90%;
     height: auto;
 }
+
+.title-box {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.title-box h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.fade-effect {
+    animation: fadeInOut 4s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 1;
+    }
+    20% {
+        opacity: 0;
+    }
+    40% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+    }
+}

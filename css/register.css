@@ -1,0 +1,63 @@
+:root {
+    --primary-green: #004225;
+    --light-bg: #f8f9fa;
+}
+
+.password-toggle {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.password-container {
+    position: relative;
+}
+
+.card-header {
+    background-color: var(--primary-green);
+    color: white;
+    padding: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.btn-primary:hover {
+    background-color: #003319;
+    border-color: #003319;
+}
+
+.form-label {
+    color: var(--primary-green);
+    font-weight: 500;
+}
+
+.card {
+    border-color: var(--primary-green);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+a {
+    color: var(--primary-green);
+    text-decoration: none;
+}
+
+a:hover {
+    color: #003319;
+    text-decoration: underline;
+}
+
+.project-title {
+    color: var(--primary-green);
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0;
+} 

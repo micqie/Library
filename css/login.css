@@ -13,7 +13,17 @@ body {
 /* Navbar Styles */
 .navbar {
     background-color: var(--primary-green);
-    padding: 1rem 0;
+    padding: 0.5rem 0;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    margin-right: 1rem;
 }
 
 .navbar-brand {

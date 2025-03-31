@@ -30,7 +30,15 @@ try {
         }
     }
 
-    $sql = "INSERT INTO lib_users (
+    // Check if school ID already exists
+    $checkStmt = $db->prepare("SELECT COUNT(*) FROM tbl_users WHERE user_schoolId = ?");
+    $checkStmt->execute([$data['schoolId']]);
+    if ($checkStmt->fetchColumn() > 0) {
+        echo json_encode(['success' => false, 'message' => 'School ID already registered']);
+        exit;
+    }
+
+    $sql = "INSERT INTO tbl_users (
         user_schoolId, user_lastname, user_firstname, user_middlename, 
         user_suffix, phinmaed_email, user_email, user_contact, 
         user_password, user_typeId, user_status, user_level
@@ -64,5 +72,5 @@ try {
 
     echo json_encode(['success' => true, 'message' => 'Registration successful']);
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
 }

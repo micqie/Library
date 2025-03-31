@@ -77,43 +77,38 @@ document.getElementById('toggleConfirmPassword').addEventListener('click', funct
 });
 
 // Form submission
-document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+document.getElementById('registrationForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-
-    if (password !== confirmPassword) {
-        alert('Passwords do not match!');
-        return;
-    }
-
-    if (!validatePassword(password)) {
-        alert('Password does not meet requirements!');
-        return;
-    }
-
-    const formData = {
-        schoolId: document.getElementById('schoolId').value,
-        lastname: document.getElementById('lastname').value,
-        firstname: document.getElementById('firstname').value,
-        middlename: document.getElementById('middlename').value,
-        suffix: document.getElementById('suffix').value,
-        phinmaedEmail: document.getElementById('phinmaedEmail').value,
-        personalEmail: document.getElementById('personalEmail').value,
-        contact: document.getElementById('contact').value,
-        password: password
-    };
-
     try {
+        const formData = {
+            schoolId: document.getElementById('schoolId').value,
+            firstname: document.getElementById('firstname').value,
+            lastname: document.getElementById('lastname').value,
+            middlename: document.getElementById('middlename').value,
+            suffix: document.getElementById('suffix').value,
+            phinmaedEmail: document.getElementById('phinmaedEmail').value,
+            personalEmail: document.getElementById('personalEmail').value,
+            contact: document.getElementById('contact').value,
+            password: document.getElementById('password').value
+        };
+
         const response = await axios.post('api/register.php', formData);
+
         if (response.data.success) {
-            window.location.href = 'users/user_dashboard.html';
+            // Show success modal
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+
+            // Add click handler for okay button
+            document.getElementById('okayButton').addEventListener('click', function() {
+                window.location.href = 'login.html';
+            });
         } else {
-            alert(response.data.message || 'Registration failed');
+            alert(response.data.message || 'Registration failed. Please try again.');
         }
     } catch (error) {
-        console.error('Registration error:', error);
-        alert('Registration failed. Please try again.');
+        console.error('Error:', error);
+        alert('An error occurred during registration. Please try again.');
     }
 });

@@ -35,7 +35,7 @@
         
         <!-- Right Column - Login Form -->
         <div class="col-lg-6">
-          <form id="loginForm">
+          <form id="loginForm" action="api/login.php" method="POST">
             <div class="form-header">
               <i class="bi bi-lock-fill"></i> LIBRARY LOGIN
             </div>
@@ -53,7 +53,8 @@
               <span class="math-operator">+</span>
               <input type="text" class="math-input" id="num2" readonly />
               <span class="math-operator">=</span>
-              <input type="number" class="math-input" id="mathAnswer" required />
+              <input type="number" class="math-input" id="mathAnswer" name="captcha_answer" required />
+              <input type="hidden" name="captcha_correct" id="captcha-correct">
             </div>
 
             <button type="submit">Login</button>
@@ -66,5 +67,19 @@
       </div>
     </div>
   </div>
+
+  <script>
+    function generateCaptcha() {
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * 10) + 1;
+        const answer = num1 + num2;
+        
+        document.getElementById('num1').value = num1;
+        document.getElementById('num2').value = num2;
+        document.getElementById('captcha-correct').value = answer;
+    }
+
+    window.onload = generateCaptcha;
+  </script>
 </body>
 </html>

@@ -5,6 +5,17 @@ header('Content-Type: application/json');
 
 $data = json_decode(file_get_contents('php://input'), true);
 
+// Add captcha validation
+if (isset($_POST['captcha_answer']) && isset($_POST['captcha_correct'])) {
+    $captcha_answer = $_POST['captcha_answer'];
+    $captcha_correct = $_POST['captcha_correct'];
+
+    if ($captcha_answer != $captcha_correct) {
+        echo json_encode(['success' => false, 'message' => 'Incorrect math answer. Please try again.']);
+        exit();
+    }
+}
+
 if (!isset($data['student_id']) || !isset($data['password'])) {
     echo json_encode(['success' => false, 'message' => 'Missing credentials']);
     exit;

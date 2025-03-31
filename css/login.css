@@ -178,6 +178,17 @@ button[type="submit"]:hover {
     font-size: 0.9rem;
 }
 
+/* Add these styles for the math input validation */
+.math-input.is-valid {
+    border-color: #198754;
+    background-color: #f8fff9;
+}
+
+.math-input.is-invalid {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 991.98px) {
     .main-container {

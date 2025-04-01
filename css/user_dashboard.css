@@ -1,0 +1,68 @@
+:root {
+    --primary-green: #004225;
+    --light-bg: #f8f9fa;
+}
+
+body {
+    background-color: var(--light-bg);
+    font-family: 'Inter', sans-serif;
+}
+
+.navbar {
+    background-color: #004225;
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    margin-right: 10px;
+    object-fit: contain;
+}
+
+.profile-card {
+    border: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.profile-icon {
+    font-size: 4rem;
+    color: var(--primary-green);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.card-title {
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+#qrCode {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#qrCode img {
+    max-width: 200px;
+}
+
+.table {
+    font-size: 0.9rem;
+}
+
+.table thead th {
+    background-color: var(--light-bg);
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+.user-details p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+} 

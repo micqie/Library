@@ -45,6 +45,7 @@ async function getUserDetails() {
                 userName: `${user.firstname} ${user.lastname}`,
                 userSchoolId: user.schoolId,
                 userDepartment: user.department || 'Not specified',
+                userCourse: user.course || 'Not specified',
                 userPhinmaedEmail: user.phinmaedEmail || 'Not specified',
                 userPersonalEmail: user.personalEmail || 'Not specified',
                 userContact: user.contact || 'Not specified'
@@ -83,7 +84,7 @@ async function getUserDetails() {
 function updateErrorDisplay(message) {
     console.log('Updating error display with message:', message);
     const elements = ['userName', 'userSchoolId', 'userDepartment',
-        'userPhinmaedEmail', 'userPersonalEmail', 'userContact'];
+        'userCourse', 'userPhinmaedEmail', 'userPersonalEmail', 'userContact'];
 
     elements.forEach(id => {
         const element = document.getElementById(id);
@@ -98,13 +99,21 @@ function updateErrorDisplay(message) {
 // Function to format date
 function formatDate(dateString) {
     try {
-        // If dateString is already in YYYY-MM-DD format, use it directly
-        const [year, month, day] = dateString.split('-');
-        const date = new Date(year, month - 1, day);
+        // Create a new Date object from the date string
+        const date = new Date(dateString);
+
+        // Check if the date is valid
+        if (isNaN(date.getTime())) {
+            console.error('Invalid date:', dateString);
+            return 'Invalid date';
+        }
+
+        // Format the date with consistent options
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric'
+            day: 'numeric',
+            timeZone: 'UTC' // Ensure consistent timezone handling
         });
     } catch (error) {
         console.error('Error formatting date:', error, dateString);

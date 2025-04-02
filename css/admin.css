@@ -1,0 +1,692 @@
+:root {
+    --primary-green: #004225;
+    --light-bg: #f8f9fa;
+}
+
+
+/* Layout */
+body {
+    background-image: url(../images/whitebg.png);
+    background-size: cover; /* Makes the image cover the whole page */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents repeating */
+    font-family: 'Inter', sans-serif;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+/* Fix the row and column layout */
+.row {
+    margin: 10px;
+    height: 25vh;
+
+
+}
+
+/* Update sidebar styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background: white;
+    color: var(--text-dark);
+    padding-top: 76px; /* Navbar height + some padding */
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    transition: var(--transition);
+    margin-top: 0;
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar h4 {
+    color: var(--text-dark);
+    padding: 0.5rem 1.5rem;
+    margin-bottom: 2rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar .nav {
+    padding: 0 0.5rem;
+}
+
+.sidebar .nav-item {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .nav-link {
+    color: var(--text-dark);
+    padding: 0.8rem 1.5rem;
+    margin: 0.2rem 0.8rem;
+    transition: var(--transition);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.sidebar .nav-link:hover {
+    color: var(--primary-green);
+    background-color: var(--light-green);
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+    color: var(--primary-green);
+    background-color: var(--light-green);
+    border-left: 4px solid var(--primary-green);
+    font-weight: 600;
+}
+
+.sidebar .nav-link i {
+    width: 24px;
+    text-align: center;
+    margin-right: 12px;
+    font-size: 1.1rem;
+    color: var(--primary-green);
+}
+
+/* Update navbar styles */
+.navbar {
+    position: fixed;
+    width: 100%;
+    z-index: 1001; /* Higher than sidebar */
+    background-color:#004225 ;
+    padding: 0.8rem 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: white;
+}
+
+/* Fix the main content area */
+.main-content {
+    margin-left: 250px;
+    padding: 76px 2rem 2rem 2rem; /* Add top padding to account for navbar */
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    width: calc(100% - 250px);
+    transition: var(--transition);
+}
+
+/* Filter Section Styles */
+.filter-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.filter-controls {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-controls .row {
+    height: auto;
+    margin: 0;
+    align-items: flex-end;
+}
+
+.filter-controls .col-md-4 {
+    padding: 0 1rem;
+}
+
+.filter-section .form-label {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-section .form-control,
+.filter-section .form-select {
+    height: 45px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    box-shadow: none;
+    transition: all 0.3s ease;
+    background-color: var(--light-green);
+}
+
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.2rem rgba(24, 159, 57, 0.15);
+    background-color: white;
+}
+
+.filter-section .form-control::placeholder {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.filter-section .btn-primary {
+    height: 45px;
+    width: 100%;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #0d6efd !important; /* Bootstrap primary blue */
+    border-color: #0d6efd !important;
+    color: white;
+    box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+.filter-section .btn-primary:hover {
+    background: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(13, 110, 253, 0.25);
+}
+
+.filter-section .btn-primary i {
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+}
+
+/* Responsive adjustments for filter section */
+@media (max-width: 768px) {
+    .filter-section {
+        padding: 1.5rem;
+    }
+
+    .filter-section .row {
+        gap: 1rem;
+    }
+
+    .filter-section .col-md-4 {
+        padding: 0;
+    }
+
+    .filter-section .btn-primary {
+        margin-top: 1rem;
+    }
+}
+
+/* Table Section Styles */
+.table-section {
+    margin-top: 1.5rem;
+}
+
+.table-responsive {
+    padding: 0;
+    margin-bottom: 0;
+    border-radius: 8px;
+    background: white;
+}
+
+.table {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.table thead th {
+    background: var(--light-green);
+    color: var(--text-dark);
+    font-weight: 600;
+    padding: 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: var(--text-dark);
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: var(--light-yellow) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--light-green);
+    opacity: 0.8;
+}
+
+/* Table Footer Styles */
+.table-footer {
+    background: white;
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.table-footer .btn-success {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Pagination Styles Update */
+.pagination-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination-container button {
+    background-color: var(--primary-green);
+    border: none;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.pagination-container button:not(:disabled):hover {
+    background-color: var(--secondary-green);
+    transform: translateY(-2px);
+}
+
+.page-number {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-number:hover {
+    background-color: var(--light-yellow);
+}
+
+.page-number.active {
+    background-color: var(--primary-green);
+    color: white;
+}
+
+/* Update showing entries style */
+.showing-entries {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.showing-entries span {
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+/* Badge Styles */
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.bg-success {
+    background-color: #e8f5e9 !important;
+    color: #2e7d32 !important;
+}
+
+.bg-warning {
+    background-color: #fff3e0 !important;
+    color: #ef6c00 !important;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+/* Form Control Styles */
+.form-control, .form-select {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.2rem rgba(24, 159, 57, 0.15);
+}
+
+/* Utility Classes */
+.content-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Update responsive behavior */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* Adjust table for mobile */
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .table thead th {
+        font-size: 0.8rem;
+        padding: 0.75rem;
+    }
+    
+    .table tbody td {
+        font-size: 0.8rem;
+        padding: 0.75rem;
+    }
+    
+    .table-footer {
+        padding: 0.75rem;
+    }
+    
+    .table-footer .btn-success {
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .showing-entries, .pagination-container {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* Add a toggle button for mobile */
+.sidebar-toggle {
+    position: fixed;
+    top: 70px;
+    left: 15px;
+    z-index: 1020;
+    padding: 0.5rem;
+    background-color: var(--primary-green);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: block;
+    }
+}
+
+/* Update the table borders */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 8px;
+}
+
+/* Dashboard Stats Styles */
+.dashboard-stats {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    height: 100px;
+    min-height: 160px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card-header h6 {
+    margin: 0;
+    color: var(--text-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+}
+
+.stat-card-header i {
+    font-size: 1.5rem;
+}
+
+.stat-card-body h3 {
+    color: var(--primary-green);
+    font-size: 1.5rem;
+    font-weight: 700;
+
+}
+
+.stat-card-body p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.top-visitors-list {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    margin-top: 0.5rem;
+}
+
+.visitor-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.visitor-item:last-child {
+    border-bottom: none;
+}
+
+.visitor-info {
+    flex: 1;
+}
+
+.visitor-name {
+    margin: 0;
+    font-weight: 500;
+}
+
+.visitor-details {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.visit-count {
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.dept-item {
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.department-stats {
+    margin-bottom: 20px;
+}
+
+/* Form select in stat card */
+.stat-card .form-select-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    height: auto;
+    border-radius: 6px;
+}
+
+/* Ensure the stat card takes full height */
+.stat-card.h-100 {
+    height: 100% !important;
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .top-visitors-list {
+        max-height: 300px;
+    }
+    
+    /* Stack the cards on mobile */
+    .col-md-9, .col-md-3 {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Stats Cards Styling */
+.stats-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.stat-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 8px;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.stat-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.visitor-name {
+    margin: 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.visitor-details {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.visit-count {
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Add spacing between cards */
+.row.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Adjust responsive behavior */
+@media (max-width: 768px) {
+    .col-md-6 {
+        margin-bottom: 1.5rem;
+    }
+    
+    .col-md-6:last-child {
+        margin-bottom: 0;
+    }
+    
+    .stat-card {
+        min-height: 300px;
+    }
+}
+
+/* Scrollbar styling */
+.stats-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.stats-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.stats-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.stats-list::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Style for the filter button */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Make sure the button takes full width */
+.btn-group .btn {
+    width: 100%;
+}

@@ -45,4 +45,11 @@ if ($data['password'] !== $user['user_password']) {
     exit;
 }
 
+// Start session and store user data
+session_start();
+$_SESSION['user_id'] = $user['user_schoolId'];
+$_SESSION['user_name'] = $user['user_firstname'] . ' ' . $user['user_lastname'];
+$_SESSION['user_type'] = $user['user_typeId'];
+$_SESSION['user_level'] = $user['user_level'];
+
 echo json_encode(['success' => true]);

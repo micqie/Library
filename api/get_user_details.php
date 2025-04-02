@@ -15,16 +15,16 @@ if (!isset($_SESSION['user_id'])) {
 try {
     $database = new Database();
     $db = $database->getConnection();
-    
+
     $query = "SELECT u.*, d.department_name 
               FROM tbl_users u 
               LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id 
               WHERE u.user_schoolId = :schoolId";
-    
+
     $stmt = $db->prepare($query);
     $stmt->execute(['schoolId' => $_SESSION['user_id']]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if ($user) {
         echo json_encode([
             'success' => true,
@@ -33,7 +33,8 @@ try {
                 'firstname' => $user['user_firstname'],
                 'lastname' => $user['user_lastname'],
                 'department' => $user['department_name'],
-                'phinmaedEmail' => $user['user_phinmaedEmail'],
+                'phinmaedEmail' => $user['phinmaed_email'],
+                'personalEmail' => $user['user_email'],
                 'contact' => $user['user_contact']
             ]
         ]);
@@ -41,6 +42,5 @@ try {
         echo json_encode(['success' => false, 'message' => 'User not found']);
     }
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }
-?> 

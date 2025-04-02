@@ -22,35 +22,40 @@ function showMessage(message, type = 'info', countdown = null) {
         // Start countdown
         let timeLeft = countdown;
         const updateCountdown = () => {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            countdownSpan.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
             if (timeLeft > 0) {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownSpan.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
                 timeLeft--;
                 setTimeout(updateCountdown, 1000);
             }
         };
         updateCountdown();
+
+        // Add to container and show
+        messageContainer.appendChild(messageElement);
+        setTimeout(() => messageElement.classList.add('show'), 100);
+
+        // Fade out after 5 seconds while countdown continues
+        setTimeout(() => {
+            messageElement.classList.remove('show');
+            messageElement.classList.add('fade-out');
+            setTimeout(() => messageElement.remove(), 500);
+        }, 5000);
     } else {
         messageElement.textContent = message;
+        
+        // Add to container and show
+        messageContainer.appendChild(messageElement);
+        setTimeout(() => messageElement.classList.add('show'), 100);
+
+        // Handle removal
+        setTimeout(() => {
+            messageElement.classList.remove('show');
+            messageElement.classList.add('fade-out');
+            setTimeout(() => messageElement.remove(), 500);
+        }, 5000);
     }
-
-    // Add to container
-    messageContainer.appendChild(messageElement);
-
-    // Slide in animation
-    setTimeout(() => messageElement.classList.add('show'), 100);
-
-    // Handle removal
-    const removeMessage = () => {
-        messageElement.classList.remove('show');
-        messageElement.classList.add('fade-out');
-        setTimeout(() => messageElement.remove(), 500);
-    };
-
-    // Remove after delay
-    const displayTime = countdown ? (countdown + 1) * 1000 : 5000;
-    setTimeout(removeMessage, displayTime);
 }
 
 

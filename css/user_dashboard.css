@@ -66,3 +66,21 @@ body {
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
 } 
+
+#modalQRCode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    padding: 20px;
+}
+#modalQRCode img {
+    max-width: 100%;
+    height: auto;
+}
+#qrCodeLoading {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.1em;
+    color: #666;
+}

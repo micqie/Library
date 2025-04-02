@@ -224,4 +224,74 @@ function generateQRCode() {
         // If school ID is not yet loaded, wait and try again
         setTimeout(generateQRCode, 1000);
     }
+}
+
+// Function to show QR Code Modal
+function showQRCodeModal() {
+    const modal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+    const modalQRCode = document.getElementById('modalQRCode');
+    const qrCodeLoading = document.getElementById('qrCodeLoading');
+    const downloadButton = document.getElementById('downloadQRCode');
+
+    // Show loading message and hide other elements
+    modalQRCode.innerHTML = '';
+    qrCodeLoading.classList.remove('d-none');
+    downloadButton.classList.add('d-none');
+
+    // Show the modal
+    modal.show();
+
+    // Get user details from session
+    axios.get('../api/get_user_details.php')
+        .then(response => {
+            console.log('API Response:', response.data); // Log the full response
+            if (response.data.success) {
+                const schoolId = response.data.user.schoolId;
+                console.log('School ID:', schoolId); // Log the school ID
+
+                // Clear previous QR code
+                modalQRCode.innerHTML = '';
+
+                // Generate new QR code immediately
+                new QRCode(modalQRCode, {
+                    text: schoolId,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#004225",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // Hide loading message and show download button
+                qrCodeLoading.classList.add('d-none');
+                downloadButton.classList.remove('d-none');
+            } else {
+                console.error('API Error:', response.data.message); // Log the error message
+                qrCodeLoading.textContent = `Error: ${response.data.message}`;
+                qrCodeLoading.classList.remove('d-none');
+                downloadButton.classList.add('d-none');
+            }
+        })
+        .catch(error => {
+            console.error('Network Error:', error); // Log the full error object
+            qrCodeLoading.textContent = `Error: ${error.message || 'Network error occurred'}`;
+            qrCodeLoading.classList.remove('d-none');
+            downloadButton.classList.add('d-none');
+        });
+}
+
+// Function to download QR Code
+function downloadQRCode() {
+    const modalQRCode = document.getElementById('modalQRCode');
+    const qrImage = modalQRCode.querySelector('img');
+
+    if (qrImage) {
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.download = 'library-qr-code.png';
+        link.href = qrImage.src;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 } 

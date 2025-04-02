@@ -176,19 +176,26 @@ body {
 }
 
 .title-box {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #004225;
+    color: white;
+    padding: 20px;
     text-align: center;
+    margin-bottom: 20px;
+    border-radius: 8px;
 }
 
-.title-box h2 {
+#titleText {
     margin: 0;
-    font-size: 1.5rem;
-    color: #333;
+    opacity: 1;
     transition: opacity 0.5s ease-in-out;
+}
+
+.fade-out {
+    opacity: 0 !important;
+}
+
+.fade-in {
+    opacity: 1 !important;
 }
 
 .fade-effect {

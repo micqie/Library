@@ -2,7 +2,8 @@ let scanner = new Instascan.Scanner({ video: document.getElementById('preview') 
 
 const TIMEOUT_DURATION = 60; // 1 minute in seconds
 const COOLDOWN_DURATION = 60; // 1 minute cooldown
-let activeUsers = new Map(); // Store active users and their timeouts
+let activeUsers = new Map(); // Store active users and their start times
+let userTimeouts = new Map(); // Store timeout IDs for each user
 let cooldownUsers = new Map(); // Store users in cooldown
 let cooldownIntervals = new Map(); // Store cooldown intervals
 
@@ -154,37 +155,52 @@ function createUserCard(userData, isTimeout = false) {
                 <p><strong>Department:</strong> ${userData.department_name || 'N/A'}</p>
                 <p><strong>Course:</strong> ${userData.course_name || 'N/A'}</p>
                 <p><strong>Time In:</strong> ${timeIn}</p>
-                <p><strong>Time Out:</strong> <span class="countdown">${timeOut}</span></p>
+                <p><strong>Time Out:</strong> <span class="countdown">${timeOut || ''}</span></p>
             </div>
         </div>
     `;
 
     document.getElementById('activeUsers').appendChild(card);
 
-    if (!isTimeout) {
-        // Start countdown for this user
-        const countdownElement = card.querySelector('.countdown');
-        const timeoutId = setTimeout(() => {
-            card.classList.add('timeout');
-            countdownElement.textContent = formatTimeTo12Hour(new Date());
-            cooldownUsers.set(userData.user_schoolId, Date.now());
-            showCooldownMessage(userData.user_schoolId);
+    // Always fade out after 5 seconds, regardless of time-in or time-out
+    setTimeout(() => {
+        card.classList.add('fade-out');
+        setTimeout(() => {
+            card.remove();
+        }, 500);
+    }, 5000);
 
-            setTimeout(() => {
-                card.classList.add('fade-out');
-                setTimeout(() => {
-                    card.remove();
-                }, 500);
-            }, 5000);
+    // Only set up timeout tracking for time-in cards
+    if (!isTimeout) {
+        // Store user's start time
+        const startTime = Date.now();
+        activeUsers.set(userData.user_schoolId, startTime);
+
+        // Set timeout for 1 minute
+        const timeoutId = setTimeout(() => {
+            handleTimeout(userData.user_schoolId, card);
         }, TIMEOUT_DURATION * 1000);
 
-        activeUsers.set(cardId, timeoutId);
+        userTimeouts.set(userData.user_schoolId, timeoutId);
     }
 
     return cardId;
 }
 
+function handleTimeout(userId, card) {
+    // Clear the timeout
+    const timeoutId = userTimeouts.get(userId);
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+        userTimeouts.delete(userId);
+    }
 
+    // Remove from active users
+    activeUsers.delete(userId);
+
+    // Show timeout message
+    showMessage('Session timed out after 1 minute');
+}
 
 // Update the scanner initialization code
 Instascan.Camera.getCameras().then(function (cameras) {
@@ -304,21 +320,41 @@ async function handleScan(schoolId) {
     }
 }
 
-// Helper function to handle API responses
+// Update handleApiResponse to check for existing sessions
 function handleApiResponse(response) {
     console.log('API Response:', response.data);
 
     if (response.data.user_data) {
+        const userId = response.data.user_data.user_schoolId;
+        
+        // Check if user already has an active session
+        if (activeUsers.has(userId)) {
+            const startTime = activeUsers.get(userId);
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            
+            if (elapsedTime < TIMEOUT_DURATION) {
+                // User still has an active session
+                showMessage('You already have an active session');
+                return;
+            }
+        }
+
         if (response.data.is_timeout) {
             const card = createUserCard(response.data.user_data, true);
             showMessage('Time-out successful!');
-            fadeOutCard(card);
+            // Fade out timeout card after 5 seconds (same as time-in)
+            setTimeout(() => {
+                card.classList.add('fade-out');
+                setTimeout(() => {
+                    card.remove();
+                }, 500);
+            }, 5000);
         } else {
             const card = createUserCard(response.data.user_data);
             showMessage('Time-in successful!');
-            fadeOutCard(card);
+            // Time-in card fade out is handled in createUserCard
         }
-        updateTitleWithName(response.data.user_data);
+        updateTitleWithFade(response.data.user_data);
     } else {
         showMessage('Invalid user ID or no data received.');
     }
@@ -342,19 +378,6 @@ function handleApiError(error) {
     }
 }
 
-// Helper function to fade out cards
-function fadeOutCard(cardId) {
-    setTimeout(() => {
-        const cardElement = document.getElementById(cardId);
-        if (cardElement) {
-            cardElement.classList.add('fade-out');
-            setTimeout(() => {
-                cardElement.remove();
-            }, 500);
-        }
-    }, 5000);
-}
-
 // Start the clock update
 setInterval(updateClock, 1000);
 updateClock(); // Initial call
@@ -376,18 +399,31 @@ axios.interceptors.response.use(
     }
 );
 
-// Add this function to your existing scan.js
-function updateTitleWithName(userData) {
-    const titleElement = document.getElementById('titleText');
-    const defaultTitle = "Attendance Monitoring System";
+// Function to update title text with fade effect
+function updateTitleWithFade(userData) {
+    const titleText = document.getElementById('titleText');
     
-    // Set the name
-    titleElement.textContent = `${userData.user_firstname} ${userData.user_lastname}`;
-    titleElement.classList.add('fade-effect');
+    // Fade out
+    titleText.classList.add('fade-out');
     
-    // After animation, remove the class and reset to default title
+    // Wait for fade out to complete then update text and fade in
     setTimeout(() => {
-        titleElement.classList.remove('fade-effect');
-        titleElement.textContent = defaultTitle;
-    }, 4000); // 4 seconds matches the animation duration
+        // Create full name with middle name and suffix if they exist
+        const fullName = `${userData.user_firstname} ${userData.user_middlename || ''} ${userData.user_lastname} ${userData.user_suffix || ''}`.trim();
+        titleText.textContent = fullName || 'Attendance Monitoring System';
+        titleText.classList.remove('fade-out');
+        titleText.classList.add('fade-in');
+        
+        // Reset after 3 seconds
+        if (fullName) {
+            setTimeout(() => {
+                titleText.classList.add('fade-out');
+                setTimeout(() => {
+                    titleText.textContent = 'Attendance Monitoring System';
+                    titleText.classList.remove('fade-out');
+                    titleText.classList.add('fade-in');
+                }, 500);
+            }, 3000);
+        }
+    }, 500);
 }

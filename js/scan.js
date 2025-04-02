@@ -44,7 +44,7 @@ function showMessage(message, type = 'info', countdown = null) {
         }, 5000);
     } else {
         messageElement.textContent = message;
-        
+
         // Add to container and show
         messageContainer.appendChild(messageElement);
         setTimeout(() => messageElement.classList.add('show'), 100);
@@ -90,11 +90,11 @@ function formatTime(date) {
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    
+
     // Convert to 12-hour format
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
-    
+
     return `${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
@@ -102,13 +102,13 @@ function formatTime(date) {
 function updateClock() {
     const now = new Date();
     const timeString = formatTime(now);
-    
-    const dateString = now.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
+
+    const dateString = now.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
     });
-    
+
     document.getElementById('clock').textContent = timeString;
     document.getElementById('date').textContent = dateString;
 }
@@ -116,7 +116,7 @@ function updateClock() {
 // For user card times
 function formatTimeTo12Hour(dateStr) {
     if (!dateStr) return '';
-    
+
     // If it's already a Date object
     if (dateStr instanceof Date) {
         return formatTime(dateStr);
@@ -209,7 +209,7 @@ Instascan.Camera.getCameras().then(function (cameras) {
         // Try to get the back camera first
         const backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back'));
         const selectedCamera = backCamera || cameras[0];
-        
+
         scanner.start(selectedCamera).then(() => {
             console.log('Scanner started successfully');
             showMessage('Scanner ready. Please scan your QR code.');
@@ -220,7 +220,7 @@ Instascan.Camera.getCameras().then(function (cameras) {
     } else {
         console.error('No cameras found.');
         showMessage('No cameras found. Please check if your device has a camera.');
-        
+
         // Make manual input more prominent when camera is not available
         const manualInput = document.getElementById('user_schoolId');
         if (manualInput) {
@@ -230,7 +230,7 @@ Instascan.Camera.getCameras().then(function (cameras) {
 }).catch(function (e) {
     console.error('Error accessing cameras:', e);
     showMessage('Camera access denied. Please check your browser permissions and ensure your camera is connected.');
-    
+
     // Make manual input more prominent when camera access fails
     const manualInput = document.getElementById('user_schoolId');
     if (manualInput) {
@@ -261,7 +261,7 @@ function restartScanner() {
             if (cameras.length > 0) {
                 const backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back'));
                 const selectedCamera = backCamera || cameras[0];
-                
+
                 scanner.start(selectedCamera).then(() => {
                     console.log('Scanner restarted successfully');
                     showMessage('Scanner restarted. Please try scanning again.');
@@ -275,7 +275,7 @@ function restartScanner() {
 }
 
 // Add event listener for visibility change to handle tab switching
-document.addEventListener('visibilitychange', function() {
+document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
         restartScanner();
     }
@@ -327,12 +327,12 @@ function handleApiResponse(response) {
 
     if (response.data.user_data) {
         const userId = response.data.user_data.user_schoolId;
-        
+
         // Check if user already has an active session
         if (activeUsers.has(userId)) {
             const startTime = activeUsers.get(userId);
             const elapsedTime = (Date.now() - startTime) / 1000;
-            
+
             if (elapsedTime < TIMEOUT_DURATION) {
                 // User still has an active session
                 showMessage('You already have an active session');
@@ -368,7 +368,7 @@ function handleApiError(error) {
         response: error.response,
         request: error.request
     });
-    
+
     if (error.response?.data?.is_early_timeout) {
         const remainingSeconds = error.response.data.remaining_seconds;
         showMessage('', 'info', remainingSeconds);
@@ -403,24 +403,24 @@ axios.interceptors.response.use(
 // Function to update title text with fade effect
 function updateTitleWithFade(userData) {
     const titleText = document.getElementById('titleText');
-    
+
     // Fade out
     titleText.classList.add('fade-out');
-    
+
     // Wait for fade out to complete then update text and fade in
     setTimeout(() => {
         // Create full name with middle name and suffix if they exist
         const fullName = `${userData.user_firstname} ${userData.user_middlename || ''} ${userData.user_lastname} ${userData.user_suffix || ''}`.trim();
-        titleText.textContent = fullName || 'Attendance Monitoring System';
+        titleText.textContent = fullName || 'Library Attendance Monitoring System';
         titleText.classList.remove('fade-out');
         titleText.classList.add('fade-in');
-        
+
         // Reset after 3 seconds
         if (fullName) {
             setTimeout(() => {
                 titleText.classList.add('fade-out');
                 setTimeout(() => {
-                    titleText.textContent = 'Attendance Monitoring System';
+                    titleText.textContent = 'Library Attendance Monitoring System';
                     titleText.classList.remove('fade-out');
                     titleText.classList.add('fade-in');
                 }, 500);

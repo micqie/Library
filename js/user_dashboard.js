@@ -1,8 +1,26 @@
+// Add pagination variables at the top of the file
+let currentPage = 1;
+const entriesPerPage = 10;
+let totalPages = 1;
+
 // Function to check if user is logged in
-function checkLoginStatus() {
-    return axios.get('../api/check_session.php')
-        .then(response => response.data.success)
-        .catch(() => false);
+async function checkLoginStatus() {
+    try {
+        const response = await axios.get('../api/check_session.php');
+        console.log('Session check response:', response.data);
+
+        if (!response.data.success) {
+            console.error('Session check failed:', response.data.message);
+            window.location.href = '../index.html';
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Session check error:', error);
+        window.location.href = '../index.html';
+        return false;
+    }
 }
 
 // Function to get user details from session
@@ -11,132 +29,206 @@ async function getUserDetails() {
         // Check login status first
         const isLoggedIn = await checkLoginStatus();
         if (!isLoggedIn) {
-            window.location.href = '../index.html';
-            return;
+            return; // checkLoginStatus will handle the redirect
         }
 
         console.log('Fetching user details...');
         const response = await axios.get('../api/get_user_details.php');
-        console.log('API Response:', response.data);
+        console.log('User details API Response:', response.data);
 
-        if (response.data.success) {
+        if (response.data.success && response.data.user) {
             const user = response.data.user;
             console.log('User data:', user);
 
-            // Update user information
-            const userFullNameElement = document.getElementById('userFullName');
-            if (userFullNameElement) {
-                userFullNameElement.textContent = `${user.firstname} ${user.lastname}`;
-                console.log('Updated userFullName element with:', `${user.firstname} ${user.lastname}`);
-            } else {
-                console.error('userFullName element not found');
-            }
+            // Update user information - safely handle missing elements
+            const elements = {
+                userName: `${user.firstname} ${user.lastname}`,
+                userSchoolId: user.schoolId,
+                userDepartment: user.department || 'Not specified',
+                userPhinmaedEmail: user.phinmaedEmail || 'Not specified',
+                userPersonalEmail: user.personalEmail || 'Not specified',
+                userContact: user.contact || 'Not specified'
+            };
 
-            document.getElementById('userName').textContent = `${user.firstname} ${user.lastname}`;
-            document.getElementById('userSchoolId').textContent = user.schoolId;
-            document.getElementById('userDepartment').textContent = user.department;
-            document.getElementById('userPhinmaedEmail').textContent = user.phinmaedEmail;
-            document.getElementById('userPersonalEmail').textContent = user.personalEmail;
-            document.getElementById('userContact').textContent = user.contact;
+            // Safely update each element
+            Object.entries(elements).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                } else {
+                    console.error(`Element not found: ${id}`);
+                }
+            });
 
-            // Generate QR Code
-            generateQRCode(user.schoolId);
+            // After successfully loading user details, get visit history
+            await getVisitHistory();
         } else {
-            console.error('API returned success: false:', response.data.message);
-            document.getElementById('userFullName').textContent = 'Error: ' + response.data.message;
+            console.error('API returned error:', response.data.message);
+            updateErrorDisplay(response.data.message || 'Error loading user data');
+            window.location.href = '../index.html';
         }
     } catch (error) {
         console.error('Error fetching user details:', error);
-        document.getElementById('userFullName').textContent = 'Error loading user details';
+        if (error.response) {
+            console.error('Error response:', error.response.data);
+        }
+        updateErrorDisplay('Error loading user details');
+        setTimeout(() => {
+            window.location.href = '../index.html';
+        }, 2000);
     }
 }
 
 // Function to update error display
 function updateErrorDisplay(message) {
-    const elements = ['userFullName', 'userName', 'userSchoolId', 'userDepartment',
+    console.log('Updating error display with message:', message);
+    const elements = ['userName', 'userSchoolId', 'userDepartment',
         'userPhinmaedEmail', 'userPersonalEmail', 'userContact'];
 
     elements.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-            element.textContent = 'Error loading data';
+            element.textContent = message || 'Error loading data';
+        } else {
+            console.error(`Element not found while displaying error: ${id}`);
         }
     });
 }
 
-// Function to get visit history
-async function getVisitHistory() {
+// Function to format date
+function formatDate(dateString) {
     try {
-        const response = await axios.get('../api/get_visit_history.php');
-        if (response.data.success && response.data.history.length > 0) {
-            const history = response.data.history;
-            const tbody = document.getElementById('visitHistory');
+        // If dateString is already in YYYY-MM-DD format, use it directly
+        const [year, month, day] = dateString.split('-');
+        const date = new Date(year, month - 1, day);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (error) {
+        console.error('Error formatting date:', error, dateString);
+        return 'Invalid date';
+    }
+}
 
+// Function to format time
+function formatTime(timeString) {
+    if (!timeString) return '-';
+    return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+}
+
+// Function to calculate duration
+function calculateDuration(timeIn, timeOut) {
+    if (!timeOut) return 'Still inside';
+    const inTime = new Date(`1970-01-01T${timeIn}`);
+    const outTime = new Date(`1970-01-01T${timeOut}`);
+    const diff = outTime - inTime;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+}
+
+// Function to get visit history
+async function getVisitHistory(page = 1) {
+    try {
+        const response = await axios.get(`../api/get_visit_history.php?page=${page}&limit=${entriesPerPage}`);
+        console.log('Visit history response:', response.data);
+
+        const tbody = document.getElementById('visitHistory');
+        const paginationContainer = document.getElementById('visitHistoryPagination');
+
+        if (response.data.success && response.data.data.length > 0) {
+            const history = response.data.data;
+            totalPages = response.data.pagination.total_pages;
+            currentPage = response.data.pagination.current_page;
+
+            // Update table content
             tbody.innerHTML = history.map(visit => {
-                // Convert MySQL datetime to JavaScript Date object
-                const [datePart, timePart] = visit.time_in.split(' ');
-                const timeIn = new Date(`${datePart}T${timePart}`);
-
-                let timeOut = null;
-                if (visit.time_out) {
-                    const [outDatePart, outTimePart] = visit.time_out.split(' ');
-                    timeOut = new Date(`${outDatePart}T${outTimePart}`);
-                }
-
-                // Format date
-                const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
-                const formattedDate = timeIn.toLocaleDateString('en-US', dateOptions);
-
-                // Format times
-                const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
-                const formattedTimeIn = timeIn.toLocaleTimeString('en-US', timeOptions);
-                const formattedTimeOut = timeOut ? timeOut.toLocaleTimeString('en-US', timeOptions) : 'Not yet';
-
-                // Calculate duration
-                let duration = 'Still inside';
-                if (timeOut) {
-                    const diff = timeOut - timeIn;
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    duration = `${hours}h ${minutes}m`;
-                }
-
+                console.log('Visit record:', visit); // Debug log
                 return `
                     <tr>
-                        <td>${formattedDate}</td>
-                        <td>${formattedTimeIn}</td>
-                        <td>${formattedTimeOut}</td>
-                        <td>${duration}</td>
+                        <td>${formatDate(visit.log_date)}</td>
+                        <td>${formatTime(visit.time_in)}</td>
+                        <td>${visit.time_out ? formatTime(visit.time_out) : 'Not yet'}</td>
+                        <td>${calculateDuration(visit.time_in, visit.time_out)}</td>
                     </tr>
                 `;
             }).join('');
+
+            // Update pagination
+            updatePagination();
         } else {
-            document.getElementById('visitHistory').innerHTML = `
+            tbody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center text-muted">
                         No visit history available
                     </td>
                 </tr>
             `;
+            if (paginationContainer) {
+                paginationContainer.innerHTML = '';
+            }
         }
     } catch (error) {
         console.error('Error fetching visit history:', error);
         document.getElementById('visitHistory').innerHTML = `
             <tr>
-                <td colspan="4" class="text-center text-muted">
+                <td colspan="4" class="text-center text-danger">
                     Error loading visit history
                 </td>
             </tr>
         `;
+        const paginationContainer = document.getElementById('visitHistoryPagination');
+        if (paginationContainer) {
+            paginationContainer.innerHTML = '';
+        }
     }
 }
 
-// Function to calculate duration
-function calculateDuration(timeIn, timeOut) {
-    const diff = timeOut - timeIn;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+// Function to update pagination
+function updatePagination() {
+    const paginationContainer = document.getElementById('visitHistoryPagination');
+    if (!paginationContainer) return;
+
+    let paginationHTML = `
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <button class="btn btn-sm btn-secondary" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                Previous
+            </button>
+            <div class="pagination-numbers">
+    `;
+
+    // Add page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `
+            <button class="btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-outline-secondary'} mx-1" 
+                    onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    paginationHTML += `
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                Next
+            </button>
+        </div>
+    `;
+
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+// Function to change page
+async function changePage(page) {
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    await getVisitHistory(currentPage);
 }
 
 // Function to generate QR Code
@@ -155,83 +247,30 @@ function generateQRCode(schoolId) {
 }
 
 // Initialize dashboard
-document.addEventListener('DOMContentLoaded', () => {
-    checkLoginStatus().then(isLoggedIn => {
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const isLoggedIn = await checkLoginStatus();
         if (isLoggedIn) {
-            getUserDetails();
-            getVisitHistory();
-        } else {
-            window.location.href = '../index.html';
+            await getUserDetails();
         }
-    });
-});
-
-function fetchVisitHistory() {
-    axios.get('../api/get_visit_history.php')
-        .then(function (response) {
-            const historyData = response.data;
-            if (historyData.status === 'success') {
-                const visitHistoryTable = document.getElementById('visitHistory');
-                visitHistoryTable.innerHTML = ''; // Clear existing content
-
-                historyData.data.forEach(visit => {
-                    const row = document.createElement('tr');
-
-                    // Format date
-                    const date = new Date(visit.date).toLocaleDateString();
-
-                    // Calculate duration
-                    let duration = 'In Progress';
-                    if (visit.time_out) {
-                        const timeIn = new Date(`${visit.date} ${visit.time_in}`);
-                        const timeOut = new Date(`${visit.date} ${visit.time_out}`);
-                        const diff = (timeOut - timeIn) / (1000 * 60); // Duration in minutes
-                        duration = `${Math.floor(diff)} minutes`;
-                    }
-
-                    row.innerHTML = `
-                        <td>${date}</td>
-                        <td>${visit.time_in}</td>
-                        <td>${visit.time_out || 'Not yet'}</td>
-                        <td>${duration}</td>
-                    `;
-                    visitHistoryTable.appendChild(row);
-                });
-            } else {
-                console.error('Error fetching visit history:', historyData.message);
-            }
-        })
-        .catch(function (error) {
-            console.error('Error:', error);
-        });
-}
-
-function generateQRCode() {
-    // Get the school ID from the page after it's loaded
-    const schoolId = document.getElementById('userSchoolId').textContent;
-    if (schoolId && schoolId !== 'Loading...') {
-        const qrContainer = document.getElementById('qrCode');
-        // Clear previous QR code if any
-        qrContainer.innerHTML = '';
-
-        // Generate new QR code
-        new QRCode(qrContainer, {
-            text: schoolId,
-            width: 128,
-            height: 128
-        });
-    } else {
-        // If school ID is not yet loaded, wait and try again
-        setTimeout(generateQRCode, 1000);
+    } catch (error) {
+        console.error('Dashboard initialization error:', error);
+        window.location.href = '../index.html';
     }
-}
+});
 
 // Function to show QR Code Modal
 function showQRCodeModal() {
-    const modal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+    const modalElement = document.getElementById('qrCodeModal');
+    const modal = new bootstrap.Modal(modalElement);
     const modalQRCode = document.getElementById('modalQRCode');
     const qrCodeLoading = document.getElementById('qrCodeLoading');
     const downloadButton = document.getElementById('downloadQRCode');
+
+    if (!modalQRCode || !qrCodeLoading || !downloadButton) {
+        console.error('Required modal elements not found');
+        return;
+    }
 
     // Show loading message and hide other elements
     modalQRCode.innerHTML = '';
@@ -244,10 +283,9 @@ function showQRCodeModal() {
     // Get user details from session
     axios.get('../api/get_user_details.php')
         .then(response => {
-            console.log('API Response:', response.data); // Log the full response
             if (response.data.success) {
                 const schoolId = response.data.user.schoolId;
-                console.log('School ID:', schoolId); // Log the school ID
+                console.log('School ID:', schoolId);
 
                 // Clear previous QR code
                 modalQRCode.innerHTML = '';
@@ -265,19 +303,35 @@ function showQRCodeModal() {
                 // Hide loading message and show download button
                 qrCodeLoading.classList.add('d-none');
                 downloadButton.classList.remove('d-none');
+
+                // Focus the download button when it becomes visible
+                downloadButton.focus();
             } else {
-                console.error('API Error:', response.data.message); // Log the error message
-                qrCodeLoading.textContent = `Error: ${response.data.message}`;
-                qrCodeLoading.classList.remove('d-none');
-                downloadButton.classList.add('d-none');
+                console.error('Failed to get user details for QR code');
+                qrCodeLoading.textContent = 'Error generating QR code';
             }
         })
         .catch(error => {
-            console.error('Network Error:', error); // Log the full error object
-            qrCodeLoading.textContent = `Error: ${error.message || 'Network error occurred'}`;
-            qrCodeLoading.classList.remove('d-none');
-            downloadButton.classList.add('d-none');
+            console.error('Error generating QR code:', error);
+            qrCodeLoading.textContent = 'Error generating QR code';
         });
+
+    // Handle modal events for accessibility
+    modalElement.addEventListener('shown.bs.modal', function () {
+        // Focus the close button when modal opens
+        const closeButton = modalElement.querySelector('.btn-close');
+        if (closeButton) {
+            closeButton.focus();
+        }
+    });
+
+    modalElement.addEventListener('hidden.bs.modal', function () {
+        // Return focus to the generate button when modal closes
+        const generateButton = document.querySelector('button[onclick="showQRCodeModal()"]');
+        if (generateButton) {
+            generateButton.focus();
+        }
+    });
 }
 
 // Function to download QR Code

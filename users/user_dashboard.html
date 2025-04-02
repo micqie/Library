@@ -15,11 +15,11 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="../assets/images/logo/coc-white.png" 
+                <img src="../images/logo/coc-white.png" 
                      alt="COC Logo" 
                      class="navbar-logo"
                      onerror="this.onerror=null; this.src='../assets/images/logo/coc-white.png';">
-                Library System
+                <!-- Library System -->
             </a>
             <div class="d-flex align-items-center">
                 <!-- <span class="text-light me-3" id="userFullName">User Full Name</span> -->
@@ -63,20 +63,25 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Library Visit History</h5>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Time In</th>
-                                        <th>Time Out</th>
-                                        <th>Duration</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="visitHistory">
-                                    <!-- Will be populated with visit history -->
-                                </tbody>
-                            </table>
+                        <div class="table-wrapper">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time In</th>
+                                            <th>Time Out</th>
+                                            <th>Duration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="visitHistory">
+                                        <!-- Will be populated with visit history -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="visitHistoryPagination">
+                                <!-- Will be populated with pagination controls -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,7 +90,7 @@
     </div>
 
     <!-- QR Code Modal -->
-    <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+    <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">

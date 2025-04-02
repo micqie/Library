@@ -357,4 +357,68 @@ function downloadQRCode() {
         link.click();
         document.body.removeChild(link);
     }
+}
+
+// Function to show edit profile modal
+async function showEditProfileModal() {
+    try {
+        // Get current user data
+        const response = await axios.get('../api/get_user_details.php');
+        if (response.data.success && response.data.user) {
+            const user = response.data.user;
+
+            // Populate the form
+            document.getElementById('editFirstName').value = user.firstname;
+            document.getElementById('editLastName').value = user.lastname;
+            document.getElementById('editPersonalEmail').value = user.personalEmail;
+            document.getElementById('editContact').value = user.contact;
+
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+            modal.show();
+        }
+    } catch (error) {
+        console.error('Error showing edit profile modal:', error);
+        alert('Error loading profile data. Please try again.');
+    }
+}
+
+// Function to save profile changes
+async function saveProfileChanges() {
+    try {
+        const firstName = document.getElementById('editFirstName').value;
+        const lastName = document.getElementById('editLastName').value;
+        const personalEmail = document.getElementById('editPersonalEmail').value;
+        const contact = document.getElementById('editContact').value;
+
+        // Validate inputs
+        if (!firstName || !lastName || !personalEmail || !contact) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const response = await axios.post('../api/update_profile.php', {
+            firstname: firstName,
+            lastname: lastName,
+            personal_email: personalEmail,
+            contact: contact
+        });
+
+        if (response.data.success) {
+            // Refresh user details to update the UI
+            await getUserDetails();
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
+            modal.hide();
+
+            // Show success message
+            alert('Profile updated successfully');
+        } else {
+            alert(response.data.message || 'Error updating profile');
+        }
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        alert('Error updating profile. Please try again.');
+    }
 } 

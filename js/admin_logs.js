@@ -34,35 +34,53 @@ let allLogs = [];
 
 // Update the refreshLogs function
 function refreshLogs() {
-    const filter = document.getElementById('dateFilter').value;
-    const search = document.getElementById('searchInput').value;
+    // Reset filters
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    document.getElementById('searchInput').value = '';
     
+    // Show loading state
     const tableBody = document.getElementById('logsTableBody');
     tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
     
-    fetch('../api/fetch_logs.php?filter=' + filter + '&search=' + encodeURIComponent(search))
-        .then(response => response.json())
+    // Load all logs
+    fetch('../api/fetch_logs.php')
         .then(response => {
-            if (response.status === 'success') {
-                allLogs = response.data;
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Refresh response:', data); // Debug log
+            
+            if (data.status === 'success') {
+                allLogs = data.data;
                 totalEntries = allLogs.length;
+                currentPage = 1;
                 displayCurrentPage();
                 updatePagination();
             } else {
-                console.error('Server response error:', response);
-                tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Error loading data</td></tr>`;
+                throw new Error(data.message || 'Failed to load logs');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
+                Error: ${error.message}
+            </td></tr>`;
         });
 }
 
 function displayCurrentPage() {
+    console.log('Displaying page:', currentPage); // Debug log
+    console.log('All logs:', allLogs); // Debug log
+    
     const start = (currentPage - 1) * entriesPerPage;
     const end = Math.min(start + entriesPerPage, totalEntries);
     const pageData = allLogs.slice(start, end);
+    
+    console.log('Page data:', pageData); // Debug log
     
     document.getElementById('startEntry').textContent = totalEntries ? start + 1 : 0;
     document.getElementById('endEntry').textContent = end;
@@ -74,23 +92,44 @@ function displayCurrentPage() {
         return;
     }
 
-    tableBody.innerHTML = pageData.map(log => `
-        <tr>
-            <td>${log.user_schoolId}</td>
-            <td>${getFullName(log.user_firstname, log.user_middlename, log.user_lastname, log.user_suffix)}</td>
-            <td>${log.department_name || 'N/A'}</td>
-            <td>${log.course_name || 'N/A'}</td>
-            <td>${formatDate(log.log_date)}</td>
-            <td>${formatTime(log.time_in)}</td>
-            <td>${formatTime(log.time_out)}</td>
-            <td>${calculateDuration(log.time_in, log.time_out)}</td>
-            <td>
-                <span class="badge ${log.time_out ? 'bg-success' : 'bg-warning'} status-badge">
-                    ${log.time_out ? 'Completed' : 'Active'}
-                </span>
-            </td>
-        </tr>
-    `).join('');
+    const html = pageData.map(log => {
+        console.log('Processing log:', log); // Debug log
+        
+        const fullName = getFullName(
+            log.user_firstname,
+            log.user_middlename,
+            log.user_lastname,
+            log.user_suffix
+        );
+        
+        const duration = log.time_out ? 
+            calculateDuration(log.time_in, log.time_out) : 
+            'Active';
+            
+        const status = log.time_out ? 'Completed' : 'Active';
+        const statusClass = log.time_out ? 'bg-success' : 'bg-warning';
+        
+        return `
+            <tr>
+                <td>${log.user_schoolId || 'N/A'}</td>
+                <td>${fullName}</td>
+                <td>${log.department_name || 'N/A'}</td>
+                <td>${log.course_name || 'N/A'}</td>
+                <td>${formatDate(log.log_date)}</td>
+                <td>${formatTime(log.time_in)}</td>
+                <td>${formatTime(log.time_out)}</td>
+                <td>${duration}</td>
+                <td>
+                    <span class="badge ${statusClass}">
+                        ${status}
+                    </span>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    console.log('Generated HTML:', html); // Debug log
+    tableBody.innerHTML = html;
 }
 
 function updatePagination() {
@@ -163,14 +202,39 @@ function exportToExcel() {
 let searchTimeout;
 document.getElementById('searchInput').addEventListener('input', function() {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(refreshLogs, 300);
+    searchTimeout = setTimeout(() => {
+        // Implement search functionality here
+        console.log('Searching:', this.value);
+    }, 300);
 });
 
 // Event listeners
 document.getElementById('dateFilter').addEventListener('change', refreshLogs);
 
-// Initial load
-document.addEventListener('DOMContentLoaded', refreshLogs);
+// Update the initial load function
+document.addEventListener('DOMContentLoaded', () => {
+    // Set default dates to last 7 days
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 7);
+    
+    document.getElementById('dateFrom').value = startDate.toISOString().split('T')[0];
+    document.getElementById('dateTo').value = endDate.toISOString().split('T')[0];
+    
+    // Load recent logs
+    loadTodayLogs(); // We'll keep the function name but it now loads recent logs
+    
+    // Add event listener for the search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                console.log('Searching:', this.value);
+            }, 300);
+        });
+    }
+});
 
 // Handle sidebar toggle for mobile
 document.getElementById('sidebarToggle')?.addEventListener('click', function() {
@@ -188,3 +252,131 @@ document.addEventListener('click', function(event) {
         }
     }
 });
+
+function filterLogs() {
+    const fromDate = document.getElementById('dateFrom').value;
+    const toDate = document.getElementById('dateTo').value;
+    
+    console.log('Filtering dates:', { fromDate, toDate }); // Debug log
+    
+    // Validate dates
+    if (!fromDate || !toDate) {
+        alert('Please select both from and to dates');
+        return;
+    }
+    
+    if (new Date(fromDate) > new Date(toDate)) {
+        alert('From date cannot be later than To date');
+        return;
+    }
+    
+    // Show loading state
+    const tableBody = document.getElementById('logsTableBody');
+    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
+    
+    // Make API request
+    fetch('../api/filter_logs.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            fromDate: fromDate,
+            toDate: toDate
+        })
+    })
+    .then(async response => {
+        const text = await response.text();
+        console.log('Raw response:', text); // Debug log
+        
+        try {
+            if (!text) {
+                throw new Error('Empty response from server');
+            }
+            
+            const data = JSON.parse(text);
+            console.log('Parsed data:', data); // Debug log
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Network response was not ok');
+            }
+            
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid response format');
+            }
+            
+            return data;
+        } catch (e) {
+            console.error('Parse error:', e);
+            throw new Error(`Failed to parse server response: ${e.message}`);
+        }
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            allLogs = data.data || [];
+            totalEntries = allLogs.length;
+            
+            if (totalEntries === 0) {
+                tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No records found for selected date range</td></tr>';
+                return;
+            }
+            
+            currentPage = 1;
+            displayCurrentPage();
+            updatePagination();
+        } else {
+            throw new Error(data.message || 'Failed to filter logs');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
+            Error: ${error.message || 'Failed to load logs'}
+        </td></tr>`;
+    });
+}
+
+// Function to load today's logs
+function loadTodayLogs() {
+    const tableBody = document.getElementById('logsTableBody');
+    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
+    
+    console.log('Fetching logs...'); // Debug log
+    
+    fetch('../api/fetch_today_logs.php')
+        .then(response => {
+            console.log('Response status:', response.status); // Debug log
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Received data:', data); // Debug log
+            
+            if (data.status === 'success') {
+                allLogs = data.data;
+                totalEntries = allLogs.length;
+                currentPage = 1;
+                
+                console.log('Number of logs:', totalEntries); // Debug log
+                
+                if (totalEntries === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No logs found</td></tr>';
+                    return;
+                }
+                
+                displayCurrentPage();
+                updatePagination();
+            } else {
+                throw new Error(data.message || 'Failed to load logs');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
+                Error: ${error.message || 'Failed to load logs'}
+            </td></tr>`;
+        });
+}

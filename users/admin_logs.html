@@ -19,7 +19,7 @@
                 <a class="navbar-brand" href="#">Library System</a>
                 <div class="d-flex align-items-center">
                     <span class="text-light me-3">Admin User</span>
-                    <a href="logout.php" class="btn btn-outline-light btn-sm">Logout</a>
+                    <a href="../api/logout.php" class="btn btn-outline-light btn-sm">Logout</a>
                 </div>
             </div>
         </nav>
@@ -72,25 +72,26 @@
                             <!-- Filter Controls -->
                             <div class="filter-controls mb-4">
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="dateFilter" class="form-label">Filter by Date</label>
-                                        <select class="form-select" id="dateFilter">
-                                            <option value="today">Today</option>
-                                            <option value="week">This Week</option>
-                                            <option value="month">This Month</option>
-                                            <option value="all">All Time</option>
-                                        </select>
+                                    <div class="col-md-3">
+                                        <label for="dateFrom" class="form-label">From Date</label>
+                                        <input type="date" class="form-control" id="dateFrom">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
+                                        <label for="dateTo" class="form-label">To Date</label>
+                                        <input type="date" class="form-control" id="dateTo">
+                                    </div>
+                                    <div class="col-md-3">
                                         <label for="searchInput" class="form-label">Search Student</label>
                                         <input type="text" class="form-control" id="searchInput" 
                                             placeholder="Enter name or ID...">
                                     </div>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-primary" onclick="refreshLogs()">
-                                            <i class="bi bi-arrow-clockwise me-2"></i>
-                                            Refresh Data
-                                        </button>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <div class="btn-group w-100">
+                                            <button class="btn btn-primary w-100" onclick="filterLogs()">
+                                                <i class="bi bi-funnel me-2"></i>Filter
+                                            </button>
+                                
+                                        </div>
                                     </div>
                                 </div>
                             </div>

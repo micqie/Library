@@ -181,16 +181,19 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: linear-gradient(45deg, var(--primary-green), var(--secondary-green));
-    border: none;
-    box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+    background: #0d6efd !important; /* Bootstrap primary blue */
+    border-color: #0d6efd !important;
+    color: white;
+    box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
     transition: all 0.3s ease;
     margin: 0;
 }
 
 .filter-section .btn-primary:hover {
+    background: #0b5ed7 !important;
+    border-color: #0a58ca !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(46, 204, 113, 0.25);
+    box-shadow: 0 6px 8px rgba(13, 110, 253, 0.25);
 }
 
 .filter-section .btn-primary i {
@@ -351,17 +354,6 @@ body {
     border-radius: 8px;
     font-weight: 500;
     transition: var(--transition);
-}
-
-.btn-primary, .btn-success {
-    background-color: var(--primary-green);
-    border-color: var(--primary-green);
-}
-
-.btn-primary:hover, .btn-success:hover {
-    background-color: var(--secondary-green);
-    border-color: var(--secondary-green);
-    transform: translateY(-2px);
 }
 
 /* Form Control Styles */
@@ -680,4 +672,21 @@ body {
 
 .stats-list::-webkit-scrollbar-thumb:hover {
     background: #999;
+}
+
+/* Style for the filter button */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Make sure the button takes full width */
+.btn-group .btn {
+    width: 100%;
 }

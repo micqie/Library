@@ -11,7 +11,7 @@ let cooldownIntervals = new Map(); // Store cooldown intervals
 function showMessage(message, type = 'info', countdown = null) {
     const messageContainer = document.getElementById('messageContainer');
     const messageElement = document.createElement('div');
-    messageElement.className = 'message';
+    messageElement.className = 'message toast-message';
 
     if (countdown) {
         // Create countdown display
@@ -31,37 +31,26 @@ function showMessage(message, type = 'info', countdown = null) {
             }
         };
         updateCountdown();
-
-        // fade out
-        setTimeout(() => {
-            messageElement.classList.add('fade-out');
-            setTimeout(() => {
-                messageElement.remove();
-            }, 500);
-        }, 5000);
     } else {
         messageElement.textContent = message;
     }
 
+    // Add to container
     messageContainer.appendChild(messageElement);
 
-    // Fade out after 5 seconds if not a countdown message
-    if (!countdown) {
-        setTimeout(() => {
-            messageElement.classList.add('fade-out');
-            setTimeout(() => {
-                messageElement.remove();
-            }, 500);
-        }, 5000);
-    } else {
-        // For countdown messages, remove after countdown finishes
-        setTimeout(() => {
-            messageElement.classList.add('fade-out');
-            setTimeout(() => {
-                messageElement.remove();
-            }, 500);
-        }, (countdown + 1) * 1000);
-    }
+    // Slide in animation
+    setTimeout(() => messageElement.classList.add('show'), 100);
+
+    // Handle removal
+    const removeMessage = () => {
+        messageElement.classList.remove('show');
+        messageElement.classList.add('fade-out');
+        setTimeout(() => messageElement.remove(), 500);
+    };
+
+    // Remove after delay
+    const displayTime = countdown ? (countdown + 1) * 1000 : 5000;
+    setTimeout(removeMessage, displayTime);
 }
 
 
@@ -99,7 +88,7 @@ function formatTime(date) {
     
     // Convert to 12-hour format
     hours = hours % 12;
-    hours = hours || 12; // Convert 0 to 12
+    hours = hours ? hours : 12; // the hour '0' should be '12'
     
     return `${hours}:${minutes}:${seconds} ${ampm}`;
 }
@@ -128,7 +117,14 @@ function formatTimeTo12Hour(dateStr) {
         return formatTime(dateStr);
     }
 
-    // If it's a string from database, return as is since it's already formatted
+    // Handle string time input (e.g., "20:03:39")
+    if (typeof dateStr === 'string') {
+        const [hours, minutes, seconds] = dateStr.split(':').map(Number);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12; // Convert 0 to 12
+        return `${displayHours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+    }
+
     return dateStr;
 }
 
@@ -155,7 +151,7 @@ function createUserCard(userData, isTimeout = false) {
                 <p><strong>Department:</strong> ${userData.department_name || 'N/A'}</p>
                 <p><strong>Course:</strong> ${userData.course_name || 'N/A'}</p>
                 <p><strong>Time In:</strong> ${timeIn}</p>
-                <p><strong>Time Out:</strong> <span class="countdown">${timeOut || ''}</span></p>
+                ${isTimeout ? `<p><strong>Time Out:</strong> ${timeOut}</p>` : ''}
             </div>
         </div>
     `;

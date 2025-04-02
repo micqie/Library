@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $data = json_decode(file_get_contents('php://input'), true);
 
 try {
-
     $required_fields = [
         'schoolId',
         'lastname',
@@ -21,7 +20,9 @@ try {
         'phinmaedEmail',
         'personalEmail',
         'contact',
-        'password'
+        'password',
+        'department',
+        'course'
     ];
 
     foreach ($required_fields as $field) {
@@ -41,11 +42,13 @@ try {
     $sql = "INSERT INTO tbl_users (
         user_schoolId, user_lastname, user_firstname, user_middlename, 
         user_suffix, phinmaed_email, user_email, user_contact, 
-        user_password, user_typeId, user_status, user_level
+        user_password, user_typeId, user_status, user_level,
+        user_departmentId, user_courseId
     ) VALUES (
         :schoolId, :lastname, :firstname, :middlename, 
         :suffix, :phinmaedEmail, :personalEmail, :contact, 
-        :password, :userType, :status, :level
+        :password, :userType, :status, :level,
+        :department, :course
     )";
 
     $stmt = $db->prepare($sql);
@@ -67,7 +70,9 @@ try {
         ':password' => $data['password'],
         ':userType' => $defaultUserType,
         ':status' => $status,
-        ':level' => $defaultLevel
+        ':level' => $defaultLevel,
+        ':department' => $data['department'],
+        ':course' => $data['course']
     ]);
 
     echo json_encode(['success' => true, 'message' => 'Registration successful']);

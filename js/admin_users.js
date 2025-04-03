@@ -25,7 +25,13 @@ async function fetchUsers() {
             throw new Error('Invalid data format received from server. Expected array, got: ' + typeof response.data);
         }
 
-        userData = response.data;
+        // Sort the data alphabetically by name
+        userData = response.data.sort((a, b) => {
+            const nameA = (a.name || '').toLowerCase();
+            const nameB = (b.name || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+
         populateFilterDropdowns();
         displayUsers();
         updatePagination();
@@ -113,9 +119,6 @@ function displayUsers(filteredData = null) {
             <td>${user.course || 'Not Assigned'}</td>
             <td>${user.role || 'User'}</td>
             <td>
-                <button class="btn btn-sm btn-primary me-1" onclick="editUser('${user.school_id}')" title="Edit User">
-                    <i class="bi bi-pencil"></i>
-                </button>
                 <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.school_id}')" title="Delete User">
                     <i class="bi bi-trash"></i>
                 </button>
@@ -201,6 +204,14 @@ function exportToExcel() {
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
     XLSX.utils.book_append_sheet(wb, ws, 'Users');
     XLSX.writeFile(wb, 'users_report.xlsx');
+}
+
+// Delete user with confirmation
+function deleteUser(schoolId) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        // TODO: Implement delete user functionality
+        console.log('Delete user:', schoolId);
+    }
 }
 
 // Initialize the page

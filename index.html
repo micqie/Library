@@ -1,57 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Scanner</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="css/index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library - Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+  <script defer src="js/login.js"></script>
+  <link rel="stylesheet" href="css/login.css">
+  <style>
+    .footer-area {
+    background: #155f37;
+    padding: 40px 0 0;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  
+  .footer-area h4 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .footer-area h5 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .footer-logo {
+    max-width: 300px;
+    margin-top: 20px;
+  }
+  
+  .navbar {
+    background-color: #155f37;
+    padding: 15px 0;
+  }
+  
+  .navbar-nav .nav-link {
+    color: white !important;
+    font-weight: 500;
+    padding: 8px 15px;
+    margin: 0 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .about-section {
+    padding: 40px 0;
+  }
+  
+  .card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-title {
+    color: #155f37;
+    font-weight: bold;
+  }
+  
+  .list-group-item {
+    border-left: none;
+    border-right: none;
+  }
+  
+  .contact-info p {
+    margin-bottom: 10px;
+  }
+  
+  .contact-info i {
+    margin-right: 10px;
+    color: #155f37;
+  }
+  </style>
 </head>
 <body>
-    <div id="messageContainer"></div>
-    <div class="main-container">
-        <!-- Left Side: Scanner -->
-        <div class="content-container">
-            <div class="scanner-section">
-                <h3 class="text-center mb-4">Please Scan QR Code</h3>
-                <div class="video-container">
-                    <video id="preview"></video>
-                </div>
-                <div class="mb-3">
-                    <label for="user_schoolId" class="form-label">Manual Entry</label>
-                    <input type="text" 
-                           class="form-control" 
-                           id="user_schoolId" 
-                           placeholder="Type ID and press Enter"
-                           autocomplete="off"
-                           style="opacity: 1; pointer-events: auto;">
-                </div>
-                <div class="clock-container">
-                    <div class="clock" id="clock">00:00:00</div>
-                    <div class="date" id="date">Loading...</div>
-                </div>
-            </div>
-        </div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <div class="d-flex align-items-center">
+        <img src="images/logo/coc-white.png" alt="COC Logo" class="navbar-logo me-2">
+      </div>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link active" href="index.html">HOME</a>
+        <a class="nav-link" href="#about-section">ABOUT US</a>
+        <a class="nav-link" href="#footer-area">CONTACT US</a>
+      </div>
+    </div>
+  </nav>
 
-        <!-- Right Side: Clock and Active Users -->
-        <div class="right-section">
-            <div class="title-box">
-                <h2 id="titleText">Library Attendance Monitoring System</h2>
-            </div>
-            <div class="info-section">
-                <div id="activeUsers">
-                    <!-- User cards will be added here dynamically -->
-                </div>
-            </div>
-            <img src="images/logo/cocicon.png" alt="logo" class="logo background-logo">
+  <!-- Main Content -->
+  <div class="main-container">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <div class="image-container">
+            <img src="images/logo/cocicon.png" alt="Library">
+          </div>
         </div>
         
-    </div>
+        <!-- Right Column - Login Form -->
+        <div class="col-lg-6">
+          <form id="loginForm" action="api/login.php" method="POST">
+            <div class="form-header">
+              <i class="bi bi-lock-fill"></i> LIBRARY LOGIN
+            </div>
+            
+            <div id="error-message"></div>
+            
+            <div id="loginCredentials">
+              <input type="text" id="student_id" placeholder="Student ID" required />
+              <input type="password" id="password" placeholder="Password" required />
+              <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
 
-    <script src="js/scan.js" ></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <div class="math-challenge">
+              <input type="text" class="math-input" id="num1" readonly />
+              <span class="math-operator">+</span>
+              <input type="text" class="math-input" id="num2" readonly />
+              <span class="math-operator">=</span>
+              <input type="number" class="math-input" id="mathAnswer" name="captcha_answer" required />
+              <input type="hidden" name="captcha_correct" id="captcha-correct">
+            </div>
+
+            <button type="submit">Login</button>
+            
+            <div class="register-link">
+              Not a Student? <a href="register.html">Click here.</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div id="about-section">
+                    <h1 class="text-center mb-4">Library Attendance Monitoring System</h1>
+                    
+                    <div class="about-content">
+                    
+                                <p class="card-text">
+                                    To provide an efficient and user-friendly library management system that enhances the learning experience of our students and supports the academic community at the College of Computing and Information Technologies.
+                                </p>
+                            </div>
+                        </div>
+
+               
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h3 class="card-title mb-3">Developers</h3>
+                                
+
+                                <div class="row">
+                                  <!-- Left Column -->
+                                  <div class="col-md-6">
+                                      <div class="card mb-4">
+                                          <div class="card-body">
+                                              <h3 class="card-title mb-3">Micah D. Lago</h3>
+                                              <ul>
+                                                  <li>QR Code Digital Library Card</li>
+                                                  <li>Automated Attendance Tracking</li>
+                                                  <li>Real-time Library Status</li>
+                                                  <li>Profile Management</li>
+                                                  <li>Visit History</li>
+                                              </ul>
+                                          </div>
+                                      </div>
+                                  </div>
+              
+                                  <!-- Right Column -->
+                                  <div class="col-md-6">
+                                      <div class="card mb-4">
+                                          <div class="card-body">
+                                              <h3 class="card-title mb-3">Hannah Marie D. Cubillan</h3>
+                                              <p class="card-text">
+                                                  Our dedicated team of developers is committed to providing the best library management experience.
+                                              </p>
+                                              <div class="contact-info">
+                                                  <p><i class="bi bi-envelope"></i> library@coc.edu.ph</p>
+                                                  <p><i class="bi bi-telephone"></i> (123) 456-7890</p>
+                                                  <p><i class="bi bi-geo-alt"></i> College of Computing and Information Technologies</p>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div> <!-- End Row -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+      <!-- Footer Area Start -->
+      <div id="footer-area" class="footer-area">
+        <div class="container">
+          <div class="row">
+            <!-- Left Section: Campus Details -->
+            <div class="col-lg-8 col-md-12">
+              <h4>CONTACT US</h4>
+              <div class="row">
+                <!-- Carmen Campus -->
+                <div class="col-md-6">
+                  <h5>Carmen Campus</h5>
+                  <p>
+                    <i class="fa fa-map-marker"></i> Max Suniel Street, Carmen, Cagayan de Oro City, 9000, Misamis Oriental
+                  </p>
+                  <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
+                  <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
+                  <hr />
+                </div>
+  
+                <!-- Puerto Campus -->
+                <div class="col-md-6">
+                  <h5>Puerto Campus</h5>
+                  <p>
+                    <i class="fa fa-map-marker"></i> Purok 6, Puerto, Cagayan de Oro City, 9000, Misamis Oriental
+                  </p>
+                  <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
+                  <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
+                  <hr />
+                </div>
+  
+                <!-- Iligan Campus -->
+                <div class="col-md-6">
+                  <h5>Iligan Campus</h5>
+                  <p>
+                    <i class="fa fa-map-marker"></i> Pedro Permites Rd., Brgy. Pala-o, Iligan City
+                  </p>
+                  <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
+                  <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
+                  <hr />
+                </div>
+              </div>
+  
+              <!-- Social Media -->
+              <h5>Social Media</h5>
+              <div class="social-links">
+                <a href="https://www.facebook.com/phinmacoc/"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://x.com/phinmacoc"><i class="fa-brands fa-twitter"></i></a>
+                <a href="https://www.instagram.com/phinmacoc/"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.youtube.com/user/phinmaed"><i class="fa-brands fa-youtube"></i></a>
+              </div>
+            </div>
+  
+            <!-- Right Section: Logo -->
+            <div class="col-lg-4 col-md-12 text-lg-end text-center">
+              <img src="images/logo/coc-white.png" alt="PHINMA COC Logo" class="footer-logo" />
+              <img src="images/logo/phinma-white.png" alt="PHINMA COC Logo" class="footer-logo" />
+            </div>
+          </div>
+        </div>
+  
+     <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          &copy; 2025 PHINMA Cagayan de Oro College. All rights reserved.
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <!-- Privacy Policy Link -->
+          <a data-bs-toggle="modal" data-bs-target="#privacyPolicyModal"">PHINMA Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function generateCaptcha() {
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * 10) + 1;
+        const answer = num1 + num2;
+        
+        document.getElementById('num1').value = num1;
+        document.getElementById('num2').value = num2;
+        document.getElementById('captcha-correct').value = answer;
+    }
+
+    window.onload = generateCaptcha;
+  </script>
 </body>
-</html> 
+</html>

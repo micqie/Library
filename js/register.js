@@ -18,17 +18,9 @@ function validatePassword(password) {
 // Load departments from the database
 async function loadDepartments() {
     try {
-        console.log('Fetching departments...');
         const response = await axios.get('api/get_departments.php');
-        console.log('Departments response:', response.data);
-
         if (response.data && Array.isArray(response.data)) {
             const departmentSelect = document.getElementById('department');
-            if (!departmentSelect) {
-                console.error('Department select element not found');
-                return;
-            }
-
             departmentSelect.innerHTML = '<option value="">Select Department</option>';
 
             response.data.forEach(dept => {
@@ -37,7 +29,6 @@ async function loadDepartments() {
                 option.textContent = dept.department_name;
                 departmentSelect.appendChild(option);
             });
-            console.log('Departments loaded successfully');
         } else {
             console.error('Invalid department data format:', response.data);
             alert('Failed to load departments. Please try again.');
@@ -51,17 +42,9 @@ async function loadDepartments() {
 // Load all courses from the database
 async function loadCourses() {
     try {
-        console.log('Fetching courses...');
         const response = await axios.get('api/get_courses.php');
-        console.log('Courses response:', response.data);
-
         if (response.data && Array.isArray(response.data)) {
             const courseSelect = document.getElementById('course');
-            if (!courseSelect) {
-                console.error('Course select element not found');
-                return;
-            }
-
             courseSelect.innerHTML = '<option value="">Select Course</option>';
 
             response.data.forEach(course => {
@@ -70,7 +53,6 @@ async function loadCourses() {
                 option.textContent = course.course_name;
                 courseSelect.appendChild(option);
             });
-            console.log('Courses loaded successfully');
         } else {
             console.error('Invalid course data format:', response.data);
             alert('Failed to load courses. Please try again.');
@@ -106,20 +88,11 @@ function checkPasswordsMatch() {
 
 // Initialize all event listeners
 function initializeEventListeners() {
-    console.log('Initializing event listeners...');
-
     // Load departments and courses when page loads
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, loading departments and courses...');
-            loadDepartments();
-            loadCourses();
-        });
-    } else {
-        console.log('DOM already loaded, loading departments and courses...');
+    document.addEventListener('DOMContentLoaded', () => {
         loadDepartments();
         loadCourses();
-    }
+    });
 
     // Password toggle functionality
     document.getElementById('togglePassword').addEventListener('click', function () {

@@ -146,7 +146,7 @@ function createUserCard(userData, isTimeout = false) {
 
     card.innerHTML = `
         <div class="card-header ${isTimeout ? 'bg-danger' : 'bg-success'} text-white">
-            <h4 class="mb-0">User Details</h4>
+            <h4 class="mb-0">${isTimeout ? 'Time Out' : 'Time In'}</h4>
         </div>
         <div class="card-body">
             <div class="user-info">
@@ -199,8 +199,7 @@ function handleTimeout(userId, card) {
     // Remove from active users
     activeUsers.delete(userId);
 
-    // Show timeout message
-    showMessage('Session timed out after 1 minute');
+
 }
 
 // Update the scanner initialization code

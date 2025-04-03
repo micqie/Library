@@ -10,114 +10,6 @@
   <script defer src="js/login.js"></script>
   <link rel="stylesheet" href="css/login.css">
   <link rel="icon" type="image/x-icon" href="images/favicon-32x32.png">
-  <style>
-    .footer-area {
-    background: #155f37;
-    padding: 40px 0 0;
-    color: #ffffff;
-    font-size: 14px;
-    line-height: 1.8;
-  }
-  
-  .footer-area h4 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: white;
-  }
-  
-  .footer-area h5 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: white;
-  }
-  
-  .footer-logo {
-    max-width: 300px;
-    margin-top: 20px;
-  }
-  
-  .navbar {
-    background-color: #155f37;
-    padding: 15px 0;
-  }
-  
-  .navbar-nav .nav-link {
-    color: white !important;
-    font-weight: 500;
-    padding: 8px 15px;
-    margin: 0 5px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-  }
-  
-  .navbar-nav .nav-link:hover {
-    background-color: rgba(255, 221, 0, 0.405);
-  }
-  
-  .navbar-nav .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  .about-section {
-    padding: 40px 0;
-  }
-  
-  .card {
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .card-title {
-    color: #155f37;
-    font-weight: bold;
-  }
-  
-  .list-group-item {
-    border-left: none;
-    border-right: none;
-  }
-  
-  .contact-info p {
-    margin-bottom: 10px;
-  }
-  
-  .contact-info i {
-    margin-right: 10px;
-    color: #155f37;
-  }
-
-  /* Add custom styles for the hamburger menu */
-  .navbar-toggler {
-    border-color: rgba(255,255,255,0.5);
-    padding: 0.25rem 0.5rem;
-  }
-  
-  .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-  }
-
-  /* Ensure mobile menu items are properly spaced */
-  @media (max-width: 991.98px) {
-    .navbar-collapse {
-      background-color: #155f37;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .navbar-nav .nav-link {
-      padding: 0.5rem 1rem;
-      margin: 0.25rem 0;
-    }
-  }
-  </style>
 </head>
 <body>
   <!-- Navbar -->
@@ -131,7 +23,7 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <div class="navbar-nav ms-auto">
-          <a class="nav-link" href="index.html">HOME</a>
+          <a class="nav-link" href="#login-section">HOME</a>
           <a class="nav-link" href="#about-section">ABOUT US</a>
           <a class="nav-link" href="#footer-area">CONTACT US</a>
         </div>
@@ -140,7 +32,7 @@
   </nav>
 
   <!-- Main Content -->
-  <div class="main-container">
+  <div class="main-container" id="login-section">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6 mb-4 mb-lg-0">
@@ -184,22 +76,20 @@
     </div>
   </div>
 
-  <div class="main-container">
+  <div class="main-container" id="about-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div id="about-section">
+                <div class="about-section">
                     <h1 class="text-center mb-4">Library Attendance Monitoring System</h1>
                     
                     <div class="about-content">
                     
-                                <p class="card-text">
-                                    To provide an efficient and user-friendly library management system that enhances the learning experience of our students and supports the academic community at the College of Computing and Information Technologies.
+                                <p class="card-text" style="margin-bottom: 40px;">
+                                  Provides a seamless, efficient, and user-friendly way to track attendance, ensuring accurate recording of time-in and time-out for all library users of PHINMA Cagayan de Oro College.
                                 </p>
                             </div>
                         </div>
-
-               
 
                         <div class="card mb-4">
                             <div class="card-body">
@@ -249,80 +139,67 @@
     </div>
 </div>
 
-      <!-- Footer Area Start -->
-      <div id="footer-area" class="footer-area">
-        <div class="container">
-          <div class="row">
-            <!-- Left Section: Campus Details -->
-            <div class="col-lg-8 col-md-12">
-              <h4>CONTACT US</h4>
-              <div class="row">
-                <!-- Carmen Campus -->
-                <div class="col-md-6">
-                  <h5>Carmen Campus</h5>
-                  <p>
-                    <i class="fa fa-map-marker"></i> Max Suniel Street, Carmen, Cagayan de Oro City, 9000, Misamis Oriental
-                  </p>
-                  <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
-                  <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
-                  <hr />
-                </div>
-  
-                <!-- Puerto Campus -->
-                <div class="col-md-6">
-                  <h5>Puerto Campus</h5>
-                  <p>
-                    <i class="fa fa-map-marker"></i> Purok 6, Puerto, Cagayan de Oro City, 9000, Misamis Oriental
-                  </p>
-                  <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
-                  <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
-                  <hr />
-                </div>
-  
-                <!-- Iligan Campus -->
-                <div class="col-md-6">
-                  <h5>Iligan Campus</h5>
-                  <p>
-                    <i class="fa fa-map-marker"></i> Pedro Permites Rd., Brgy. Pala-o, Iligan City
-                  </p>
-                  <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
-                  <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
-                  <hr />
-                </div>
-              </div>
-  
-              <!-- Social Media -->
-              <h5>Social Media</h5>
-              <div class="social-links">
-                <a href="https://www.facebook.com/phinmacoc/"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://x.com/phinmacoc"><i class="fa-brands fa-twitter"></i></a>
-                <a href="https://www.instagram.com/phinmacoc/"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.youtube.com/user/phinmaed"><i class="fa-brands fa-youtube"></i></a>
-              </div>
-            </div>
-  
-            <!-- Right Section: Logo -->
-            <div class="col-lg-4 col-md-12 text-lg-end text-center">
-              <img src="images/logo/coc-white.png" alt="PHINMA COC Logo" class="footer-logo" />
-              <img src="images/logo/phinma-white.png" alt="PHINMA COC Logo" class="footer-logo" />
-            </div>
+<!-- Footer Area Start -->
+<div id="footer-area" class="footer-area">
+  <div class="container">
+    <div class="row">
+      <!-- Left Section: Campus Details -->
+      <div class="col-lg-8 col-md-12">
+        <h4>CONTACT US</h4>
+        <div class="row">
+          <!-- Carmen Campus -->
+          <div class="col-md-6">
+            <h5>Carmen Campus</h5>
+            <p>
+              <i class="fa fa-map-marker"></i> Max Suniel Street, Carmen, Cagayan de Oro City, 9000, Misamis Oriental
+            </p>
+            <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
+            <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
+            <hr />
+          </div>
+
+          <!-- Puerto Campus -->
+          <div class="col-md-6">
+            <h5>Puerto Campus</h5>
+            <p>
+              <i class="fa fa-map-marker"></i> Purok 6, Puerto, Cagayan de Oro City, 9000, Misamis Oriental
+            </p>
+            <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
+            <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
+            <hr />
+          </div>
+
+          <!-- Iligan Campus -->
+          <div class="col-md-6">
+            <h5>Iligan Campus</h5>
+            <p>
+              <i class="fa fa-map-marker"></i> Pedro Permites Rd., Brgy. Pala-o, Iligan City
+            </p>
+            <p><i class="fa fa-mobile"></i> 0953-614-5310</p>
+            <p><i class="fa fa-envelope"></i> pedro.coc@phinmaed.com</p>
+            <hr />
           </div>
         </div>
-  
-     <!-- Footer Bottom -->
-  <div class="footer-bottom">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6 text-center text-md-start">
-          &copy; 2025 PHINMA Cagayan de Oro College. All rights reserved.
+
+        <!-- Social Media -->
+        <h5>Social Media</h5>
+        <div class="social-links">
+          <a href="https://www.facebook.com/phinmacoc/"><i class="fa-brands fa-facebook"></i></a>
+          <a href="https://x.com/phinmacoc"><i class="fa-brands fa-twitter"></i></a>
+          <a href="https://www.instagram.com/phinmacoc/"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.youtube.com/user/phinmaed"><i class="fa-brands fa-youtube"></i></a>
         </div>
-        <div class="col-md-6 text-center text-md-end">
-          <!-- Privacy Policy Link -->
-          <a data-bs-toggle="modal" data-bs-target="#privacyPolicyModal"">PHINMA Privacy Policy</a>
-        </div>
+      </div>
+
+      <!-- Right Section: Logo -->
+      <div class="col-lg-4 col-md-12 text-lg-end text-center">
+        <img src="images/logo/coc-white.png" alt="PHINMA COC Logo" class="footer-logo" />
+        <img src="images/logo/phinma-white.png" alt="PHINMA COC Logo" class="footer-logo" />
       </div>
     </div>
   </div>
+
+<!-- Footer Bottom -->
 
   <script>
     function generateCaptcha() {

@@ -1,5 +1,5 @@
 :root {
-    --primary-green: #004225;
+    --primary-green: #155f37;
     --light-bg: #f8f9fa;
 }
 
@@ -13,7 +13,7 @@ body {
 /* Navbar Styles */
 .navbar {
     background-color: var(--primary-green);
-    padding: 0.5rem 0;
+    padding: 15px 0;
     min-height: 70px;
     display: flex;
     align-items: center;
@@ -36,14 +36,30 @@ body {
     color: rgba(255, 255, 255, 0.9);
 }
 
-.nav-link {
+.navbar-nav .nav-link {
     color: white !important;
     font-weight: 500;
-    margin-left: 1.5rem;
+    padding: 8px 15px;
+    margin: 0 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
 }
 
-.nav-link:hover {
-    color: rgba(255, 255, 255, 0.9) !important;
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 221, 0, 0.405);
+}
+
+.navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar-toggler {
+    border-color: rgba(255,255,255,0.5);
+    padding: 0.25rem 0.5rem;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 /* Main Container Styles */
@@ -102,7 +118,6 @@ body {
     border: 1px solid #dee2e6;
     border-radius: 4px;
     font-size: 1rem;
-    background-color: var(--light-bg);
 }
 
 .math-challenge {
@@ -119,7 +134,6 @@ body {
     border: 1px solid #dee2e6;
     border-radius: 4px;
     font-size: 1rem;
-    background-color: var(--light-bg);
 }
 
 .math-operator {
@@ -190,25 +204,9 @@ button[type="submit"]:hover {
     background-color: #fff8f8;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 991.98px) {
-    .main-container {
-        padding-top: 5rem;
-    }
-    
-    .image-container {
-        max-width: 500px;
-        margin: 0 auto;
-    }
-}
-
-/* About Page Styles */
+/* About Section Styles */
 .about-section {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    margin-top: 2rem;
+    padding: 40px 0;
 }
 
 .about-content {
@@ -254,22 +252,101 @@ button[type="submit"]:hover {
     line-height: 1.6;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .about-section {
-        padding: 1.5rem;
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-title {
+    color: var(--primary-green);
+    font-weight: bold;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+/* Contact Info Styles */
+.contact-info p {
+    margin-bottom: 10px;
+}
+
+.contact-info i {
+    margin-right: 10px;
+    color: var(--primary-green);
+}
+
+/* Footer Styles */
+.footer-area {
+    background: var(--primary-green);
+    padding: 40px 0 0;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.footer-area h4 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.footer-area h5 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: white;
+}
+
+.footer-logo {
+    max-width: 300px;
+    margin-top: 20px;
+}
+
+.social-links a {
+    color: white;
+    margin-right: 15px;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Media Queries */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: var(--primary-green);
+        padding: 1rem;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-nav {
         margin-top: 1rem;
     }
-
-    .about-content h1 {
-        font-size: 1.8rem;
+    
+    .navbar-nav .nav-link {
+        margin: 5px 0;
+        text-align: center;
     }
 
-    .about-content h2 {
-        font-size: 1.5rem;
+    .main-container {
+        padding-top: 5rem;
     }
+    
+    .image-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
 
-    .about-content h3 {
-        font-size: 1.2rem;
-    }
-} 

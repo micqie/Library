@@ -4,7 +4,13 @@
 }
 
 body {
-    background-color: var(--light-bg);
+ 
+        background-image: url('images/logo/icon.png');
+        background-size: 1920px 1080px; /* Set fixed width and height */
+        background-repeat: no-repeat; /* Prevent tiling */
+        background-position: center; /* Center the image */
+        background-attachment: fixed; /* Keep it fixed when scrolling */
+ 
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
     display: flex;

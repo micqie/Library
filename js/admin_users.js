@@ -1,145 +1,168 @@
-$(document).ready(function() {
-    let usersTable = $('#usersTable').DataTable({
-        ajax: {
-            url: '../api/get_users.php',
-            dataSrc: ''
-        },
-        columns: [
-            { data: 'user_schoolId' },
-            { 
-                data: null,
-                render: function(data, type, row) {
-                    return `${row.user_firstname} ${row.user_middlename || ''} ${row.user_lastname} ${row.user_suffix || ''}`.trim();
-                }
-            },
-            { data: 'user_email' },
-            { data: 'user_contact' },
-            { data: 'department_name' },
-            { data: 'course_name' },
-            {
-                data: null,
-                render: function(data, type, row) {
-                    return `
-                        <button class="btn btn-sm btn-primary edit-user" data-id="${row.user_id}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-user" data-id="${row.user_id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    `;
-                }
-            }
-        ]
-    });
+let currentPage = 1;
+const itemsPerPage = 10;
+let userData = [];
 
-    // Load departments and courses for dropdowns
-    loadDepartments();
-    loadCourses();
-
-    // Add User
-    $('#saveUserBtn').click(function() {
-        const formData = new FormData($('#addUserForm')[0]);
+// Fetch users data from the server
+async function fetchUsers() {
+    try {
+        // Add loading indicator
+        document.getElementById('usersTableBody').innerHTML = 
+            '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
         
-        $.ajax({
-            url: '../api/add_user.php',
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                $('#addUserModal').modal('hide');
-                usersTable.ajax.reload();
-                alert('User added successfully!');
-            },
-            error: function(xhr) {
-                alert('Error adding user: ' + xhr.responseText);
-            }
-        });
-    });
-
-    // Edit User
-    $('#usersTable').on('click', '.edit-user', function() {
-        const userId = $(this).data('id');
+        const response = await axios.get('../api/get_users.php');
+        console.log('Raw API Response:', response); // Debug log
         
-        $.ajax({
-            url: '../api/get_user.php',
-            method: 'GET',
-            data: { user_id: userId },
-            success: function(user) {
-                // Populate edit form
-                $('#editUserForm [name="user_id"]').val(user.user_id);
-                // Populate other fields...
-                $('#editUserModal').modal('show');
-            }
-        });
-    });
-
-    // Update User
-    $('#updateUserBtn').click(function() {
-        const formData = new FormData($('#editUserForm')[0]);
-        
-        $.ajax({
-            url: '../api/update_user.php',
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                $('#editUserModal').modal('hide');
-                usersTable.ajax.reload();
-                alert('User updated successfully!');
-            },
-            error: function(xhr) {
-                alert('Error updating user: ' + xhr.responseText);
-            }
-        });
-    });
-
-    // Delete User
-    $('#usersTable').on('click', '.delete-user', function() {
-        if (confirm('Are you sure you want to delete this user?')) {
-            const userId = $(this).data('id');
-            
-            $.ajax({
-                url: '../api/delete_user.php',
-                method: 'POST',
-                data: { user_id: userId },
-                success: function(response) {
-                    usersTable.ajax.reload();
-                    alert('User deleted successfully!');
-                },
-                error: function(xhr) {
-                    alert('Error deleting user: ' + xhr.responseText);
-                }
-            });
+        if (response.data.error) {
+            throw new Error(`Server error: ${response.data.error}\nDetails: ${response.data.details || 'No details provided'}`);
         }
+        
+        // Log the actual data
+        console.log('Response data:', response.data);
+        
+        // Ensure response.data is an array
+        if (!Array.isArray(response.data)) {
+            console.error('Invalid data format:', response.data);
+            throw new Error('Invalid data format received from server. Expected array, got: ' + typeof response.data);
+        }
+        
+        userData = response.data;
+        displayUsers();
+        updatePagination();
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        document.getElementById('usersTableBody').innerHTML = 
+            `<tr><td colspan="8" class="text-center text-danger">
+                Error loading users: ${error.message || 'Unknown error'}<br>
+                <small>Check console for more details</small>
+            </td></tr>`;
+    }
+}
+
+// Display users in the table
+function displayUsers(filteredData = null) {
+    const data = filteredData || userData;
+    
+    // Check if data is an array
+    if (!Array.isArray(data)) {
+        console.error('Data is not an array:', data);
+        document.getElementById('usersTableBody').innerHTML = 
+            `<tr><td colspan="8" class="text-center text-danger">
+                Error: Invalid data format received from server
+            </td></tr>`;
+        return;
+    }
+    
+    const tableBody = document.getElementById('usersTableBody');
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const paginatedData = data.slice(start, end);
+
+    tableBody.innerHTML = '';
+
+    if (paginatedData.length === 0) {
+        tableBody.innerHTML = 
+            `<tr><td colspan="8" class="text-center">
+                No users found
+            </td></tr>`;
+        return;
+    }
+
+    paginatedData.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.user_id || ''}</td>
+            <td>${user.name || ''}</td>
+            <td>${user.email || ''}</td>
+            <td>${user.department || ''}</td>
+            <td>${user.course || ''}</td>
+            <td>${user.role || ''}</td>
+            <td>
+                <span class="badge ${user.status === 'Active' ? 'bg-success' : 'bg-danger'}">
+                    ${user.status || 'Unknown'}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="editUser(${user.user_id})">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.user_id})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
     });
 
-    function loadDepartments() {
-        $.ajax({
-            url: '../api/get_departments.php',
-            method: 'GET',
-            success: function(departments) {
-                const select = $('select[name="department_id"]');
-                select.empty().append('<option value="">Select Department</option>');
-                departments.forEach(dept => {
-                    select.append(`<option value="${dept.department_id}">${dept.department_name}</option>`);
-                });
-            }
-        });
-    }
+    // Update pagination info
+    document.getElementById('startEntry').textContent = data.length > 0 ? start + 1 : 0;
+    document.getElementById('endEntry').textContent = Math.min(end, data.length);
+    document.getElementById('totalEntries').textContent = data.length;
+}
 
-    function loadCourses() {
-        $.ajax({
-            url: '../api/get_courses.php',
-            method: 'GET',
-            success: function(courses) {
-                const select = $('select[name="course_id"]');
-                select.empty().append('<option value="">Select Course</option>');
-                courses.forEach(course => {
-                    select.append(`<option value="${course.course_id}">${course.course_name}</option>`);
-                });
-            }
-        });
-    }
+// Filter users based on search input
+function filterUsers() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const filteredData = userData.filter(user => 
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.user_id.toString().includes(searchTerm) ||
+        user.department.toLowerCase().includes(searchTerm)
+    );
+    currentPage = 1;
+    displayUsers(filteredData);
+    updatePagination(filteredData.length);
+}
+
+// Update pagination controls
+function updatePagination(totalItems = userData.length) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const pageNumbers = document.getElementById('pageNumbers');
+
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayUsers();
+            updatePagination();
+        }
+    };
+
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayUsers();
+            updatePagination();
+        }
+    };
+
+    pageNumbers.textContent = `Page ${currentPage} of ${totalPages}`;
+}
+
+// Export table data to Excel
+function exportToExcel() {
+    const wb = XLSX.utils.book_new();
+    const ws_data = [
+        ['User ID', 'Name', 'Email', 'Department', 'Course', 'Role', 'Status'],
+        ...userData.map(user => [
+            user.user_id,
+            user.name,
+            user.email,
+            user.department,
+            user.course,
+            user.role,
+            user.status
+        ])
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    XLSX.utils.book_append_sheet(wb, ws, 'Users');
+    XLSX.writeFile(wb, 'users_report.xlsx');
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+    fetchUsers();
 }); 

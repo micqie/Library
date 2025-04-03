@@ -32,6 +32,63 @@ const entriesPerPage = 10;
 let totalEntries = 0;
 let allLogs = [];
 
+// Function to sort logs by date and time in descending order
+function sortLogs(logs) {
+    return logs.sort((a, b) => {
+        // First compare dates
+        const dateCompare = new Date(b.log_date) - new Date(a.log_date);
+        if (dateCompare !== 0) return dateCompare;
+
+        // If dates are the same, compare time_in
+        return new Date(`1970-01-01T${b.time_in}`) - new Date(`1970-01-01T${a.time_in}`);
+    });
+}
+
+// Function to filter logs by status
+function filterByStatus(logs) {
+    const statusFilter = document.getElementById('statusFilter').value;
+    if (statusFilter === 'all') return logs;
+
+    return logs.filter(log => {
+        if (statusFilter === 'active') {
+            return !log.time_out;
+        } else if (statusFilter === 'completed') {
+            return log.time_out;
+        }
+        return true;
+    });
+}
+
+// Function to filter logs by department
+function filterByDepartment(logs) {
+    const departmentFilter = document.getElementById('departmentFilter').value;
+    if (departmentFilter === 'all') return logs;
+
+    return logs.filter(log => {
+        const department = (log.department_name || '').toLowerCase();
+        return department.includes(departmentFilter.toLowerCase());
+    });
+}
+
+// Function to filter logs by search term
+function filterBySearch(logs) {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (!searchTerm) return logs;
+
+    return logs.filter(log => {
+        const fullName = getFullName(
+            log.user_firstname || '',
+            log.user_middlename || '',
+            log.user_lastname || '',
+            log.user_suffix || ''
+        ).toLowerCase();
+
+        const studentId = (log.user_schoolId || '').toLowerCase();
+
+        return fullName.includes(searchTerm) || studentId.includes(searchTerm);
+    });
+}
+
 // Update the refreshLogs function
 function refreshLogs() {
     // Reset filters
@@ -55,7 +112,7 @@ function refreshLogs() {
             console.log('Refresh response:', data); // Debug log
 
             if (data.status === 'success') {
-                allLogs = data.data;
+                allLogs = sortLogs(data.data);
                 totalEntries = allLogs.length;
                 currentPage = 1;
                 displayCurrentPage();
@@ -76,15 +133,19 @@ function displayCurrentPage() {
     console.log('Displaying page:', currentPage); // Debug log
     console.log('All logs:', allLogs); // Debug log
 
+    // Apply all filters in sequence
+    const statusFilteredLogs = filterByStatus(allLogs);
+    const departmentFilteredLogs = filterByDepartment(statusFilteredLogs);
+    const searchFilteredLogs = filterBySearch(departmentFilteredLogs);
     const start = (currentPage - 1) * entriesPerPage;
-    const end = Math.min(start + entriesPerPage, totalEntries);
-    const pageData = allLogs.slice(start, end);
+    const end = Math.min(start + entriesPerPage, searchFilteredLogs.length);
+    const pageData = searchFilteredLogs.slice(start, end);
 
     console.log('Page data:', pageData); // Debug log
 
-    document.getElementById('startEntry').textContent = totalEntries ? start + 1 : 0;
+    document.getElementById('startEntry').textContent = searchFilteredLogs.length ? start + 1 : 0;
     document.getElementById('endEntry').textContent = end;
-    document.getElementById('totalEntries').textContent = totalEntries;
+    document.getElementById('totalEntries').textContent = searchFilteredLogs.length;
 
     const tableBody = document.getElementById('logsTableBody');
     if (pageData.length === 0) {
@@ -155,20 +216,6 @@ function goToPage(page) {
     updatePagination();
 }
 
-// Add pagination event listeners
-document.getElementById('prevPage').addEventListener('click', () => {
-    if (currentPage > 1) {
-        goToPage(currentPage - 1);
-    }
-});
-
-document.getElementById('nextPage').addEventListener('click', () => {
-    const totalPages = Math.ceil(totalEntries / entriesPerPage);
-    if (currentPage < totalPages) {
-        goToPage(currentPage + 1);
-    }
-});
-
 // Excel export function
 function exportToExcel() {
     const filter = document.getElementById('dateFilter').value;
@@ -209,31 +256,106 @@ document.getElementById('searchInput').addEventListener('input', function () {
 });
 
 // Event listeners
-document.getElementById('dateFilter').addEventListener('change', refreshLogs);
+document.getElementById('dateFilter').addEventListener('change', function () {
+    const filterValue = this.value;
+    switch (filterValue) {
+        case 'recent':
+            loadTodayLogs(); // This function already loads recent records
+            break;
+        case 'today':
+            loadTodayOnlyLogs();
+            break;
+        case 'all':
+            refreshLogs();
+            break;
+    }
+});
+
+// Function to load today's logs only
+function loadTodayOnlyLogs() {
+    const tableBody = document.getElementById('logsTableBody');
+    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
+
+    const today = new Date().toISOString().split('T')[0];
+
+    fetch('../api/filter_logs.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            fromDate: today,
+            toDate: today
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                allLogs = sortLogs(data.data || []);
+                totalEntries = allLogs.length;
+                currentPage = 1;
+
+                if (totalEntries === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No logs found for today</td></tr>';
+                    return;
+                }
+
+                displayCurrentPage();
+                updatePagination();
+            } else {
+                throw new Error(data.message || 'Failed to load logs');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
+            Error: ${error.message || 'Failed to load logs'}
+        </td></tr>`;
+        });
+}
 
 // Update the initial load function
 document.addEventListener('DOMContentLoaded', () => {
-    // Set default dates to last 7 days
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
+    // Set both dates to current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    document.getElementById('dateFrom').value = currentDate;
+    document.getElementById('dateTo').value = currentDate;
 
-    document.getElementById('dateFrom').value = startDate.toISOString().split('T')[0];
-    document.getElementById('dateTo').value = endDate.toISOString().split('T')[0];
+    // Set initial filter values
+    document.getElementById('dateFilter').value = 'recent';
+    document.getElementById('statusFilter').value = 'all';
+    document.getElementById('departmentFilter').value = 'all';
 
-    // Load recent logs
-    loadTodayLogs(); // We'll keep the function name but it now loads recent logs
+    // Load recent logs initially
+    loadTodayLogs();
 
-    // Add event listener for the search input
+    // Add event listeners
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                console.log('Searching:', this.value);
+                currentPage = 1; // Reset to first page when search changes
+                displayCurrentPage();
+                updatePagination();
             }, 300);
         });
     }
+
+    // Add status filter event listener
+    document.getElementById('statusFilter').addEventListener('change', function () {
+        currentPage = 1; // Reset to first page when filter changes
+        displayCurrentPage();
+        updatePagination();
+    });
+
+    // Add department filter event listener
+    document.getElementById('departmentFilter').addEventListener('change', function () {
+        currentPage = 1; // Reset to first page when filter changes
+        displayCurrentPage();
+        updatePagination();
+    });
 });
 
 // Handle sidebar toggle for mobile
@@ -314,7 +436,7 @@ function filterLogs() {
         })
         .then(data => {
             if (data.status === 'success') {
-                allLogs = data.data || [];
+                allLogs = sortLogs(data.data || []);
                 totalEntries = allLogs.length;
 
                 if (totalEntries === 0) {
@@ -356,7 +478,7 @@ function loadTodayLogs() {
             console.log('Received data:', data); // Debug log
 
             if (data.status === 'success') {
-                allLogs = data.data;
+                allLogs = sortLogs(data.data);
                 totalEntries = allLogs.length;
                 currentPage = 1;
 

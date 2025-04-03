@@ -31,7 +31,7 @@ try {
     // Build the search condition (Case-insensitive and supports full names)
     $searchCondition = "";
     $params = []; // Store parameters for binding
-    
+
     if (!empty($search)) {
         $searchCondition = "AND (
             LOWER(u.user_schoolId) LIKE :search 
@@ -43,9 +43,9 @@ try {
         )";
         $params[':search'] = "%" . strtolower($search) . "%"; // Convert input to lowercase
     }
-    
+
     // Ensure WHERE clause is valid
-    $whereClause = "WHERE $dateFilter"; 
+    $whereClause = "WHERE $dateFilter";
     if (!empty($searchCondition)) {
         $whereClause .= " $searchCondition";
     }
@@ -65,14 +65,14 @@ try {
             LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
             $whereClause
             ORDER BY l.time_in DESC";
-    
+
     $stmt = $db->prepare($query);
-    
+
     // Bind parameters
     foreach ($params as $key => $value) {
         $stmt->bindValue($key, $value, PDO::PARAM_STR);
     }
-    
+
     $stmt->execute();
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -81,7 +81,6 @@ try {
         "status" => "success",
         "logs" => $logs
     ]);
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
@@ -89,4 +88,3 @@ try {
         "message" => $e->getMessage()
     ]);
 }
-?>

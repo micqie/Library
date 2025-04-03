@@ -55,7 +55,7 @@ try {
             ORDER BY l.time_in DESC";
 
     $stmt = $db->prepare($query);
-    
+
     if (!empty($search)) {
         $searchParam = "%$search%";
         $stmt->bindParam(':search', $searchParam);
@@ -69,7 +69,6 @@ try {
         "status" => "success",
         "data" => $logs
     ]);
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
@@ -78,4 +77,3 @@ try {
         "debug" => $e->getMessage()
     ]);
 }
-?>

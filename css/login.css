@@ -83,6 +83,14 @@ body {
     object-fit: contain;
 }
 
+/* Add responsive styles for mobile */
+@media (max-width: 768px) {
+    .image-container img {
+        max-height: 100px;
+        width: 80%;
+    }
+}
+
 /* Login Form Styles */
 #loginForm {
     background: white;

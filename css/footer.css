@@ -70,9 +70,9 @@
 }
 
 /* Social Media Links */
-.social-links {
+/* .social-links {
     margin-top: 15px;
-}
+} */
 
 .social-links a {
     color: white;
@@ -107,13 +107,13 @@
     margin: 15px 0;
 }
 
-.footer-area .row {
+/* .footer-area .row {
     margin-bottom: 20px;
 }
 
 .footer-area .col-md-6 {
-    margin-bottom: 20px;
-}
+    margin-bottom: 5px;
+} */
 
 /* Chrome-specific fixes */
 @media screen and (-webkit-min-device-pixel-ratio:0) {

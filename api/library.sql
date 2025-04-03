@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 02, 2025 at 09:11 AM
+-- Generation Time: Apr 03, 2025 at 11:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -70,7 +70,39 @@ INSERT INTO `lib_logs` (`log_id`, `user_schoolId`, `time_in`, `time_out`, `log_d
 (78, '02-2122-020202', '09:24:48', '09:25:50', '2025-04-02'),
 (79, '02-2122-020202', '09:25:54', '09:29:52', '2025-04-02'),
 (80, '02-2122-020202', '09:30:00', '09:31:16', '2025-04-02'),
-(81, '02-2122-020202', '09:31:25', NULL, '2025-04-02');
+(81, '02-2122-020202', '09:31:25', '19:21:03', '2025-04-02'),
+(87, 'visitor2@gmail.com', '15:28:21', '15:29:33', '2025-04-02'),
+(88, 'visitor2@gmail.com', '15:29:52', '15:31:02', '2025-04-02'),
+(89, '02-2122-020202', '19:21:06', '19:30:10', '2025-04-02'),
+(90, '02-2122-030303', '19:35:07', '19:37:17', '2025-04-02'),
+(91, '02-2122-030303', '19:53:07', '20:04:54', '2025-04-02'),
+(92, '02-2122-020202', '19:54:29', '19:55:55', '2025-04-02'),
+(93, '02-2122-020202', '20:12:15', '20:16:23', '2025-04-02'),
+(94, '02-2122-030303', '20:32:31', '20:40:23', '2025-04-02'),
+(95, '02-2122-030303', '20:41:10', '20:43:37', '2025-04-02'),
+(96, '02-2122-020202', '20:58:33', '22:09:25', '2025-04-02'),
+(97, '02-2122-030303', '20:59:29', '21:04:20', '2025-04-02'),
+(98, '02-2122-030303', '21:04:41', '21:05:54', '2025-04-02'),
+(99, '02-2122-030303', '21:08:46', '21:10:11', '2025-04-02'),
+(100, '02-2122-030303', '21:22:07', '21:24:40', '2025-04-02'),
+(101, '02-2122-030303', '21:27:20', '21:35:59', '2025-04-02'),
+(102, '02-2122-030303', '22:18:38', '22:28:41', '2025-04-02'),
+(103, '02-2122-030303', '22:37:48', '22:39:02', '2025-04-02'),
+(104, '02-2122-030303', '22:39:18', '22:40:18', '2025-04-02'),
+(105, '02-2122-030303', '07:54:13', '07:56:56', '2025-04-03'),
+(106, '02-2122-040404', '08:08:30', '08:09:40', '2025-04-03'),
+(107, '02-2122-030303', '09:38:49', '09:39:53', '2025-04-03'),
+(108, '02-2122-020202', '09:48:58', '10:00:54', '2025-04-03'),
+(109, '02-2122-030303', '10:01:51', '11:11:27', '2025-04-03'),
+(110, '02-2122-020202', '10:13:19', '10:20:07', '2025-04-03'),
+(111, '02-2122-020202', '10:20:16', '10:22:13', '2025-04-03'),
+(112, '54321', '10:29:33', '10:30:40', '2025-04-03'),
+(113, '54321', '10:59:44', '11:00:49', '2025-04-03'),
+(114, '54321', '11:05:50', '11:08:00', '2025-04-03'),
+(115, '02-2122-020202', '11:05:54', '11:10:53', '2025-04-03'),
+(116, '54321', '11:10:24', '11:26:47', '2025-04-03'),
+(117, '02-2122-030303', '11:11:41', '11:26:52', '2025-04-03'),
+(118, '54321', '11:26:57', NULL, '2025-04-03');
 
 -- --------------------------------------------------------
 
@@ -162,12 +194,16 @@ CREATE TABLE `tbl_users` (
 --
 
 INSERT INTO `tbl_users` (`user_id`, `user_schoolId`, `user_lastname`, `user_firstname`, `user_middlename`, `user_suffix`, `phinmaed_email`, `user_email`, `user_contact`, `user_password`, `user_courseId`, `user_departmentId`, `user_schoolyearId`, `user_typeId`, `user_status`, `user_level`) VALUES
-(1, '02-2122-020202', 'Lago', 'Micah', 'Dusil', 'none', 'micah@phinmaed.com', 'micah@gmail.com', '0909009', 'phinma-coc', 2, 2, 2024, 2, 1, 2),
+(1, '02-2122-020202', 'Lago', 'Micah', 'Dusil', 'none', 'micah@phinmaed.com', 'micah@gmail.com', '0993196913', 'phinma-coc', 2, 2, 2024, 2, 1, 2),
 (2, '12345', 'Doe', 'John', 'Michael', NULL, 'johndoe@phinma.edu', 'johndoe@gmail.com', '09123456789', 'password123', 1, 1, 2024, 2, 1, 1),
 (3, '54321', 'Sy', 'Henry ', '', '', 'henry@phinmaed.com', 'hen@gmail.com', '0905067432', 'Password123', NULL, NULL, NULL, 2, 1, 10),
 (6, '98765', 'Lago', 'Mckenzie ', 'Dusil', '', 'mckenzie@phinmaed.com', 'mckenzie@gmail.com', '213123123', 'Password123', NULL, NULL, NULL, 2, 1, 10),
 (8, '022122', 'test', 'test', '', '', 'test@phinmaed.com', 'test@gmail.com', '0905067498', 'Password123', NULL, NULL, NULL, 2, 1, 10),
-(14, 'visitor@gmail.com', 'Test', 'Visitor', 'Middle', '', 'visitor@phinmaed.com', 'visitor@gmail.com', 'visitor@gmail.com', 'Password123', 6, 2, NULL, 2, 1, 10);
+(14, 'visitor@gmail.com', 'Test', 'Visitor', 'Middle', '', 'visitor@phinmaed.com', 'visitor@gmail.com', 'visitor@gmail.com', 'Password123', 6, 2, NULL, 2, 1, 10),
+(15, 'visitor2@gmail.com', 'Two', 'Visitor', 'Middle', '', 'visitor2@phinmaed.com', 'visitor2@gmail.com', 'visitor2@gmail.com', 'Password123', 10, 4, NULL, 2, 1, 10),
+(16, '02-2122-030303', 'Cubillan', 'Hannah', 'Dapanas', '', 'cubillan@phinmaed.com', 'cubillan@gmail.com', '09161616161', 'Password123', 19, 6, NULL, 2, 1, 10),
+(17, '02-2122-040404', 'Last', 'Student', 'Middle', '', 'student@phinmaed.com', 'student@gmail.com', '0900000005', 'Password123', 9, 3, NULL, 2, 1, 10),
+(23, '00-0000-00001', 'Library', 'Admin', NULL, NULL, 'admin@phinmaed.com', 'admin@gmail.com', '09000000001', 'admin123', NULL, NULL, NULL, 5, 1, 80);
 
 -- --------------------------------------------------------
 
@@ -190,7 +226,7 @@ INSERT INTO `tbl_usertype` (`user_typeId`, `user_type`, `user_defaultLevel`) VAL
 (2, 'Student', 10),
 (3, 'Faculty', 10),
 (4, 'Employee', 10),
-(5, 'Admin', 10);
+(5, 'Admin-Library', 80);
 
 --
 -- Indexes for dumped tables
@@ -241,13 +277,13 @@ ALTER TABLE `tbl_usertype`
 -- AUTO_INCREMENT for table `lib_logs`
 --
 ALTER TABLE `lib_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables

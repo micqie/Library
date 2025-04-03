@@ -3,11 +3,11 @@ function generateCaptcha() {
     const num1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
     const answer = num1 + num2;
-    
+
     document.getElementById('num1').value = num1;
     document.getElementById('num2').value = num2;
     document.getElementById('captcha-correct').value = answer;
-    
+
     // Reset validation classes when generating new numbers
     const mathInput = document.getElementById('mathAnswer');
     mathInput.classList.remove('is-valid', 'is-invalid');
@@ -20,10 +20,10 @@ function validateMathAnswer() {
     const num2 = parseInt(document.getElementById('num2').value);
     const userAnswer = parseInt(document.getElementById('mathAnswer').value);
     const mathInput = document.getElementById('mathAnswer');
-    
+
     if (!isNaN(userAnswer)) { // Only validate if there's an input
         const correctAnswer = num1 + num2;
-        
+
         if (userAnswer === correctAnswer) {
             mathInput.classList.remove('is-invalid');
             mathInput.classList.add('is-valid');
@@ -59,22 +59,20 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
         student_id: studentId,
         password: password
     })
-    .then(function (response) {
-        console.log("Server response:", response.data);
-        if (response.data.success) {
-            window.location.href = './users/user_dashboard.html';
-        } else {
-            document.getElementById('error-message').textContent = response.data.message || 'Login failed';
-        }
-    })
-    .catch(function (error) {
-        console.error('Full error:', error);
-        if (error.response) {
-            document.getElementById('error-message').textContent = error.response.data.message || error.response.statusText;
-        } else {
-            document.getElementById('error-message').textContent = 'Network error. Please try again.';
-        }
-    });
+        .then(function (response) {
+            if (response.data.success) {
+                window.location.href = response.data.redirectUrl;
+            } else {
+                document.getElementById('error-message').textContent = response.data.message || 'Login failed';
+            }
+        })
+        .catch(function (error) {
+            if (error.response) {
+                document.getElementById('error-message').textContent = error.response.data.message || error.response.statusText;
+            } else {
+                document.getElementById('error-message').textContent = 'Network error. Please try again.';
+            }
+        });
 });
 
 // Generate captcha when page loads

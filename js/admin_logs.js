@@ -271,54 +271,13 @@ document.getElementById('dateFilter').addEventListener('change', function () {
     }
 });
 
-// Function to load today's logs only
-function loadTodayOnlyLogs() {
-    const tableBody = document.getElementById('logsTableBody');
-    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
-
-    const today = new Date().toISOString().split('T')[0];
-
-    fetch('../api/filter_logs.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            fromDate: today,
-            toDate: today
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                allLogs = sortLogs(data.data || []);
-                totalEntries = allLogs.length;
-                currentPage = 1;
-
-                if (totalEntries === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No logs found for today</td></tr>';
-                    return;
-                }
-
-                displayCurrentPage();
-                updatePagination();
-            } else {
-                throw new Error(data.message || 'Failed to load logs');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
-            Error: ${error.message || 'Failed to load logs'}
-        </td></tr>`;
-        });
-}
-
 // Update the initial load function
 document.addEventListener('DOMContentLoaded', () => {
+    // Get current date in local timezone
+    const now = new Date();
+    const currentDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+
     // Set both dates to current date
-    const currentDate = new Date().toISOString().split('T')[0];
     document.getElementById('dateFrom').value = currentDate;
     document.getElementById('dateTo').value = currentDate;
 
@@ -464,7 +423,11 @@ function loadTodayLogs() {
     const tableBody = document.getElementById('logsTableBody');
     tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
 
-    console.log('Fetching logs...'); // Debug log
+    // Get current date in local timezone
+    const now = new Date();
+    const currentDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+
+    console.log('Fetching logs for date:', currentDate); // Debug log
 
     fetch('../api/fetch_today_logs.php')
         .then(response => {
@@ -500,5 +463,51 @@ function loadTodayLogs() {
             tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
                 Error: ${error.message || 'Failed to load logs'}
             </td></tr>`;
+        });
+}
+
+// Function to load today's logs only
+function loadTodayOnlyLogs() {
+    const tableBody = document.getElementById('logsTableBody');
+    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
+
+    // Get current date in local timezone
+    const now = new Date();
+    const currentDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+
+    fetch('../api/filter_logs.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            fromDate: currentDate,
+            toDate: currentDate
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                allLogs = sortLogs(data.data || []);
+                totalEntries = allLogs.length;
+                currentPage = 1;
+
+                if (totalEntries === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No logs found for today</td></tr>';
+                    return;
+                }
+
+                displayCurrentPage();
+                updatePagination();
+            } else {
+                throw new Error(data.message || 'Failed to load logs');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
+            Error: ${error.message || 'Failed to load logs'}
+        </td></tr>`;
         });
 }

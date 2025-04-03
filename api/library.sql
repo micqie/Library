@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 03, 2025 at 11:21 AM
+-- Generation Time: Apr 03, 2025 at 04:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -102,7 +102,8 @@ INSERT INTO `lib_logs` (`log_id`, `user_schoolId`, `time_in`, `time_out`, `log_d
 (115, '02-2122-020202', '11:05:54', '11:10:53', '2025-04-03'),
 (116, '54321', '11:10:24', '11:26:47', '2025-04-03'),
 (117, '02-2122-030303', '11:11:41', '11:26:52', '2025-04-03'),
-(118, '54321', '11:26:57', NULL, '2025-04-03');
+(118, '54321', '11:26:57', NULL, '2025-04-03'),
+(119, '02-2122-030303', '19:55:38', '19:58:42', '2025-04-03');
 
 -- --------------------------------------------------------
 
@@ -203,7 +204,10 @@ INSERT INTO `tbl_users` (`user_id`, `user_schoolId`, `user_lastname`, `user_firs
 (15, 'visitor2@gmail.com', 'Two', 'Visitor', 'Middle', '', 'visitor2@phinmaed.com', 'visitor2@gmail.com', 'visitor2@gmail.com', 'Password123', 10, 4, NULL, 2, 1, 10),
 (16, '02-2122-030303', 'Cubillan', 'Hannah', 'Dapanas', '', 'cubillan@phinmaed.com', 'cubillan@gmail.com', '09161616161', 'Password123', 19, 6, NULL, 2, 1, 10),
 (17, '02-2122-040404', 'Last', 'Student', 'Middle', '', 'student@phinmaed.com', 'student@gmail.com', '0900000005', 'Password123', 9, 3, NULL, 2, 1, 10),
-(23, '00-0000-00001', 'Library', 'Admin', NULL, NULL, 'admin@phinmaed.com', 'admin@gmail.com', '09000000001', 'admin123', NULL, NULL, NULL, 5, 1, 80);
+(23, '00-0000-00001', 'Library', 'Admin', NULL, NULL, 'admin@phinmaed.com', 'admin@gmail.com', '09000000001', 'admin123', NULL, NULL, NULL, 5, 1, 80),
+(24, '02-2122-050505', 'Five', 'user5', '', '', '', 'usesr5@gmail.com', '09160000005', 'Password123', 7, 2, NULL, 2, 1, 10),
+(25, '02-2122-060606', 'Six', 'user6', '', '', '', 'usesr6@gmail.com', '09160000006', 'Password123', 19, 6, NULL, 2, 1, 10),
+(26, '02-2122-070707', 'Seven', 'User7', '', '', '', 'user7@gmail.com', '09000000007', 'Password123', 1, 1, NULL, 2, 1, 10);
 
 -- --------------------------------------------------------
 
@@ -277,13 +281,13 @@ ALTER TABLE `tbl_usertype`
 -- AUTO_INCREMENT for table `lib_logs`
 --
 ALTER TABLE `lib_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Constraints for dumped tables

@@ -39,6 +39,7 @@ body {
 .nav-link {
     color: white !important;
     font-weight: 500;
+    margin-left: 1.5rem;
 }
 
 .nav-link:hover {
@@ -198,5 +199,77 @@ button[type="submit"]:hover {
     .image-container {
         max-width: 500px;
         margin: 0 auto;
+    }
+}
+
+/* About Page Styles */
+.about-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+}
+
+.about-content {
+    color: #333;
+}
+
+.about-content h1 {
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+.about-content h2 {
+    color: var(--primary-green);
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+.about-content h3 {
+    color: var(--primary-green);
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.about-content ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.about-content ul li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.about-content ul li:before {
+    content: "•";
+    color: var(--primary-green);
+    position: absolute;
+    left: 0;
+}
+
+.about-content p {
+    line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .about-section {
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .about-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .about-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .about-content h3 {
+        font-size: 1.2rem;
     }
 } 

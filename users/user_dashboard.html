@@ -11,142 +11,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<style>
-    .footer-area {
-    background: #155f37;
-    padding: 40px 0 0;
-    color: #ffffff;
-    font-size: 14px;
-    line-height: 1.8;
-  }
-  
-  .footer-area h4 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: white;
-  }
-  
-  .footer-area h5 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: white;
-  }
-  
-  .footer-logo {
-    max-width: 300px;
-    margin-top: 20px;
-  }
-  
-  .navbar {
-    background-color: #155f37;
-    padding: 15px 0;
-  }
-  
-  .navbar-toggler {
-    border: 2px solid rgb(255, 255, 255);
-    padding: 0.5rem;
-  }
-  
-  .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-  }
-  
-  .navbar-toggler:focus {
-    box-shadow: none;
-  }
-  
-  .navbar-nav .nav-link {
-    color: white !important;
-    font-weight: 500;
-    padding: 8px 15px;
-    margin: 0 5px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-  }
-  
-  .navbar-nav .nav-link:hover {
-    background-color:  rgba(218, 231, 32, 0.558);
-  }
-  
-  .navbar-nav .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  @media (max-width: 991.98px) {
-    .navbar-collapse {
-      background-color: #155f37;
-      padding: 1rem;
-      border-radius: 0 0 10px 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .navbar-nav {
-      margin-top: 1rem;
-    }
-    
-    .navbar-nav .nav-link {
-      margin: 5px 0;
-      text-align: center;
-    }
-  }
-  
-  .about-section {
-    padding: 40px 0;
-  }
-  
-  .card {
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .card-title {
-    color: #155f37;
-    font-weight: bold;
-  }
-  
-  .list-group-item {
-    border-left: none;
-    border-right: none;
-  }
-  
-  .contact-info p {
-    margin-bottom: 10px;
-  }
-  
-  .contact-info i {
-    margin-right: 10px;
-    color: #155f37;
-  }
-  </style>
   </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-          <div class="d-flex align-items-center">
-            <img src="images/logo/coc-white.png" alt="COC Logo" class="navbar-logo me-2">
-          </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <div class="navbar-nav ms-auto">
-              <a class="nav-link" href="index.html">HOME</a>
-              <a class="nav-link" href="#about-section">ABOUT US</a>
-              <a class="nav-link" href="#footer-area">CONTACT US</a>
-              
-    <a href="../api/logout.php" class="btn btn-outline-light btn-sm">Logout</a>
-            </div>
-          </div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <div class="d-flex align-items-center">
+        <img src="../images/logo/coc-white.png" alt="COC Logo" class="navbar-logo me-2">
+      </div>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="navbar-nav ms-auto">
+          <!-- <a class="nav-link" href="../index.html">HOME</a>
+          <a class="nav-link" href="#about-section">ABOUT US</a>
+          <a class="nav-link" href="#footer-area">CONTACT US</a> -->
+          <a href="../api/logout.php" class="btn btn-outline-light btn-sm">Logout</a>
         </div>
-      </nav>
+      </div>
+    </div>
+  </nav>
+
     
 <div class="user" style="margin-bottom: 100px; padding-top: 100px;">
     <div class="container mt-6">

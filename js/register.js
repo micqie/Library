@@ -18,7 +18,10 @@ function validatePassword(password) {
 // Load departments from the database
 async function loadDepartments() {
     try {
-        const response = await axios.get('api/get_departments.php');
+        console.log('Fetching departments...');
+        const response = await axios.get('./api/get_departments.php');
+        console.log('Departments response:', response.data);
+
         if (response.data && Array.isArray(response.data)) {
             const departmentSelect = document.getElementById('department');
             departmentSelect.innerHTML = '<option value="">Select Department</option>';
@@ -35,14 +38,20 @@ async function loadDepartments() {
         }
     } catch (error) {
         console.error('Error loading departments:', error);
-        alert('Failed to load departments. Please try again.');
+        if (error.response) {
+            console.error('Error response:', error.response.data);
+        }
+        alert('Failed to load departments. Please check your connection and try again.');
     }
 }
 
-// Load all courses from the database
+// Load all courses
 async function loadCourses() {
     try {
-        const response = await axios.get('api/get_courses.php');
+        console.log('Fetching courses...');
+        const response = await axios.get('./api/get_courses.php');
+        console.log('Courses response:', response.data);
+
         if (response.data && Array.isArray(response.data)) {
             const courseSelect = document.getElementById('course');
             courseSelect.innerHTML = '<option value="">Select Course</option>';
@@ -59,7 +68,10 @@ async function loadCourses() {
         }
     } catch (error) {
         console.error('Error loading courses:', error);
-        alert('Failed to load courses. Please try again.');
+        if (error.response) {
+            console.error('Error response:', error.response.data);
+        }
+        alert('Failed to load courses. Please check your connection and try again.');
     }
 }
 
@@ -89,10 +101,8 @@ function checkPasswordsMatch() {
 // Initialize all event listeners
 function initializeEventListeners() {
     // Load departments and courses when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        loadDepartments();
-        loadCourses();
-    });
+    loadDepartments();
+    loadCourses();
 
     // Password toggle functionality
     document.getElementById('togglePassword').addEventListener('click', function () {
@@ -170,7 +180,6 @@ function initializeEventListeners() {
                 lastname: document.getElementById('lastname').value,
                 middlename: document.getElementById('middlename').value,
                 suffix: document.getElementById('suffix').value,
-                phinmaedEmail: document.getElementById('phinmaedEmail').value,
                 personalEmail: personalEmail,
                 contact: document.getElementById('contact').value,
                 department: document.getElementById('department').value,
@@ -185,7 +194,7 @@ function initializeEventListeners() {
                 successModal.show();
 
                 document.getElementById('okayButton').addEventListener('click', function () {
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                 });
             } else {
                 alert(response.data.message || 'Registration failed. Please try again.');

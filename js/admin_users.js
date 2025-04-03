@@ -6,52 +6,88 @@ let userData = [];
 async function fetchUsers() {
     try {
         // Add loading indicator
-        document.getElementById('usersTableBody').innerHTML = 
-            '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
-        
+        document.getElementById('usersTableBody').innerHTML =
+            '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
+
         const response = await axios.get('../api/get_users.php');
         console.log('Raw API Response:', response); // Debug log
-        
+
         if (response.data.error) {
             throw new Error(`Server error: ${response.data.error}\nDetails: ${response.data.details || 'No details provided'}`);
         }
-        
+
         // Log the actual data
         console.log('Response data:', response.data);
-        
+
         // Ensure response.data is an array
         if (!Array.isArray(response.data)) {
             console.error('Invalid data format:', response.data);
             throw new Error('Invalid data format received from server. Expected array, got: ' + typeof response.data);
         }
-        
+
         userData = response.data;
+        populateFilterDropdowns();
         displayUsers();
         updatePagination();
     } catch (error) {
         console.error('Error fetching users:', error);
-        document.getElementById('usersTableBody').innerHTML = 
-            `<tr><td colspan="8" class="text-center text-danger">
+        document.getElementById('usersTableBody').innerHTML =
+            `<tr><td colspan="7" class="text-center text-danger">
                 Error loading users: ${error.message || 'Unknown error'}<br>
                 <small>Check console for more details</small>
             </td></tr>`;
     }
 }
 
+// Populate filter dropdowns with unique values
+function populateFilterDropdowns() {
+    // Get unique departments, courses, and roles
+    const departments = [...new Set(userData.map(user => user.department).filter(Boolean))].sort();
+    const courses = [...new Set(userData.map(user => user.course).filter(Boolean))].sort();
+    const roles = [...new Set(userData.map(user => user.role).filter(Boolean))].sort();
+
+    // Populate department dropdown
+    const departmentFilter = document.getElementById('departmentFilter');
+    departments.forEach(dept => {
+        const option = document.createElement('option');
+        option.value = dept;
+        option.textContent = dept;
+        departmentFilter.appendChild(option);
+    });
+
+    // Populate course dropdown
+    const courseFilter = document.getElementById('courseFilter');
+    courses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = course;
+        option.textContent = course;
+        courseFilter.appendChild(option);
+    });
+
+    // Populate role dropdown
+    const roleFilter = document.getElementById('roleFilter');
+    roles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role;
+        option.textContent = role;
+        roleFilter.appendChild(option);
+    });
+}
+
 // Display users in the table
 function displayUsers(filteredData = null) {
     const data = filteredData || userData;
-    
+
     // Check if data is an array
     if (!Array.isArray(data)) {
         console.error('Data is not an array:', data);
-        document.getElementById('usersTableBody').innerHTML = 
-            `<tr><td colspan="8" class="text-center text-danger">
+        document.getElementById('usersTableBody').innerHTML =
+            `<tr><td colspan="7" class="text-center text-danger">
                 Error: Invalid data format received from server
             </td></tr>`;
         return;
     }
-    
+
     const tableBody = document.getElementById('usersTableBody');
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -60,8 +96,8 @@ function displayUsers(filteredData = null) {
     tableBody.innerHTML = '';
 
     if (paginatedData.length === 0) {
-        tableBody.innerHTML = 
-            `<tr><td colspan="8" class="text-center">
+        tableBody.innerHTML =
+            `<tr><td colspan="7" class="text-center">
                 No users found
             </td></tr>`;
         return;
@@ -70,22 +106,17 @@ function displayUsers(filteredData = null) {
     paginatedData.forEach(user => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${user.user_id || ''}</td>
-            <td>${user.name || ''}</td>
-            <td>${user.email || ''}</td>
-            <td>${user.department || ''}</td>
-            <td>${user.course || ''}</td>
-            <td>${user.role || ''}</td>
+            <td>${user.school_id || 'N/A'}</td>
+            <td>${user.name || 'N/A'}</td>
+            <td>${user.email || 'N/A'}</td>
+            <td>${user.department || 'Not Assigned'}</td>
+            <td>${user.course || 'Not Assigned'}</td>
+            <td>${user.role || 'User'}</td>
             <td>
-                <span class="badge ${user.status === 'Active' ? 'bg-success' : 'bg-danger'}">
-                    ${user.status || 'Unknown'}
-                </span>
-            </td>
-            <td>
-                <button class="btn btn-sm btn-primary" onclick="editUser(${user.user_id})">
+                <button class="btn btn-sm btn-primary me-1" onclick="editUser('${user.school_id}')" title="Edit User">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.user_id})">
+                <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.school_id}')" title="Delete User">
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
@@ -99,14 +130,25 @@ function displayUsers(filteredData = null) {
     document.getElementById('totalEntries').textContent = data.length;
 }
 
-// Filter users based on search input
+// Filter users based on search input and dropdowns
 function filterUsers() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const filteredData = userData.filter(user => 
-        user.name.toLowerCase().includes(searchTerm) ||
-        user.user_id.toString().includes(searchTerm) ||
-        user.department.toLowerCase().includes(searchTerm)
-    );
+    const selectedDepartment = document.getElementById('departmentFilter').value;
+    const selectedCourse = document.getElementById('courseFilter').value;
+    const selectedRole = document.getElementById('roleFilter').value;
+
+    const filteredData = userData.filter(user => {
+        const matchesSearch =
+            user.name.toLowerCase().includes(searchTerm) ||
+            user.school_id.toString().toLowerCase().includes(searchTerm);
+
+        const matchesDepartment = !selectedDepartment || user.department === selectedDepartment;
+        const matchesCourse = !selectedCourse || user.course === selectedCourse;
+        const matchesRole = !selectedRole || user.role === selectedRole;
+
+        return matchesSearch && matchesDepartment && matchesCourse && matchesRole;
+    });
+
     currentPage = 1;
     displayUsers(filteredData);
     updatePagination(filteredData.length);
@@ -145,15 +187,14 @@ function updatePagination(totalItems = userData.length) {
 function exportToExcel() {
     const wb = XLSX.utils.book_new();
     const ws_data = [
-        ['User ID', 'Name', 'Email', 'Department', 'Course', 'Role', 'Status'],
+        ['School ID', 'Name', 'Email', 'Department', 'Course', 'Role'],
         ...userData.map(user => [
-            user.user_id,
+            user.school_id,
             user.name,
             user.email,
             user.department,
             user.course,
-            user.role,
-            user.status
+            user.role
         ])
     ];
 

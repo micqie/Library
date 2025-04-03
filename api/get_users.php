@@ -15,49 +15,48 @@ try {
 
     // Query to get users with their department and course names
     $query = "SELECT 
-        u.user_id,
-        u.firstname,
-        u.lastname,
-        u.email,
-        u.role,
-        u.status,
+        u.user_schoolId,
+        u.user_firstname,
+        u.user_lastname,
+        u.user_email,
+        ut.user_type as role,
         d.department_name,
         c.course_name
     FROM tbl_users u
-    LEFT JOIN tbl_departments d ON u.department_id = d.department_id
-    LEFT JOIN tbl_courses c ON u.course_id = c.course_id
+    LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
+    LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
+    LEFT JOIN tbl_usertype ut ON u.user_typeId = ut.user_typeId
     ORDER BY u.user_id DESC";
-    
+
     $stmt = $db->prepare($query);
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Debug output
     error_log("Users data: " . print_r($users, true));
-    
+
     if (!$users) {
         echo json_encode([]);
         exit;
     }
-    
+
     // Format the user data
-    $formattedUsers = array_map(function($user) {
+    $formattedUsers = array_map(function ($user) {
         return [
-            'user_id' => $user['user_id'] ?? '',
-            'name' => trim(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')),
-            'email' => $user['email'] ?? '',
+            'school_id' => $user['user_schoolId'] ?? 'N/A',
+            'name' => trim(($user['user_firstname'] ?? '') . ' ' . ($user['user_lastname'] ?? '')),
+            'email' => $user['user_email'] ?? '',
             'department' => $user['department_name'] ?? 'Not Assigned',
             'course' => $user['course_name'] ?? 'Not Assigned',
-            'role' => $user['role'] ?? 'User',
-            'status' => $user['status'] ?? 'Active'
+            'role' => $user['role'] ?? 'User'
         ];
     }, $users);
-    
+
     // Debug output
     error_log("Formatted users: " . print_r($formattedUsers, true));
-    
+
     echo json_encode($formattedUsers);
-} catch(Exception $e) {
+} catch (Exception $e) {
     error_log("Error in get_users.php: " . $e->getMessage());
     error_log("Stack trace: " . $e->getTraceAsString());
     http_response_code(500);
@@ -66,4 +65,3 @@ try {
         'details' => $e->getTraceAsString()
     ]);
 }
-?> 

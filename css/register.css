@@ -112,7 +112,7 @@ a {
 
 a:hover {
     color: #003319;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 /* Password Toggle */

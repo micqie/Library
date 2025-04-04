@@ -65,7 +65,7 @@ INSERT INTO `lib_logs` (`log_id`, `user_schoolId`, `time_in`, `time_out`, `log_d
 (69, '12345', '21:16:48', '21:18:51', '2025-03-29'),
 (71, '12345', '16:00:48', '16:01:48', '2025-03-31'),
 (72, '02-2122-020202', '16:01:41', '22:35:06', '2025-03-31'),
-(73, '12345', '22:35:38', NULL, '2025-03-31'),
+
 (74, '02-2122-020202', '07:28:20', '07:34:04', '2025-04-02'),
 (78, '02-2122-020202', '09:24:48', '09:25:50', '2025-04-02'),
 (79, '02-2122-020202', '09:25:54', '09:29:52', '2025-04-02'),
@@ -102,8 +102,7 @@ INSERT INTO `lib_logs` (`log_id`, `user_schoolId`, `time_in`, `time_out`, `log_d
 (115, '02-2122-020202', '11:05:54', '11:10:53', '2025-04-03'),
 (116, '54321', '11:10:24', '11:26:47', '2025-04-03'),
 (117, '02-2122-030303', '11:11:41', '11:26:52', '2025-04-03'),
-(118, '54321', '11:26:57', NULL, '2025-04-03'),
-(119, '02-2122-030303', '19:55:38', '19:58:42', '2025-04-03');
+
 
 -- --------------------------------------------------------
 
@@ -195,7 +194,7 @@ CREATE TABLE `tbl_users` (
 --
 
 INSERT INTO `tbl_users` (`user_id`, `user_schoolId`, `user_lastname`, `user_firstname`, `user_middlename`, `user_suffix`, `phinmaed_email`, `user_email`, `user_contact`, `user_password`, `user_courseId`, `user_departmentId`, `user_schoolyearId`, `user_typeId`, `user_status`, `user_level`) VALUES
-(1, '02-2122-020202', 'Lago', 'Micah', 'Dusil', 'none', 'micah@phinmaed.com', 'micah@gmail.com', '0993196913', 'phinma-coc', 2, 2, 2024, 2, 1, 2),
+(1, '02-2122-020202', 'Lago', 'Micah', 'Dusil', '', 'micah@phinmaed.com', 'micah@gmail.com', '0993196913', 'phinma-coc', 2, 2, 2024, 2, 1, 2),
 (2, '12345', 'Doe', 'John', 'Michael', NULL, 'johndoe@phinma.edu', 'johndoe@gmail.com', '09123456789', 'password123', 1, 1, 2024, 2, 1, 1),
 (3, '54321', 'Sy', 'Henry ', '', '', 'henry@phinmaed.com', 'hen@gmail.com', '0905067432', 'Password123', NULL, NULL, NULL, 2, 1, 10),
 (6, '98765', 'Lago', 'Mckenzie ', 'Dusil', '', 'mckenzie@phinmaed.com', 'mckenzie@gmail.com', '213123123', 'Password123', NULL, NULL, NULL, 2, 1, 10),

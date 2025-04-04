@@ -8,22 +8,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../css/user_dashboard.css">
+    <link rel="stylesheet" href="../css/admin_logs.css">
     <link rel="stylesheet" href="../css/footer.css">
+    
     <link rel="icon" type="image/x-icon" href="../images/favicon-32x32.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
 
-      body {
-        background-image: url('images/logo/icon.png');
-              background-size: 1920px 1080px; /* Set fixed width and height */
-              background-repeat: no-repeat; /* Prevent tiling */
-              background-position: center; /* Center the image */
-              background-attachment: fixed; /* Keep it fixed when scrolling */
-      
-      }
-      
-        </style>
   </head>
 <body>
   <!-- Navbar -->
@@ -37,9 +28,6 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <div class="navbar-nav ms-auto">
-          <!-- <a class="nav-link" href="../index.html">HOME</a>
-          <a class="nav-link" href="#about-section">ABOUT US</a>
-          <a class="nav-link" href="#footer-area">CONTACT US</a> -->
           <a href="../api/logout.php" class="btn btn-outline-light btn-sm">Logout</a>
         </div>
       </div>
@@ -62,8 +50,7 @@
                         <div class="user-details mt-3 text-start">
                             <p><strong>Department:</strong> <span id="userDepartment">Department Name</span></p>
                             <p><strong>Course:</strong> <span id="userCourse">Course Name</span></p>
-                            <p><strong>PhinmaEd Email:</strong> <span id="userPhinmaedEmail">Phinmaed</span></p>
-                            <p><strong>Personal Email:</strong> <span id="userPersonalEmail">Personal Email</span></p>
+                            <p><strong>Email Address:</strong> <span id="userPersonalEmail">Email Address</span></p>
                             <p><strong>Contact:</strong> <span id="userContact">Mobile Number</span></p>
                         </div>
                         <button class="btn btn-primary mt-3" onclick="showEditProfileModal()">
@@ -149,7 +136,7 @@
                             <input type="text" class="form-control" id="editLastName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editPersonalEmail" class="form-label">Personal Email</label>
+                            <label for="editPersonalEmail" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="editPersonalEmail" required>
                         </div>
                         <div class="mb-3">

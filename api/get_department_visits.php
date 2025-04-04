@@ -15,6 +15,12 @@ try {
         SELECT 
             d.department_name,
             COALESCE(COUNT(l.log_id), 0) as visit_count,
+            (
+                SELECT COUNT(DISTINCT u2.user_schoolId)
+                FROM tbl_users u2
+                JOIN lib_logs l2 ON u2.user_schoolId = l2.user_schoolId
+                WHERE u2.user_departmentId = d.department_id
+            ) as unique_visitors,
             GROUP_CONCAT(DISTINCT CONCAT(l.log_date, ' ', l.time_in) ORDER BY l.log_date DESC, l.time_in DESC) as visit_dates
         FROM tbl_departments d
         LEFT JOIN tbl_users u ON d.department_id = u.user_departmentId
@@ -53,7 +59,6 @@ try {
     } else {
         echo json_encode($visits);
     }
-
 } catch (Exception $e) {
     // During development, show the actual error
     error_log("Department visits error: " . $e->getMessage());
@@ -64,4 +69,3 @@ try {
         'query' => $query // Show the query for debugging
     ]);
 }
-?>

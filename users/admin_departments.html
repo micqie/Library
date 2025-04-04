@@ -13,18 +13,6 @@
     <!-- Add Excel export library -->
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
-
-        body {
-          background-image: url('images/logo/icon.png');
-                background-size: 1920px 1080px; /* Set fixed width and height */
-                background-repeat: no-repeat; /* Prevent tiling */
-                background-position: center; /* Center the image */
-                background-attachment: fixed; /* Keep it fixed when scrolling */
-        
-        }
-        
-          </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -94,12 +82,12 @@
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table table-hover">
-                                        <thead class="table-dark">
+                                        <thead class="table-dark" style="background-color: #343a40; color: #fff;">
                                             <tr>
                                                 <th>Rank</th>
                                                 <th>Department</th>
                                                 <th>Total Visits</th>
-                                                <th>Recent Visit Dates</th>
+                                                <th>Unique Visitors</th>
                                             </tr>
                                         </thead>
                                         <tbody id="departmentVisitsTable">
@@ -148,11 +136,7 @@
                                 </div>
                             </div>
                         </div>
-
-                
                     </div>
-                    
-            
                 </div>
             </div>
         </div>
@@ -160,124 +144,6 @@
     <script src="../js/admin_logs.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/admin_dashboard.js"></script>
-    <script>
-    async function loadDepartmentVisits(startDate = '', endDate = '') {
-        try {
-            const visitsTableBody = document.getElementById('departmentVisitsTable');
-            visitsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">Loading...</td></tr>';
-
-            const response = await axios.get('../api/get_department_visits.php', {
-                params: {
-                    start_date: startDate,
-                    end_date: endDate
-                }
-            });
-            
-            visitsTableBody.innerHTML = '';
-            
-            // Debug: Log the response
-            console.log('API Response:', response.data);
-
-            if (!response.data || response.data.length === 0) {
-                visitsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center">No departments found</td>
-                    </tr>`;
-                return;
-            }
-
-            response.data.forEach((visit, index) => {
-                const visitDates = visit.visit_dates 
-                    ? visit.visit_dates.split(',')
-                        .slice(0, 3)
-                        .map(date => {
-                            if (!date) return '';
-                            try {
-                                const formattedDate = new Date(date).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                });
-                                return `<span class="badge bg-secondary me-1">${formattedDate}</span>`;
-                            } catch (e) {
-                                console.error('Date formatting error:', e);
-                                return '';
-                            }
-                        })
-                        .filter(date => date !== '')
-                        .join('')
-                    : '<span class="text-muted">No visits</span>';
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>
-                        <span class="badge ${index < 3 ? 'bg-success' : 'bg-secondary'}">#${index + 1}</span>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-building me-2"></i>
-                            <strong>${visit.department_name || 'Unknown Department'}</strong>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge bg-primary">${visit.visit_count || 0} visits</span>
-                    </td>
-                    <td>${visitDates}</td>
-                `;
-                visitsTableBody.appendChild(row);
-            });
-        } catch (error) {
-            console.error('Error fetching department visits:', error);
-            console.error('Error details:', error.response?.data);
-            
-            const visitsTableBody = document.getElementById('departmentVisitsTable');
-            visitsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-center text-danger">
-                        <i class="bi bi-exclamation-triangle me-2"></i>
-                        Error loading department visits: ${error.response?.data?.message || error.message}
-                    </td>
-                </tr>
-            `;
-        }
-    }
-
-    function filterVisits() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        
-        if (endDate && startDate > endDate) {
-            alert('Start date cannot be later than end date');
-            return;
-        }
-        
-        loadDepartmentVisits(startDate, endDate);
-    }
-
-    // Load initial data when the page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        loadDepartmentVisits();
-    });
-    </script>
-
-    <!-- Add this CSS to your existing styles -->
-    <style>
-    .date-filter input {
-        max-width: 150px;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
-    .badge {
-        font-size: 0.9em;
-        padding: 0.5em 0.7em;
-    }
-
-    .table-responsive {
-        min-height: 200px;
-    }
-    </style>
+    <script src="../js/admin_departments.js"></script>
 </body>
 </html> 

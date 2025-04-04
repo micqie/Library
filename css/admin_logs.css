@@ -106,3 +106,20 @@
         margin-top: 15px;
     }
 }
+
+.date-filter input {
+    max-width: 150px;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.7em;
+}
+
+.table-responsive {
+    min-height: 200px;
+}

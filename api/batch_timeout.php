@@ -64,4 +64,8 @@ try {
     http_response_code(500);
     echo json_encode($response);
 }
+<<<<<<< HEAD
 exit;
+=======
+exit;
+>>>>>>> acd3a721cbff1227287d26116351c56f2312b946

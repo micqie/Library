@@ -568,4 +568,8 @@ function batchTimeout() {
                 </td>
             </tr>`;
         });
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> acd3a721cbff1227287d26116351c56f2312b946

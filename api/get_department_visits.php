@@ -68,4 +68,8 @@ try {
         'message' => $e->getMessage(), // Show actual error during development
         'query' => $query // Show the query for debugging
     ]);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> acd3a721cbff1227287d26116351c56f2312b946

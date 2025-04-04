@@ -119,8 +119,15 @@ function displayUsers(filteredData = null) {
             <td>${user.course || 'Not Assigned'}</td>
             <td>${user.role || 'User'}</td>
             <td>
-                <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.school_id}')" title="Delete User">
-                    <i class="bi bi-trash"></i>
+                <span class="badge ${user.status === 'active' ? 'bg-success' : 'bg-danger'}">
+                    ${user.status || 'active'}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-sm ${user.status === 'active' ? 'btn-danger' : 'btn-success'}" 
+                        onclick="${user.status === 'active' ? 'deactivateUser' : 'activateUser'}('${user.school_id}')" 
+                        title="${user.status === 'active' ? 'Deactivate User' : 'Activate User'}">
+                    <i class="bi ${user.status === 'active' ? 'bi-person-x' : 'bi-person-check'}"></i>
                 </button>
             </td>
         `;
@@ -139,6 +146,7 @@ function filterUsers() {
     const selectedDepartment = document.getElementById('departmentFilter').value;
     const selectedCourse = document.getElementById('courseFilter').value;
     const selectedRole = document.getElementById('roleFilter').value;
+    const selectedStatus = document.getElementById('statusFilter').value;
 
     const filteredData = userData.filter(user => {
         const matchesSearch =
@@ -148,8 +156,9 @@ function filterUsers() {
         const matchesDepartment = !selectedDepartment || user.department === selectedDepartment;
         const matchesCourse = !selectedCourse || user.course === selectedCourse;
         const matchesRole = !selectedRole || user.role === selectedRole;
+        const matchesStatus = !selectedStatus || user.status === selectedStatus;
 
-        return matchesSearch && matchesDepartment && matchesCourse && matchesRole;
+        return matchesSearch && matchesDepartment && matchesCourse && matchesRole && matchesStatus;
     });
 
     currentPage = 1;
@@ -206,11 +215,46 @@ function exportToExcel() {
     XLSX.writeFile(wb, 'users_report.xlsx');
 }
 
-// Delete user with confirmation
-function deleteUser(schoolId) {
-    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-        // TODO: Implement delete user functionality
-        console.log('Delete user:', schoolId);
+// Replace deleteUser function with deactivateUser and add activateUser
+async function deactivateUser(schoolId) {
+    if (confirm('Are you sure you want to deactivate this user?')) {
+        try {
+            const response = await axios.post('../api/update_user_status.php', {
+                school_id: schoolId,
+                status: 'inactive'
+            });
+
+            if (response.data.success) {
+                alert('User deactivated successfully');
+                fetchUsers(); // Refresh the user list
+            } else {
+                throw new Error(response.data.message || 'Failed to deactivate user');
+            }
+        } catch (error) {
+            console.error('Error deactivating user:', error);
+            alert('Error deactivating user: ' + error.message);
+        }
+    }
+}
+
+async function activateUser(schoolId) {
+    if (confirm('Are you sure you want to activate this user?')) {
+        try {
+            const response = await axios.post('../api/update_user_status.php', {
+                school_id: schoolId,
+                status: 'active'
+            });
+
+            if (response.data.success) {
+                alert('User activated successfully');
+                fetchUsers(); // Refresh the user list
+            } else {
+                throw new Error(response.data.message || 'Failed to activate user');
+            }
+        } catch (error) {
+            console.error('Error activating user:', error);
+            alert('Error activating user: ' + error.message);
+        }
     }
 }
 

@@ -371,6 +371,8 @@ function handleApiError(error) {
     if (error.response?.data?.is_early_timeout) {
         const remainingSeconds = error.response.data.remaining_seconds;
         showMessage('', 'info', remainingSeconds);
+    } else if (error.response?.status === 403) {
+        showMessage(error.response.data.message, 'error');
     } else if (error.response?.data?.error) {
         showMessage(error.response.data.error);
     } else {

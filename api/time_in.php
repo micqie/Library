@@ -27,6 +27,15 @@ try {
     $check_stmt->execute();
 
     if ($check_stmt->rowCount() > 0) {
+        $user = $check_stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Check if user is active
+        if ($user['user_status'] == 0) {
+            http_response_code(403);
+            echo json_encode(array("message" => "This account is deactivated. Please contact the administrator."));
+            exit;
+        }
+
         // Check if user has an active time-in (no time-out)
         $active_query = "SELECT *, TIMESTAMPDIFF(SECOND, time_in, CURRENT_TIMESTAMP) as time_diff 
                        FROM lib_logs 
@@ -39,7 +48,7 @@ try {
 
         if ($active_stmt->rowCount() > 0) {
             $active_record = $active_stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             // Check if at least 1 minute has passed
             if ($active_record['time_diff'] < 60) {
                 http_response_code(400);
@@ -57,7 +66,7 @@ try {
                            WHERE log_id = :log_id";
             $update_stmt = $db->prepare($update_query);
             $update_stmt->bindParam(":log_id", $active_record['log_id']);
-            
+
             if ($update_stmt->execute()) {
                 // Get user details with time-out time
                 $user_query = "SELECT u.*, d.department_name, c.course_name, l.time_in, l.time_out, l.log_id
@@ -95,10 +104,10 @@ try {
                 $query = "INSERT INTO lib_logs (user_schoolId, time_in) VALUES (:user_schoolId, CURRENT_TIME())";
                 $stmt = $db->prepare($query);
                 $stmt->bindParam(":user_schoolId", $schoolId);
-                
+
                 if ($stmt->execute()) {
                     $log_id = $db->lastInsertId();
-                    
+
                     // Get user details with the new time-in
                     $user_query = "SELECT u.*, d.department_name, c.course_name, l.time_in, l.log_id
                                  FROM tbl_users u 
@@ -133,4 +142,3 @@ try {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
-?> 

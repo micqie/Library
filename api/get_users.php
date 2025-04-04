@@ -21,7 +21,8 @@ try {
         u.user_email,
         ut.user_type as role,
         d.department_name,
-        c.course_name
+        c.course_name,
+        u.user_status
     FROM tbl_users u
     LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
     LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
@@ -48,7 +49,8 @@ try {
             'email' => $user['user_email'] ?? '',
             'department' => $user['department_name'] ?? 'Not Assigned',
             'course' => $user['course_name'] ?? 'Not Assigned',
-            'role' => $user['role'] ?? 'User'
+            'role' => $user['role'] ?? 'User',
+            'status' => $user['user_status'] == 1 ? 'active' : 'inactive'
         ];
     }, $users);
 

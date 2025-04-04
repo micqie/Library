@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../css/admin.css">
     <link rel="icon" type="image/x-icon" href="../images/favicon-32x32.png">
     <link rel="stylesheet" href="../css/admin_logs.css">
-    <link rel="stylesheet" href="../css/admin.css">
+    <!-- <link rel="stylesheet" href="../css/admin.css"> -->
     <!-- Add Excel export library -->
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -95,10 +95,18 @@
                                             <option value="">All Courses</option>
                                         </select>
                                     </div>
-                                    <div class="col-md 3">
+                                    <div class="col-md-2">
                                         <label for="roleFilter" class="form-label">Role</label>
                                         <select class="form-select" id="roleFilter">
                                             <option value="">All Roles</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="statusFilter" class="form-label">Status</label>
+                                        <select class="form-select" id="statusFilter">
+                                            <option value="">All Status</option>
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2 d-flex align-items-end">
@@ -121,6 +129,7 @@
                                                 <th>Department</th>
                                                 <th>Course</th>
                                                 <th>Role</th>
+                                                <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>

@@ -19,9 +19,7 @@ try {
         'firstname',
         'personalEmail',
         'contact',
-        'password',
-        'department',
-        'course'
+        'password'
     ];
 
     foreach ($required_fields as $field) {
@@ -41,23 +39,25 @@ try {
     $sql = "INSERT INTO tbl_users (
         user_schoolId, user_lastname, user_firstname, user_middlename, 
         user_suffix, user_email, user_contact, 
-        user_password, user_typeId, user_status, user_level,
-        user_departmentId, user_courseId
-    ) VALUES (
+        user_password, user_typeId, user_status, user_level" .
+        (!empty($data['department']) ? ", user_departmentId" : "") .
+        (!empty($data['course']) ? ", user_courseId" : "") .
+        ") VALUES (
         :schoolId, :lastname, :firstname, :middlename, 
         :suffix, :personalEmail, :contact, 
-        :password, :userType, :status, :level,
-        :department, :course
-    )";
+        :password, :userType, :status, :level" .
+        (!empty($data['department']) ? ", :department" : "") .
+        (!empty($data['course']) ? ", :course" : "") .
+        ")";
 
     $stmt = $db->prepare($sql);
 
-    // student ang default user
-    $defaultUserType = 2;
+    // Set user type based on whether email is used as username
+    $userType = isset($data['setAsSchoolId']) && $data['setAsSchoolId'] ? 1 : 2; // 1 for visitor, 2 for student
     $defaultLevel = 10;
     $status = 1;
 
-    $stmt->execute([
+    $params = [
         ':schoolId' => $data['schoolId'],
         ':lastname' => $data['lastname'],
         ':firstname' => $data['firstname'],
@@ -66,12 +66,20 @@ try {
         ':personalEmail' => $data['personalEmail'],
         ':contact' => $data['contact'],
         ':password' => $data['password'],
-        ':userType' => $defaultUserType,
+        ':userType' => $userType,
         ':status' => $status,
-        ':level' => $defaultLevel,
-        ':department' => $data['department'],
-        ':course' => $data['course']
-    ]);
+        ':level' => $defaultLevel
+    ];
+
+    // Add department and course parameters only if they are provided
+    if (!empty($data['department'])) {
+        $params[':department'] = $data['department'];
+    }
+    if (!empty($data['course'])) {
+        $params[':course'] = $data['course'];
+    }
+
+    $stmt->execute($params);
 
     echo json_encode(['success' => true, 'message' => 'Registration successful']);
 } catch (Exception $e) {

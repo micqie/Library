@@ -70,6 +70,12 @@ if (!$user) {
     exit;
 }
 
+// Check if user is active
+if ($user['user_status'] == 0) {
+    echo json_encode(['success' => false, 'message' => 'Your account is deactivated. Please contact the administrator.']);
+    exit;
+}
+
 if ($data['password'] !== $user['user_password']) {
     echo json_encode(['success' => false, 'message' => 'Incorrect password']);
     exit;

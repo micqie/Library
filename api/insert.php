@@ -59,6 +59,4 @@ if (isset($data['text'])) {
     echo json_encode(["status" => "error", "message" => "Missing student ID"]);
 }
 
-// Close the database connection
 $conn = null;
-?>

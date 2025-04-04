@@ -3,7 +3,6 @@ require_once 'config/database.php';
 header('Content-Type: application/json');
 
 try {
-    // Database connection
     $database = new Database();
     $db = $database->getConnection();
 
@@ -25,17 +24,15 @@ try {
               LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
               LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
               ORDER BY l.log_date DESC, l.time_in DESC
-              LIMIT 50"; // Get last 50 records
+              LIMIT 50";
 
     $stmt = $db->prepare($query);
     $stmt->execute();
 
-    // Debug: Log the number of rows
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     error_log("Number of logs found: " . count($logs));
     error_log("SQL Query: " . $query);
 
-    // Debug: Log the first record if exists
     if (count($logs) > 0) {
         error_log("First record: " . print_r($logs[0], true));
     }
@@ -64,7 +61,6 @@ try {
         'data' => $formattedLogs
     ];
 
-    // Debug: Log the final response
     error_log("Sending response: " . json_encode($response));
 
     echo json_encode($response);

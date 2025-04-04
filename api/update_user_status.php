@@ -30,20 +30,16 @@ $school_id = $data['school_id'];
 $status = $data['status'] === 'active' ? 1 : 0;
 
 try {
-    // Debug connection
     if (!$db) {
         throw new Exception("Database connection failed");
     }
 
-    // Prepare the update statement
     $query = "UPDATE tbl_users SET user_status = :status WHERE user_schoolId = :school_id";
     $stmt = $db->prepare($query);
 
-    // Bind parameters
     $stmt->bindParam(':status', $status, PDO::PARAM_INT);
     $stmt->bindParam(':school_id', $school_id, PDO::PARAM_STR);
 
-    // Execute the update
     if ($stmt->execute()) {
         if ($stmt->rowCount() > 0) {
             echo json_encode(['success' => true, 'message' => 'User status updated successfully']);

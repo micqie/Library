@@ -29,21 +29,18 @@ if (!$conn) {
     exit;
 }
 
-// First, check if this is an admin login attempt
 $stmt = $conn->prepare("SELECT * FROM tbl_users WHERE user_schoolId = :student_id AND user_typeId = 5");
 $stmt->bindParam(':student_id', $data['student_id']);
 $stmt->execute();
 
 $admin_user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// If this is an admin user
 if ($admin_user) {
     if ($data['password'] !== $admin_user['user_password']) {
         echo json_encode(['success' => false, 'message' => 'Incorrect password']);
         exit;
     }
 
-    // Start session and store admin user data
     session_start();
     $_SESSION['user_id'] = $admin_user['user_schoolId'];
     $_SESSION['user_name'] = $admin_user['user_firstname'] . ' ' . $admin_user['user_lastname'];
@@ -58,7 +55,6 @@ if ($admin_user) {
     exit;
 }
 
-// If not an admin, proceed with regular user login
 $stmt = $conn->prepare("SELECT * FROM tbl_users WHERE user_schoolId = :student_id");
 $stmt->bindParam(':student_id', $data['student_id']);
 $stmt->execute();
@@ -81,7 +77,6 @@ if ($data['password'] !== $user['user_password']) {
     exit;
 }
 
-// Start session and store user data
 session_start();
 $_SESSION['user_id'] = $user['user_schoolId'];
 $_SESSION['user_name'] = $user['user_firstname'] . ' ' . $user['user_lastname'];

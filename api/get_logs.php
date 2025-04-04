@@ -13,7 +13,6 @@ try {
     $filter = isset($_GET['filter']) ? $_GET['filter'] : 'today';
     $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-    // Build the date filter condition
     switch ($filter) {
         case 'today':
             $dateFilter = "DATE(l.time_in) = CURDATE()";
@@ -25,12 +24,11 @@ try {
             $dateFilter = "YEAR(l.time_in) = YEAR(CURDATE()) AND MONTH(l.time_in) = MONTH(CURDATE())";
             break;
         default:
-            $dateFilter = "1=1"; // All time
+            $dateFilter = "1=1";
     }
 
-    // Build the search condition (Case-insensitive and supports full names)
     $searchCondition = "";
-    $params = []; // Store parameters for binding
+    $params = [];
 
     if (!empty($search)) {
         $searchCondition = "AND (
@@ -41,16 +39,14 @@ try {
             OR LOWER(CONCAT(u.user_firstname, ' ', u.user_lastname)) LIKE :search
             OR LOWER(CONCAT(u.user_firstname, ' ', u.user_middlename, ' ', u.user_lastname)) LIKE :search
         )";
-        $params[':search'] = "%" . strtolower($search) . "%"; // Convert input to lowercase
+        $params[':search'] = "%" . strtolower($search) . "%";
     }
 
-    // Ensure WHERE clause is valid
     $whereClause = "WHERE $dateFilter";
     if (!empty($searchCondition)) {
         $whereClause .= " $searchCondition";
     }
 
-    // SQL Query
     $query = "SELECT 
                 l.*, 
                 u.user_firstname, 
@@ -68,7 +64,6 @@ try {
 
     $stmt = $db->prepare($query);
 
-    // Bind parameters
     foreach ($params as $key => $value) {
         $stmt->bindValue($key, $value, PDO::PARAM_STR);
     }

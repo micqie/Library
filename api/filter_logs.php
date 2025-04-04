@@ -8,11 +8,9 @@ header('Access-Control-Allow-Headers: Content-Type');
 require_once 'config/database.php';
 
 try {
-    // Read raw POST data
     $rawData = file_get_contents('php://input');
     error_log("Raw POST data: " . $rawData);
 
-    // Decode JSON input
     $data = json_decode($rawData, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         throw new Exception('Invalid JSON data: ' . json_last_error_msg());
@@ -30,14 +28,12 @@ try {
         throw new Exception('Invalid date format. Use YYYY-MM-DD.');
     }
 
-    // Database connection
     $database = new Database();
     $db = $database->getConnection();
     if (!$db) {
         throw new Exception('Database connection failed');
     }
 
-    // SQL Query - Updated to match your exact table structure
     $query = "SELECT 
                 l.log_id,
                 l.user_schoolId,
@@ -68,7 +64,6 @@ try {
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     error_log("Found " . count($logs) . " records");
 
-    // Format the data with correct column names
     $formattedLogs = array_map(function ($log) {
         return [
             'user_schoolId' => $log['user_schoolId'] ?? '',
@@ -84,12 +79,10 @@ try {
         ];
     }, $logs);
 
-    // Clean output buffer
     while (ob_get_level()) {
         ob_end_clean();
     }
 
-    // Send JSON response
     echo json_encode([
         'status' => 'success',
         'message' => 'Successfully retrieved logs',
@@ -100,7 +93,6 @@ try {
     error_log("Error: " . $e->getMessage());
     http_response_code(400);
 
-    // Clean output buffer
     while (ob_get_level()) {
         ob_end_clean();
     }

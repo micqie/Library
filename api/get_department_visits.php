@@ -6,11 +6,9 @@ try {
     $database = new Database();
     $db = $database->getConnection();
 
-    // Get date filters from request
     $startDate = isset($_GET['start_date']) && !empty($_GET['start_date']) ? $_GET['start_date'] : null;
     $endDate = isset($_GET['end_date']) && !empty($_GET['end_date']) ? $_GET['end_date'] : null;
 
-    // Base query
     $query = "
         SELECT 
             d.department_name,
@@ -27,7 +25,6 @@ try {
         LEFT JOIN lib_logs l ON u.user_schoolId = l.user_schoolId
     ";
 
-    // Add date filters if provided
     if ($startDate || $endDate) {
         $query .= " WHERE 1=1";
         if ($startDate) {
@@ -38,12 +35,10 @@ try {
         }
     }
 
-    // Complete the query
     $query .= " GROUP BY d.department_name ORDER BY visit_count DESC, department_name ASC";
 
     $stmt = $db->prepare($query);
 
-    // Bind parameters if any
     if ($startDate) {
         $stmt->bindParam(':start_date', $startDate);
     }
@@ -60,12 +55,11 @@ try {
         echo json_encode($visits);
     }
 } catch (Exception $e) {
-    // During development, show the actual error
     error_log("Department visits error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'error' => 'Failed to fetch department visits',
-        'message' => $e->getMessage(), // Show actual error during development
-        'query' => $query // Show the query for debugging
+        'message' => $e->getMessage(),
+        'query' => $query
     ]);
 }

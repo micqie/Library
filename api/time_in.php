@@ -17,7 +17,6 @@ try {
     // For manual entries, skip the cooldown check
     if (!$isManual) {
         // Only check cooldown for QR scans
-        // ... existing cooldown check logic ...
     }
 
     // First check if user exists

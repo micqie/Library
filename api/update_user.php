@@ -25,9 +25,9 @@ try {
                 user_schoolyearId = :schoolyearId,
                 user_status = :status
               WHERE user_id = :user_id";
-    
+
     $stmt = $db->prepare($query);
-    
+
     $stmt->bindParam(":user_id", $data['user_id']);
     $stmt->bindParam(":schoolId", $data['user_schoolId']);
     $stmt->bindParam(":lastname", $data['user_lastname']);
@@ -41,12 +41,11 @@ try {
     $stmt->bindParam(":departmentId", $data['user_departmentId']);
     $stmt->bindParam(":schoolyearId", $data['user_schoolyearId']);
     $stmt->bindParam(":status", $data['user_status']);
-    
-    if($stmt->execute()) {
+
+    if ($stmt->execute()) {
         echo json_encode(["message" => "User updated successfully."]);
     }
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["error" => "Database error: " . $e->getMessage()]);
 }
-?> 

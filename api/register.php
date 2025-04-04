@@ -53,7 +53,7 @@ try {
     $stmt = $db->prepare($sql);
 
     // Set user type based on whether email is used as username
-    $userType = isset($data['setAsSchoolId']) && $data['setAsSchoolId'] ? 1 : 2; // 1 for visitor, 2 for student
+    $userType = isset($data['setAsSchoolId']) && $data['setAsSchoolId'] ? 1 : 2;
     $defaultLevel = 10;
     $status = 1;
 
@@ -71,7 +71,6 @@ try {
         ':level' => $defaultLevel
     ];
 
-    // Add department and course parameters only if they are provided
     if (!empty($data['department'])) {
         $params[':department'] = $data['department'];
     }

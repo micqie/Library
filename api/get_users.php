@@ -8,12 +8,10 @@ $database = new Database();
 $db = $database->getConnection();
 
 try {
-    // Debug connection
     if (!$db) {
         throw new Exception("Database connection failed");
     }
 
-    // Query to get users with their department and course names
     $query = "SELECT 
         u.user_schoolId,
         u.user_firstname,
@@ -33,7 +31,6 @@ try {
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Debug output
     error_log("Users data: " . print_r($users, true));
 
     if (!$users) {
@@ -41,7 +38,6 @@ try {
         exit;
     }
 
-    // Format the user data
     $formattedUsers = array_map(function ($user) {
         return [
             'school_id' => $user['user_schoolId'] ?? 'N/A',
@@ -54,7 +50,6 @@ try {
         ];
     }, $users);
 
-    // Debug output
     error_log("Formatted users: " . print_r($formattedUsers, true));
 
     echo json_encode($formattedUsers);

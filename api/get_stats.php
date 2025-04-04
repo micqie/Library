@@ -1,5 +1,4 @@
 <?php
-// Add this at the start of the file for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -12,10 +11,8 @@ $database = new Database();
 $db = $database->getConnection();
 
 try {
-    // Get today's date
     $today = date('Y-m-d');
 
-    // Get total visits for today
     $query = "
         SELECT 
             COUNT(*) as total_visits,
@@ -109,7 +106,6 @@ try {
             "topVisitors" => $topVisitors
         ]
     ]);
-
 } catch (Exception $e) {
     error_log("Stats error: " . $e->getMessage());
     http_response_code(500);
@@ -118,4 +114,3 @@ try {
         "message" => "Failed to fetch statistics"
     ]);
 }
-?> 

@@ -46,7 +46,6 @@ async function getUserDetails() {
                 userSchoolId: user.schoolId,
                 userDepartment: user.department || 'Not specified',
                 userCourse: user.course || 'Not specified',
-                userPhinmaedEmail: user.phinmaedEmail || 'Not specified',
                 userPersonalEmail: user.personalEmail || 'Not specified',
                 userContact: user.contact || 'Not specified'
             };
@@ -84,7 +83,7 @@ async function getUserDetails() {
 function updateErrorDisplay(message) {
     console.log('Updating error display with message:', message);
     const elements = ['userName', 'userSchoolId', 'userDepartment',
-        'userCourse', 'userPhinmaedEmail', 'userPersonalEmail', 'userContact'];
+        'userCourse', 'userPersonalEmail', 'userContact'];
 
     elements.forEach(id => {
         const element = document.getElementById(id);

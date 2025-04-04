@@ -1,46 +1,38 @@
-// Add pagination variables at the top of the file
+
 let currentPage = 1;
 const entriesPerPage = 10;
 let totalPages = 1;
 
-// Function to check if user is logged in
+// Check Login Status
 async function checkLoginStatus() {
     try {
         const response = await axios.get('../api/check_session.php');
-        console.log('Session check response:', response.data);
 
         if (!response.data.success) {
-            console.error('Session check failed:', response.data.message);
             window.location.href = '../index.html';
             return false;
         }
 
         return true;
     } catch (error) {
-        console.error('Session check error:', error);
         window.location.href = '../index.html';
         return false;
     }
 }
 
-// Function to get user details from session
+// Get User Details
 async function getUserDetails() {
     try {
-        // Check login status first
         const isLoggedIn = await checkLoginStatus();
         if (!isLoggedIn) {
-            return; // checkLoginStatus will handle the redirect
+            return;
         }
 
-        console.log('Fetching user details...');
         const response = await axios.get('../api/get_user_details.php');
-        console.log('User details API Response:', response.data);
 
         if (response.data.success && response.data.user) {
             const user = response.data.user;
-            console.log('User data:', user);
 
-            // Update user information - safely handle missing elements
             const elements = {
                 userName: `${user.firstname} ${user.lastname}`,
                 userSchoolId: user.schoolId,
@@ -51,28 +43,19 @@ async function getUserDetails() {
                 userContact: user.contact || 'Not specified'
             };
 
-            // Safely update each element
             Object.entries(elements).forEach(([id, value]) => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.textContent = value;
-                } else {
-                    console.error(`Element not found: ${id}`);
                 }
             });
 
-            // After successfully loading user details, get visit history
             await getVisitHistory();
         } else {
-            console.error('API returned error:', response.data.message);
             updateErrorDisplay(response.data.message || 'Error loading user data');
             window.location.href = '../index.html';
         }
     } catch (error) {
-        console.error('Error fetching user details:', error);
-        if (error.response) {
-            console.error('Error response:', error.response.data);
-        }
         updateErrorDisplay('Error loading user details');
         setTimeout(() => {
             window.location.href = '../index.html';
@@ -80,9 +63,8 @@ async function getUserDetails() {
     }
 }
 
-// Function to update error display
+// Error display
 function updateErrorDisplay(message) {
-    console.log('Updating error display with message:', message);
     const elements = ['userName', 'userSchoolId', 'userDepartment',
         'userCourse', 'userPhinmaedEmail', 'userPersonalEmail', 'userContact'];
 
@@ -90,38 +72,31 @@ function updateErrorDisplay(message) {
         const element = document.getElementById(id);
         if (element) {
             element.textContent = message || 'Error loading data';
-        } else {
-            console.error(`Element not found while displaying error: ${id}`);
         }
     });
 }
 
-// Function to format date
+// Format Date
 function formatDate(dateString) {
     try {
-        // Create a new Date object from the date string
         const date = new Date(dateString);
 
-        // Check if the date is valid
         if (isNaN(date.getTime())) {
-            console.error('Invalid date:', dateString);
             return 'Invalid date';
         }
 
-        // Format the date with consistent options
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
-            timeZone: 'UTC' // Ensure consistent timezone handling
+            timeZone: 'UTC'
         });
     } catch (error) {
-        console.error('Error formatting date:', error, dateString);
         return 'Invalid date';
     }
 }
 
-// Function to format time
+// Format Time
 function formatTime(timeString) {
     if (!timeString) return '-';
     return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
@@ -131,7 +106,7 @@ function formatTime(timeString) {
     });
 }
 
-// Function to calculate duration
+// Calculate Duration
 function calculateDuration(timeIn, timeOut) {
     if (!timeOut) return 'Still inside';
     const inTime = new Date(`1970-01-01T${timeIn}`);
@@ -142,11 +117,10 @@ function calculateDuration(timeIn, timeOut) {
     return `${hours}h ${minutes}m`;
 }
 
-// Function to get visit history
+// Get Visit History
 async function getVisitHistory(page = 1) {
     try {
         const response = await axios.get(`../api/get_visit_history.php?page=${page}&limit=${entriesPerPage}`);
-        console.log('Visit history response:', response.data);
 
         const tbody = document.getElementById('visitHistory');
         const paginationContainer = document.getElementById('visitHistoryPagination');
@@ -157,17 +131,14 @@ async function getVisitHistory(page = 1) {
             currentPage = response.data.pagination.current_page;
 
             // Update table content
-            tbody.innerHTML = history.map(visit => {
-                console.log('Visit record:', visit); // Debug log
-                return `
-                    <tr>
-                        <td>${formatDate(visit.log_date)}</td>
-                        <td>${formatTime(visit.time_in)}</td>
-                        <td>${visit.time_out ? formatTime(visit.time_out) : 'Not yet'}</td>
-                        <td>${calculateDuration(visit.time_in, visit.time_out)}</td>
-                    </tr>
-                `;
-            }).join('');
+            tbody.innerHTML = history.map(visit => `
+                <tr>
+                    <td>${formatDate(visit.log_date)}</td>
+                    <td>${formatTime(visit.time_in)}</td>
+                    <td>${visit.time_out ? formatTime(visit.time_out) : 'Not yet'}</td>
+                    <td>${calculateDuration(visit.time_in, visit.time_out)}</td>
+                </tr>
+            `).join('');
 
             // Update pagination
             updatePagination();
@@ -184,7 +155,6 @@ async function getVisitHistory(page = 1) {
             }
         }
     } catch (error) {
-        console.error('Error fetching visit history:', error);
         document.getElementById('visitHistory').innerHTML = `
             <tr>
                 <td colspan="4" class="text-center text-danger">
@@ -199,7 +169,7 @@ async function getVisitHistory(page = 1) {
     }
 }
 
-// Function to update pagination
+// Update Pagination
 function updatePagination() {
     const paginationContainer = document.getElementById('visitHistoryPagination');
     if (!paginationContainer) return;
@@ -233,17 +203,17 @@ function updatePagination() {
     paginationContainer.innerHTML = paginationHTML;
 }
 
-// Function to change page
+// Change Page
 async function changePage(page) {
     if (page < 1 || page > totalPages) return;
     currentPage = page;
     await getVisitHistory(currentPage);
 }
 
-// Function to generate QR Code
+// Generate QR Code
 function generateQRCode(schoolId) {
     const qrContainer = document.getElementById('qrCode');
-    qrContainer.innerHTML = ''; // Clear previous QR code
+    qrContainer.innerHTML = '';
 
     new QRCode(qrContainer, {
         text: schoolId,
@@ -263,12 +233,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             await getUserDetails();
         }
     } catch (error) {
-        console.error('Dashboard initialization error:', error);
         window.location.href = '../index.html';
     }
 });
 
-// Function to show QR Code Modal
+// Show QR Code Modal
 function showQRCodeModal() {
     const modalElement = document.getElementById('qrCodeModal');
     const modal = new bootstrap.Modal(modalElement);
@@ -277,7 +246,6 @@ function showQRCodeModal() {
     const downloadButton = document.getElementById('downloadQRCode');
 
     if (!modalQRCode || !qrCodeLoading || !downloadButton) {
-        console.error('Required modal elements not found');
         return;
     }
 
@@ -294,7 +262,6 @@ function showQRCodeModal() {
         .then(response => {
             if (response.data.success) {
                 const schoolId = response.data.user.schoolId;
-                console.log('School ID:', schoolId);
 
                 // Clear previous QR code
                 modalQRCode.innerHTML = '';
@@ -316,18 +283,15 @@ function showQRCodeModal() {
                 // Focus the download button when it becomes visible
                 downloadButton.focus();
             } else {
-                console.error('Failed to get user details for QR code');
                 qrCodeLoading.textContent = 'Error generating QR code';
             }
         })
-        .catch(error => {
-            console.error('Error generating QR code:', error);
+        .catch(() => {
             qrCodeLoading.textContent = 'Error generating QR code';
         });
 
     // Handle modal events for accessibility
     modalElement.addEventListener('shown.bs.modal', function () {
-        // Focus the close button when modal opens
         const closeButton = modalElement.querySelector('.btn-close');
         if (closeButton) {
             closeButton.focus();
@@ -335,7 +299,6 @@ function showQRCodeModal() {
     });
 
     modalElement.addEventListener('hidden.bs.modal', function () {
-        // Return focus to the generate button when modal closes
         const generateButton = document.querySelector('button[onclick="showQRCodeModal()"]');
         if (generateButton) {
             generateButton.focus();
@@ -343,13 +306,12 @@ function showQRCodeModal() {
     });
 }
 
-// Function to download QR Code
+// Download QR Code
 function downloadQRCode() {
     const modalQRCode = document.getElementById('modalQRCode');
     const qrImage = modalQRCode.querySelector('img');
 
     if (qrImage) {
-        // Create a temporary link element
         const link = document.createElement('a');
         link.download = 'library-qr-code.png';
         link.href = qrImage.src;
@@ -359,31 +321,27 @@ function downloadQRCode() {
     }
 }
 
-// Function to show edit profile modal
+// Show Edit Profile Modal
 async function showEditProfileModal() {
     try {
-        // Get current user data
         const response = await axios.get('../api/get_user_details.php');
         if (response.data.success && response.data.user) {
             const user = response.data.user;
 
-            // Populate the form
             document.getElementById('editFirstName').value = user.firstname;
             document.getElementById('editLastName').value = user.lastname;
             document.getElementById('editPersonalEmail').value = user.personalEmail;
             document.getElementById('editContact').value = user.contact;
 
-            // Show the modal
             const modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
             modal.show();
         }
     } catch (error) {
-        console.error('Error showing edit profile modal:', error);
         alert('Error loading profile data. Please try again.');
     }
 }
 
-// Function to save profile changes
+// Save Profile Changes
 async function saveProfileChanges() {
     try {
         const firstName = document.getElementById('editFirstName').value;
@@ -391,7 +349,6 @@ async function saveProfileChanges() {
         const personalEmail = document.getElementById('editPersonalEmail').value;
         const contact = document.getElementById('editContact').value;
 
-        // Validate inputs
         if (!firstName || !lastName || !personalEmail || !contact) {
             alert('Please fill in all fields');
             return;
@@ -405,20 +362,16 @@ async function saveProfileChanges() {
         });
 
         if (response.data.success) {
-            // Refresh user details to update the UI
             await getUserDetails();
 
-            // Close the modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
             modal.hide();
 
-            // Show success message
             alert('Profile updated successfully');
         } else {
             alert(response.data.message || 'Error updating profile');
         }
     } catch (error) {
-        console.error('Error saving profile:', error);
         alert('Error updating profile. Please try again.');
     }
 } 

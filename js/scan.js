@@ -1,11 +1,11 @@
 let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
 
-const TIMEOUT_DURATION = 60; // 1 minute in seconds
-const COOLDOWN_DURATION = 60; // 1 minute cooldown
-let activeUsers = new Map(); // Store active users and their start times
-let userTimeouts = new Map(); // Store timeout IDs for each user
-let cooldownUsers = new Map(); // Store users in cooldown
-let cooldownIntervals = new Map(); // Store cooldown intervals
+const TIMEOUT_DURATION = 60;
+const COOLDOWN_DURATION = 60;
+let activeUsers = new Map();
+let userTimeouts = new Map();
+let cooldownUsers = new Map();
+let cooldownIntervals = new Map();
 
 
 function showMessage(message, type = 'info', countdown = null) {
@@ -14,12 +14,10 @@ function showMessage(message, type = 'info', countdown = null) {
     messageElement.className = 'message toast-message';
 
     if (countdown) {
-        // Create countdown display
         const countdownSpan = document.createElement('span');
         messageElement.textContent = 'Cannot timeout yet. Please wait ';
         messageElement.appendChild(countdownSpan);
 
-        // Start countdown
         let timeLeft = countdown;
         const updateCountdown = () => {
             if (timeLeft > 0) {
@@ -32,11 +30,9 @@ function showMessage(message, type = 'info', countdown = null) {
         };
         updateCountdown();
 
-        // Add to container and show
         messageContainer.appendChild(messageElement);
         setTimeout(() => messageElement.classList.add('show'), 100);
 
-        // Fade out after 5 seconds while countdown continues
         setTimeout(() => {
             messageElement.classList.remove('show');
             messageElement.classList.add('fade-out');
@@ -45,11 +41,9 @@ function showMessage(message, type = 'info', countdown = null) {
     } else {
         messageElement.textContent = message;
 
-        // Add to container and show
         messageContainer.appendChild(messageElement);
         setTimeout(() => messageElement.classList.add('show'), 100);
 
-        // Handle removal
         setTimeout(() => {
             messageElement.classList.remove('show');
             messageElement.classList.add('fade-out');
@@ -84,21 +78,20 @@ function showCooldownMessage(userId) {
     cooldownIntervals.set(userId, interval);
 }
 
-// Helper function to format time in 12-hour format
+// Format Time
 function formatTime(date) {
     let hours = date.getHours();
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
 
-    // Convert to 12-hour format
     hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours ? hours : 12;
 
     return `${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
-// Update clock function
+// Update clock
 function updateClock() {
     const now = new Date();
     const timeString = formatTime(now);
@@ -117,16 +110,14 @@ function updateClock() {
 function formatTimeTo12Hour(dateStr) {
     if (!dateStr) return '';
 
-    // If it's already a Date object
     if (dateStr instanceof Date) {
         return formatTime(dateStr);
     }
 
-    // Handle string time input (e.g., "20:03:39")
     if (typeof dateStr === 'string') {
         const [hours, minutes, seconds] = dateStr.split(':').map(Number);
         const ampm = hours >= 12 ? 'PM' : 'AM';
-        const displayHours = hours % 12 || 12; // Convert 0 to 12
+        const displayHours = hours % 12 || 12;
         return `${displayHours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
     }
 
@@ -140,7 +131,6 @@ function createUserCard(userData, isTimeout = false) {
     card.id = cardId;
     card.setAttribute('data-user-id', userData.user_schoolId);
 
-    // Format the times
     const timeIn = formatTimeTo12Hour(userData.time_in);
     const timeOut = isTimeout ? formatTimeTo12Hour(userData.time_out) : '';
 
@@ -163,7 +153,6 @@ function createUserCard(userData, isTimeout = false) {
 
     document.getElementById('activeUsers').appendChild(card);
 
-    // Always fade out after 5 seconds, regardless of time-in or time-out
     setTimeout(() => {
         card.classList.add('fade-out');
         setTimeout(() => {
@@ -171,13 +160,10 @@ function createUserCard(userData, isTimeout = false) {
         }, 500);
     }, 5000);
 
-    // Only set up timeout tracking for time-in cards
     if (!isTimeout) {
-        // Store user's start time
         const startTime = Date.now();
         activeUsers.set(userData.user_schoolId, startTime);
 
-        // Set timeout for 1 minute
         const timeoutId = setTimeout(() => {
             handleTimeout(userData.user_schoolId, card);
         }, TIMEOUT_DURATION * 1000);
@@ -189,14 +175,12 @@ function createUserCard(userData, isTimeout = false) {
 }
 
 function handleTimeout(userId, card) {
-    // Clear the timeout
     const timeoutId = userTimeouts.get(userId);
     if (timeoutId) {
         clearTimeout(timeoutId);
         userTimeouts.delete(userId);
     }
 
-    // Remove from active users
     activeUsers.delete(userId);
 
 
@@ -205,7 +189,6 @@ function handleTimeout(userId, card) {
 // Update the scanner initialization code
 Instascan.Camera.getCameras().then(function (cameras) {
     if (cameras.length > 0) {
-        // Try to get the back camera first
         const backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back'));
         const selectedCamera = backCamera || cameras[0];
 
@@ -220,7 +203,6 @@ Instascan.Camera.getCameras().then(function (cameras) {
         console.error('No cameras found.');
         showMessage('No cameras found. Please check if your device has a camera.');
 
-        // Make manual input more prominent when camera is not available
         const manualInput = document.getElementById('user_schoolId');
         if (manualInput) {
             manualInput.placeholder = 'No camera detected. Please enter ID manually';
@@ -230,7 +212,6 @@ Instascan.Camera.getCameras().then(function (cameras) {
     console.error('Error accessing cameras:', e);
     showMessage('Camera access denied. Please check your browser permissions and ensure your camera is connected.');
 
-    // Make manual input more prominent when camera access fails
     const manualInput = document.getElementById('user_schoolId');
     if (manualInput) {
         manualInput.placeholder = 'Camera access failed. Please enter ID manually';
@@ -244,7 +225,7 @@ scanner.addListener('scan-error', function (error) {
     showMessage('Scan error occurred. Please try again.');
 });
 
-// Update the scan listener to be more robust
+// Update the scan listener
 scanner.addListener('scan', function (content) {
     if (content && content.trim()) {
         handleScan(content.trim());
@@ -253,7 +234,7 @@ scanner.addListener('scan', function (content) {
     }
 });
 
-// Add a function to handle scanner restart
+// Restart Scanner
 function restartScanner() {
     scanner.stop().then(() => {
         Instascan.Camera.getCameras().then(function (cameras) {
@@ -273,14 +254,14 @@ function restartScanner() {
     });
 }
 
-// Add event listener for visibility change to handle tab switching
+// Visibility Change
 document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible') {
         restartScanner();
     }
 });
 
-// Add a new function to handle manual entry separately
+// Manual Entry
 async function handleManualEntry(schoolId) {
     try {
         const response = await axios.post('./api/time_in.php', {
@@ -294,13 +275,13 @@ async function handleManualEntry(schoolId) {
     }
 }
 
-// Update the manual entry event listener to use the new function
+// Manual Entry
 const schoolIdInput = document.getElementById('user_schoolId');
 schoolIdInput.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         const schoolId = e.target.value.trim();
         if (schoolId) {
-            handleManualEntry(schoolId);  // Use handleManualEntry instead of handleScan
+            handleManualEntry(schoolId);
             schoolIdInput.value = '';
         }
     }
@@ -327,13 +308,11 @@ function handleApiResponse(response) {
     if (response.data.user_data) {
         const userId = response.data.user_data.user_schoolId;
 
-        // Check if user already has an active session
         if (activeUsers.has(userId)) {
             const startTime = activeUsers.get(userId);
             const elapsedTime = (Date.now() - startTime) / 1000;
 
             if (elapsedTime < TIMEOUT_DURATION) {
-                // User still has an active session
                 showMessage('You already have an active session');
                 return;
             }
@@ -342,7 +321,6 @@ function handleApiResponse(response) {
         if (response.data.is_timeout) {
             const card = createUserCard(response.data.user_data, true);
             showMessage('Time-out successful!');
-            // Fade out timeout card after 5 seconds (same as time-in)
             setTimeout(() => {
                 card.classList.add('fade-out');
                 setTimeout(() => {
@@ -352,7 +330,6 @@ function handleApiResponse(response) {
         } else {
             const card = createUserCard(response.data.user_data);
             showMessage('Time-in successful!');
-            // Time-in card fade out is handled in createUserCard
         }
         updateTitleWithFade(response.data.user_data);
     } else {
@@ -382,13 +359,13 @@ function handleApiError(error) {
 
 // Start the clock update
 setInterval(updateClock, 1000);
-updateClock(); // Initial call
+updateClock();
 
 // Configure Axios defaults if needed
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-// Add Axios interceptor for common error handling
+// Axios Error Handling
 axios.interceptors.response.use(
     response => response,
     error => {
@@ -400,22 +377,18 @@ axios.interceptors.response.use(
     }
 );
 
-// Function to update title text with fade effect
+// Update title text with fade effect
 function updateTitleWithFade(userData) {
     const titleText = document.getElementById('titleText');
 
-    // Fade out
     titleText.classList.add('fade-out');
 
-    // Wait for fade out to complete then update text and fade in
     setTimeout(() => {
-        // Create full name with middle name and suffix if they exist
         const fullName = `${userData.user_firstname} ${userData.user_middlename || ''} ${userData.user_lastname} ${userData.user_suffix || ''}`.trim();
         titleText.textContent = fullName || 'Library Attendance Monitoring System';
         titleText.classList.remove('fade-out');
         titleText.classList.add('fade-in');
 
-        // Reset after 3 seconds
         if (fullName) {
             setTimeout(() => {
                 titleText.classList.add('fade-out');

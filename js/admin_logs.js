@@ -100,25 +100,17 @@ function refreshLogs() {
     const tableBody = document.getElementById('logsTableBody');
     tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
 
-    // Load all logs
-    fetch('../api/fetch_logs.php')
+    // Load all logs using Axios
+    axios.get('../api/fetch_logs.php')
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Refresh response:', data); // Debug log
-
-            if (data.status === 'success') {
-                allLogs = sortLogs(data.data);
+            if (response.data.status === 'success') {
+                allLogs = sortLogs(response.data.data);
                 totalEntries = allLogs.length;
                 currentPage = 1;
                 displayCurrentPage();
                 updatePagination();
             } else {
-                throw new Error(data.message || 'Failed to load logs');
+                throw new Error(response.data.message || 'Failed to load logs');
             }
         })
         .catch(error => {
@@ -130,9 +122,6 @@ function refreshLogs() {
 }
 
 function displayCurrentPage() {
-    console.log('Displaying page:', currentPage); // Debug log
-    console.log('All logs:', allLogs); // Debug log
-
     // Apply all filters in sequence
     const statusFilteredLogs = filterByStatus(allLogs);
     const departmentFilteredLogs = filterByDepartment(statusFilteredLogs);
@@ -140,8 +129,6 @@ function displayCurrentPage() {
     const start = (currentPage - 1) * entriesPerPage;
     const end = Math.min(start + entriesPerPage, searchFilteredLogs.length);
     const pageData = searchFilteredLogs.slice(start, end);
-
-    console.log('Page data:', pageData); // Debug log
 
     document.getElementById('startEntry').textContent = searchFilteredLogs.length ? start + 1 : 0;
     document.getElementById('endEntry').textContent = end;
@@ -154,8 +141,6 @@ function displayCurrentPage() {
     }
 
     const html = pageData.map(log => {
-        console.log('Processing log:', log); // Debug log
-
         const fullName = getFullName(
             log.user_firstname,
             log.user_middlename,
@@ -189,7 +174,6 @@ function displayCurrentPage() {
         `;
     }).join('');
 
-    console.log('Generated HTML:', html); // Debug log
     tableBody.innerHTML = html;
 }
 
@@ -338,8 +322,6 @@ function filterLogs() {
     const fromDate = document.getElementById('dateFrom').value;
     const toDate = document.getElementById('dateTo').value;
 
-    console.log('Filtering dates:', { fromDate, toDate }); // Debug log
-
     // Validate dates
     if (!fromDate || !toDate) {
         alert('Please select both from and to dates');
@@ -355,47 +337,19 @@ function filterLogs() {
     const tableBody = document.getElementById('logsTableBody');
     tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
 
-    // Make API request
-    fetch('../api/filter_logs.php', {
-        method: 'POST',
+    // Make API request using Axios
+    axios.post('../api/filter_logs.php', {
+        fromDate: fromDate,
+        toDate: toDate
+    }, {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            fromDate: fromDate,
-            toDate: toDate
-        })
+        }
     })
-        .then(async response => {
-            const text = await response.text();
-            console.log('Raw response:', text); // Debug log
-
-            try {
-                if (!text) {
-                    throw new Error('Empty response from server');
-                }
-
-                const data = JSON.parse(text);
-                console.log('Parsed data:', data); // Debug log
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Network response was not ok');
-                }
-
-                if (!data || typeof data !== 'object') {
-                    throw new Error('Invalid response format');
-                }
-
-                return data;
-            } catch (e) {
-                console.error('Parse error:', e);
-                throw new Error(`Failed to parse server response: ${e.message}`);
-            }
-        })
-        .then(data => {
-            if (data.status === 'success') {
-                allLogs = sortLogs(data.data || []);
+        .then(response => {
+            if (response.data.status === 'success') {
+                allLogs = sortLogs(response.data.data || []);
                 totalEntries = allLogs.length;
 
                 if (totalEntries === 0) {
@@ -407,14 +361,14 @@ function filterLogs() {
                 displayCurrentPage();
                 updatePagination();
             } else {
-                throw new Error(data.message || 'Failed to filter logs');
+                throw new Error(response.data.message || 'Failed to filter logs');
             }
         })
         .catch(error => {
             console.error('Error:', error);
             tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
-            Error: ${error.message || 'Failed to load logs'}
-        </td></tr>`;
+                Error: ${error.message || 'Failed to load logs'}
+            </td></tr>`;
         });
 }
 
@@ -427,25 +381,12 @@ function loadTodayLogs() {
     const now = new Date();
     const currentDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
-    console.log('Fetching logs for date:', currentDate); // Debug log
-
-    fetch('../api/fetch_today_logs.php')
+    axios.get('../api/fetch_today_logs.php')
         .then(response => {
-            console.log('Response status:', response.status); // Debug log
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Received data:', data); // Debug log
-
-            if (data.status === 'success') {
-                allLogs = sortLogs(data.data);
+            if (response.data.status === 'success') {
+                allLogs = sortLogs(response.data.data);
                 totalEntries = allLogs.length;
                 currentPage = 1;
-
-                console.log('Number of logs:', totalEntries); // Debug log
 
                 if (totalEntries === 0) {
                     tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No logs found</td></tr>';
@@ -455,7 +396,7 @@ function loadTodayLogs() {
                 displayCurrentPage();
                 updatePagination();
             } else {
-                throw new Error(data.message || 'Failed to load logs');
+                throw new Error(response.data.message || 'Failed to load logs');
             }
         })
         .catch(error => {
@@ -475,21 +416,18 @@ function loadTodayOnlyLogs() {
     const now = new Date();
     const currentDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
-    fetch('../api/filter_logs.php', {
-        method: 'POST',
+    axios.post('../api/filter_logs.php', {
+        fromDate: currentDate,
+        toDate: currentDate
+    }, {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            fromDate: currentDate,
-            toDate: currentDate
-        })
+        }
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                allLogs = sortLogs(data.data || []);
+        .then(response => {
+            if (response.data.status === 'success') {
+                allLogs = sortLogs(response.data.data || []);
                 totalEntries = allLogs.length;
                 currentPage = 1;
 
@@ -501,14 +439,14 @@ function loadTodayOnlyLogs() {
                 displayCurrentPage();
                 updatePagination();
             } else {
-                throw new Error(data.message || 'Failed to load logs');
+                throw new Error(response.data.message || 'Failed to load logs');
             }
         })
         .catch(error => {
             console.error('Error:', error);
             tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">
-            Error: ${error.message || 'Failed to load logs'}
-        </td></tr>`;
+                Error: ${error.message || 'Failed to load logs'}
+            </td></tr>`;
         });
 }
 
@@ -522,40 +460,19 @@ function batchTimeout() {
     const tableBody = document.getElementById('logsTableBody');
     tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Processing batch timeout...</td></tr>';
 
-    // Make API request to batch timeout
-    fetch('../api/batch_timeout.php', {
-        method: 'POST',
+    // Make API request to batch timeout using Axios
+    axios.post('../api/batch_timeout.php', {}, {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
     })
-        .then(async response => {
-            const text = await response.text();
-            console.log('Raw server response:', text);
-
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error('Failed to parse server response:', text);
-                throw new Error('Invalid server response format');
-            }
-
-            if (!response.ok) {
-                throw new Error(data.message || `Server error: ${response.status}`);
-            }
-
-            return data;
-        })
-        .then(data => {
-            console.log('Processed response:', data);
-
-            if (data.status === 'success') {
-                alert(data.message);
+        .then(response => {
+            if (response.data.status === 'success') {
+                alert(response.data.message);
                 refreshLogs();
             } else {
-                throw new Error(data.message || 'Unknown error occurred');
+                throw new Error(response.data.message || 'Unknown error occurred');
             }
         })
         .catch(error => {

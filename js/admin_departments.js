@@ -72,7 +72,6 @@ function filterVisits() {
     loadDepartmentVisits(startDate, endDate);
 }
 
-// Load initial data when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     loadDepartmentVisits();
 }); 

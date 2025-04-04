@@ -1,40 +1,35 @@
-// Function to load statistics
 function loadStats() {
-    console.log('Loading stats...'); // Debug log
-
     axios.get('../api/get_stats.php')
-    .then(response => {
-        console.log('Response:', response.data); // Debug log
-        
-        if (response.data.status === 'success') {
-            const { 
-                totalVisits, 
-                uniqueVisitors,
-                activeVisitors,
-                peakHour,
-                departmentStats, 
-                topVisitors 
-            } = response.data.data;
-            
-            // Update total visits
-            document.getElementById('totalVisits').innerHTML = `
+        .then(response => {
+            if (response.data.status === 'success') {
+                const {
+                    totalVisits,
+                    uniqueVisitors,
+                    activeVisitors,
+                    peakHour,
+                    departmentStats,
+                    topVisitors
+                } = response.data.data;
+
+                // Total visits
+                document.getElementById('totalVisits').innerHTML = `
                 ${totalVisits}
                 <small class="text-muted d-block">${uniqueVisitors} unique visitors</small>
             `;
-            
-            // Update active visitors
-            document.getElementById('activeVisitors').textContent = activeVisitors;
-            
-            // Update peak hour
-            document.getElementById('avgDuration').innerHTML = `
+
+                // Active visitors
+                document.getElementById('activeVisitors').textContent = activeVisitors;
+
+                // Peak hour
+                document.getElementById('avgDuration').innerHTML = `
                 ${peakHour || 'No visits yet'}
                 <small class="text-muted d-block">Peak hour today</small>
             `;
-            
-            // Update department stats
-            const departmentStatsList = document.getElementById('departmentStats');
-            if (departmentStats && departmentStats.length > 0) {
-                departmentStatsList.innerHTML = `
+
+                // Department stats
+                const departmentStatsList = document.getElementById('departmentStats');
+                if (departmentStats && departmentStats.length > 0) {
+                    departmentStatsList.innerHTML = `
                     ${departmentStats.map(dept => `
                         <div class="stat-item">
                             <div class="d-flex justify-content-between align-items-center">
@@ -45,14 +40,14 @@ function loadStats() {
                         </div>
                     `).join('')}
                 `;
-            } else {
-                departmentStatsList.innerHTML = '<div class="text-muted p-3">No department data available</div>';
-            }
-            
-            // Update top visitors
-            const topVisitorsList = document.getElementById('topVisitors');
-            if (topVisitors && topVisitors.length > 0) {
-                topVisitorsList.innerHTML = `
+                } else {
+                    departmentStatsList.innerHTML = '<div class="text-muted p-3">No department data available</div>';
+                }
+
+                // Top visitors
+                const topVisitorsList = document.getElementById('topVisitors');
+                if (topVisitors && topVisitors.length > 0) {
+                    topVisitorsList.innerHTML = `
                     ${topVisitors.map(visitor => `
                         <div class="stat-item">
                             <div class="visitor-info">
@@ -68,40 +63,36 @@ function loadStats() {
                         </div>
                     `).join('')}
                 `;
-            } else {
-                topVisitorsList.innerHTML = '<div class="text-muted p-3">No visitors data available</div>';
+                } else {
+                    topVisitorsList.innerHTML = '<div class="text-muted p-3">No visitors data available</div>';
+                }
             }
-        }
-    })
-    .catch(error => {
-        console.error('Error loading stats:', error);
-        // Show error messages in the respective containers
-        document.getElementById('totalVisits').textContent = 'Error';
-        document.getElementById('activeVisitors').textContent = 'Error';
-        document.getElementById('avgDuration').textContent = 'Error';
-        document.getElementById('departmentStats').innerHTML = '<div class="text-danger p-3">Failed to load statistics</div>';
-        document.getElementById('topVisitors').innerHTML = '<div class="text-danger p-3">Failed to load statistics</div>';
-    });
+        })
+        .catch(() => {
+            document.getElementById('totalVisits').textContent = 'Error';
+            document.getElementById('activeVisitors').textContent = 'Error';
+            document.getElementById('avgDuration').textContent = 'Error';
+            document.getElementById('departmentStats').innerHTML = '<div class="text-danger p-3">Failed to load statistics</div>';
+            document.getElementById('topVisitors').innerHTML = '<div class="text-danger p-3">Failed to load statistics</div>';
+        });
 }
 
-// Configure Axios defaults if needed
+// Configure Axios defaults
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-// Add Axios interceptor for common error handling
+// Axios Error Handling
 axios.interceptors.response.use(
     response => response,
     error => {
-        if (error.response?.status === 404) {
-            console.error('Resource not found');
-        } else if (error.response?.status === 500) {
-            console.error('Server error');
+        if (error.response?.status === 404 || error.response?.status === 500) {
+            return Promise.reject(error);
         }
         return Promise.reject(error);
     }
 );
 
-// You can also add an async/await version if you prefer
+// Async version of loadStats
 async function loadStatsAsync(period = 'today') {
     try {
         const response = await axios.get(`../api/get_stats.php`, {
@@ -110,10 +101,10 @@ async function loadStatsAsync(period = 'today') {
 
         if (response.data.status === 'success') {
             const { totalVisits, activeVisitors, departmentStats } = response.data.data;
-            
+
             document.getElementById('totalVisits').textContent = totalVisits;
             document.getElementById('activeVisitors').textContent = activeVisitors;
-            
+
             const topVisitorsList = document.getElementById('topVisitors');
             topVisitorsList.innerHTML = departmentStats.map(dept => `
                 <div class="visitor-item">
@@ -126,21 +117,20 @@ async function loadStatsAsync(period = 'today') {
             `).join('');
         }
     } catch (error) {
-        console.error('Error loading stats:', error);
         const topVisitorsList = document.getElementById('topVisitors');
         topVisitorsList.innerHTML = '<div class="error-message">Failed to load statistics</div>';
     }
 }
 
-// Add event listener for period change
+// Period Change
 document.getElementById('statsPeriod').addEventListener('change', (e) => {
     loadStats(e.target.value);
 });
 
-// Load initial data when the document is ready
+// Load initial data
 document.addEventListener('DOMContentLoaded', () => {
     loadStats();
 });
 
-// Refresh stats every 5 minutes
+// 5 Minutes
 setInterval(loadStats, 300000); 

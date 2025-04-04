@@ -21,7 +21,7 @@ function validateMathAnswer() {
     const userAnswer = parseInt(document.getElementById('mathAnswer').value);
     const mathInput = document.getElementById('mathAnswer');
 
-    if (!isNaN(userAnswer)) { // Only validate if there's an input
+    if (!isNaN(userAnswer)) {
         const correctAnswer = num1 + num2;
 
         if (userAnswer === correctAnswer) {
@@ -39,14 +39,13 @@ function validateMathAnswer() {
     }
 }
 
-// Add event listener for math answer input - real-time validation
+// Add event listener for math answer input
 document.getElementById('mathAnswer').addEventListener('input', validateMathAnswer);
 
-// Single submit event listener that handles both math validation and login
+// Single submit event listener
 document.getElementById('loginForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
-    // First check if math answer is correct
     if (!validateMathAnswer()) {
         document.getElementById('error-message').textContent = 'Please enter the correct answer to the math problem.';
         return;
@@ -75,5 +74,4 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
         });
 });
 
-// Generate captcha when page loads
 window.onload = generateCaptcha;

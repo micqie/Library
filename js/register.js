@@ -1,4 +1,4 @@
-// Password validation function
+// Password validation
 function validatePassword(password) {
     const conditions = {
         length: password.length >= 8,
@@ -15,7 +15,7 @@ function validatePassword(password) {
     return Object.values(conditions).every(condition => condition === true);
 }
 
-// Load departments from the database
+// Load departments
 async function loadDepartments() {
     try {
         console.log('Fetching departments...');
@@ -100,7 +100,6 @@ function checkPasswordsMatch() {
 
 // Initialize all event listeners
 function initializeEventListeners() {
-    // Load departments and courses when page loads
     loadDepartments();
     loadCourses();
 
@@ -206,5 +205,4 @@ function initializeEventListeners() {
     });
 }
 
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', initializeEventListeners);

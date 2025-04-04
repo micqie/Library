@@ -2,26 +2,18 @@ let currentPage = 1;
 const itemsPerPage = 10;
 let userData = [];
 
-// Fetch users data from the server
 async function fetchUsers() {
     try {
-        // Add loading indicator
         document.getElementById('usersTableBody').innerHTML =
             '<tr><td colspan="7" class="text-center">Loading...</td></tr>';
 
         const response = await axios.get('../api/get_users.php');
-        console.log('Raw API Response:', response); // Debug log
 
         if (response.data.error) {
             throw new Error(`Server error: ${response.data.error}\nDetails: ${response.data.details || 'No details provided'}`);
         }
 
-        // Log the actual data
-        console.log('Response data:', response.data);
-
-        // Ensure response.data is an array
         if (!Array.isArray(response.data)) {
-            console.error('Invalid data format:', response.data);
             throw new Error('Invalid data format received from server. Expected array, got: ' + typeof response.data);
         }
 
@@ -36,18 +28,15 @@ async function fetchUsers() {
         displayUsers();
         updatePagination();
     } catch (error) {
-        console.error('Error fetching users:', error);
         document.getElementById('usersTableBody').innerHTML =
             `<tr><td colspan="7" class="text-center text-danger">
-                Error loading users: ${error.message || 'Unknown error'}<br>
-                <small>Check console for more details</small>
+                Error loading users: ${error.message || 'Unknown error'}
             </td></tr>`;
     }
 }
 
-// Populate filter dropdowns with unique values
+// Populate filter dropdowns
 function populateFilterDropdowns() {
-    // Get unique departments, courses, and roles
     const departments = [...new Set(userData.map(user => user.department).filter(Boolean))].sort();
     const courses = [...new Set(userData.map(user => user.course).filter(Boolean))].sort();
     const roles = [...new Set(userData.map(user => user.role).filter(Boolean))].sort();
@@ -80,13 +69,11 @@ function populateFilterDropdowns() {
     });
 }
 
-// Display users in the table
+// Display users
 function displayUsers(filteredData = null) {
     const data = filteredData || userData;
 
-    // Check if data is an array
     if (!Array.isArray(data)) {
-        console.error('Data is not an array:', data);
         document.getElementById('usersTableBody').innerHTML =
             `<tr><td colspan="7" class="text-center text-danger">
                 Error: Invalid data format received from server
@@ -134,7 +121,6 @@ function displayUsers(filteredData = null) {
         tableBody.appendChild(row);
     });
 
-    // Update pagination info
     document.getElementById('startEntry').textContent = data.length > 0 ? start + 1 : 0;
     document.getElementById('endEntry').textContent = Math.min(end, data.length);
     document.getElementById('totalEntries').textContent = data.length;
@@ -226,12 +212,11 @@ async function deactivateUser(schoolId) {
 
             if (response.data.success) {
                 alert('User deactivated successfully');
-                fetchUsers(); // Refresh the user list
+                fetchUsers();
             } else {
                 throw new Error(response.data.message || 'Failed to deactivate user');
             }
         } catch (error) {
-            console.error('Error deactivating user:', error);
             alert('Error deactivating user: ' + error.message);
         }
     }
@@ -247,18 +232,16 @@ async function activateUser(schoolId) {
 
             if (response.data.success) {
                 alert('User activated successfully');
-                fetchUsers(); // Refresh the user list
+                fetchUsers();
             } else {
                 throw new Error(response.data.message || 'Failed to activate user');
             }
         } catch (error) {
-            console.error('Error activating user:', error);
             alert('Error activating user: ' + error.message);
         }
     }
 }
 
-// Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     fetchUsers();
 }); 

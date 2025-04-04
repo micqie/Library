@@ -511,3 +511,61 @@ function loadTodayOnlyLogs() {
         </td></tr>`;
         });
 }
+
+// Function to handle batch timeout
+function batchTimeout() {
+    if (!confirm('Are you sure you want to timeout all active users? This action cannot be undone.')) {
+        return;
+    }
+
+    // Show loading state
+    const tableBody = document.getElementById('logsTableBody');
+    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Processing batch timeout...</td></tr>';
+
+    // Make API request to batch timeout
+    fetch('../api/batch_timeout.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+        .then(async response => {
+            const text = await response.text();
+            console.log('Raw server response:', text);
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error('Failed to parse server response:', text);
+                throw new Error('Invalid server response format');
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || `Server error: ${response.status}`);
+            }
+
+            return data;
+        })
+        .then(data => {
+            console.log('Processed response:', data);
+
+            if (data.status === 'success') {
+                alert(data.message);
+                refreshLogs();
+            } else {
+                throw new Error(data.message || 'Unknown error occurred');
+            }
+        })
+        .catch(error => {
+            console.error('Operation failed:', error);
+            alert(`Error: ${error.message}`);
+            tableBody.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-danger">
+                    Failed to process batch timeout: ${error.message}
+                </td>
+            </tr>`;
+        });
+}

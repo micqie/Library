@@ -391,7 +391,6 @@ axios.interceptors.response.use(
     response => response,
     error => {
         if (error.response?.status === 404) {
-            showMessage('Resource not found. Please try again.');
         } else if (error.response?.status === 500) {
             showMessage('Server error. Please try again later.');
         }

@@ -12,108 +12,87 @@ $database = new Database();
 $db = $database->getConnection();
 
 try {
-    // Get period from request (day, week, month)
-    $period = isset($_GET['period']) ? $_GET['period'] : 'day';
-    
-    // Debug log
-    error_log("Fetching stats for period: " . $period);
+    // Get today's date
+    $today = date('Y-m-d');
 
-    // Get department visit stats with student details
-    $deptVisitsQuery = "SELECT 
-        d.department_name,
-        u.user_firstname,
-        u.user_lastname,
-        u.user_schoolId,
-        COUNT(*) as visit_count
-    FROM lib_logs l
-    JOIN tbl_users u ON l.user_schoolId = u.user_schoolId
-    JOIN tbl_departments d ON u.user_departmentId = d.department_id
-    WHERE ";
+    // Get total visits for today
+    $query = "
+        SELECT 
+            COUNT(*) as total_visits,
+            COUNT(DISTINCT user_schoolId) as unique_visitors,
+            (
+                SELECT COUNT(*) 
+                FROM lib_logs 
+                WHERE time_out IS NULL 
+                AND log_date = :today
+            ) as active_visitors,
+            (
+                SELECT TIME_FORMAT(time_in, '%h:00 %p')
+                FROM lib_logs 
+                WHERE log_date = :today
+                GROUP BY HOUR(time_in)
+                ORDER BY COUNT(*) DESC
+                LIMIT 1
+            ) as peak_hour
+        FROM lib_logs 
+        WHERE log_date = :today
+    ";
 
-    // Add date condition based on period
-    switch($period) {
-        case 'day':
-            $deptVisitsQuery .= "DATE(l.time_in) = CURDATE()";
-            break;
-        case 'week':
-            $deptVisitsQuery .= "YEARWEEK(l.time_in, 1) = YEARWEEK(CURDATE(), 1)";
-            break;
-        case 'month':
-            $deptVisitsQuery .= "YEAR(l.time_in) = YEAR(CURDATE()) AND MONTH(l.time_in) = MONTH(CURDATE())";
-            break;
-    }
-
-    $deptVisitsQuery .= " GROUP BY d.department_id, u.user_schoolId
-        ORDER BY visit_count DESC
-        LIMIT 10"; // Get top 10 visitors
-
-    $stmt = $db->prepare($deptVisitsQuery);
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(':today', $today);
     $stmt->execute();
-    $topVisitors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Get department summary
-    $deptSummaryQuery = "SELECT 
-        d.department_name,
-        COUNT(DISTINCT l.user_schoolId) as unique_visitors,
-        COUNT(*) as total_visits
-    FROM lib_logs l
-    JOIN tbl_users u ON l.user_schoolId = u.user_schoolId
-    JOIN tbl_departments d ON u.user_departmentId = d.department_id
-    WHERE ";
+    // Get department stats for today
+    $deptQuery = "
+        SELECT 
+            d.department_name,
+            COUNT(l.log_id) as total_visits,
+            COUNT(DISTINCT l.user_schoolId) as unique_visitors
+        FROM tbl_departments d
+        LEFT JOIN tbl_users u ON d.department_id = u.user_departmentId
+        LEFT JOIN lib_logs l ON u.user_schoolId = l.user_schoolId
+        WHERE l.log_date = :today
+        GROUP BY d.department_id, d.department_name
+        ORDER BY total_visits DESC
+        LIMIT 5
+    ";
 
-    switch($period) {
-        case 'day':
-            $deptSummaryQuery .= "DATE(l.time_in) = CURDATE()";
-            break;
-        case 'week':
-            $deptSummaryQuery .= "YEARWEEK(l.time_in, 1) = YEARWEEK(CURDATE(), 1)";
-            break;
-        case 'month':
-            $deptSummaryQuery .= "YEAR(l.time_in) = YEAR(CURDATE()) AND MONTH(l.time_in) = MONTH(CURDATE())";
-            break;
-    }
-
-    $deptSummaryQuery .= " GROUP BY d.department_id
-        ORDER BY total_visits DESC";
-
-    $stmt = $db->prepare($deptSummaryQuery);
+    $stmt = $db->prepare($deptQuery);
+    $stmt->bindParam(':today', $today);
     $stmt->execute();
     $departmentStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Get total visits for the period
-    $totalVisitsQuery = "SELECT COUNT(*) as total, COUNT(DISTINCT user_schoolId) as unique_users 
-    FROM lib_logs WHERE ";
-    
-    switch($period) {
-        case 'day':
-            $totalVisitsQuery .= "DATE(time_in) = CURDATE()";
-            break;
-        case 'week':
-            $totalVisitsQuery .= "YEARWEEK(time_in, 1) = YEARWEEK(CURDATE(), 1)";
-            break;
-        case 'month':
-            $totalVisitsQuery .= "YEAR(time_in) = YEAR(CURDATE()) AND MONTH(time_in) = MONTH(CURDATE())";
-            break;
-    }
+    // Get top visitors for today
+    $visitorQuery = "
+        SELECT 
+            u.user_firstname,
+            u.user_lastname,
+            u.user_schoolId,
+            d.department_name,
+            COUNT(*) as visit_count
+        FROM lib_logs l
+        JOIN tbl_users u ON l.user_schoolId = u.user_schoolId
+        LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
+        WHERE l.log_date = :today
+        GROUP BY u.user_schoolId
+        ORDER BY visit_count DESC
+        LIMIT 5
+    ";
 
-    $stmt = $db->prepare($totalVisitsQuery);
+    $stmt = $db->prepare($visitorQuery);
+    $stmt->bindParam(':today', $today);
     $stmt->execute();
-    $visitStats = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Get currently active visitors
-    $activeVisitorsQuery = "SELECT COUNT(*) as active FROM lib_logs WHERE time_out IS NULL";
-    $stmt = $db->prepare($activeVisitorsQuery);
-    $stmt->execute();
-    $activeVisitors = $stmt->fetch(PDO::FETCH_ASSOC)['active'];
+    $topVisitors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Before sending response, log the data
     error_log("Sending response: " . json_encode([
         "status" => "success",
         "data" => [
-            "period" => $period,
-            "totalVisits" => $visitStats['total'],
-            "uniqueVisitors" => $visitStats['unique_users'],
-            "activeVisitors" => $activeVisitors,
+            "totalVisits" => $stats['total_visits'],
+            "uniqueVisitors" => $stats['unique_visitors'],
+            "activeVisitors" => $stats['active_visitors'],
+            "peakHour" => $stats['peak_hour'],
             "departmentStats" => $departmentStats,
             "topVisitors" => $topVisitors
         ]
@@ -122,21 +101,21 @@ try {
     echo json_encode([
         "status" => "success",
         "data" => [
-            "period" => $period,
-            "totalVisits" => $visitStats['total'],
-            "uniqueVisitors" => $visitStats['unique_users'],
-            "activeVisitors" => $activeVisitors,
+            "totalVisits" => $stats['total_visits'],
+            "uniqueVisitors" => $stats['unique_visitors'],
+            "activeVisitors" => $stats['active_visitors'],
+            "peakHour" => $stats['peak_hour'],
             "departmentStats" => $departmentStats,
             "topVisitors" => $topVisitors
         ]
     ]);
 
 } catch (Exception $e) {
+    error_log("Stats error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         "status" => "error",
-        "message" => "Database error",
-        "debug" => $e->getMessage()
+        "message" => "Failed to fetch statistics"
     ]);
 }
 ?> 

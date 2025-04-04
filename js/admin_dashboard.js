@@ -1,10 +1,8 @@
 // Function to load statistics
-function loadStats(period = 'day') {
-    console.log('Loading stats for period:', period); // Debug log
+function loadStats() {
+    console.log('Loading stats...'); // Debug log
 
-    axios.get(`../api/get_stats.php`, {
-        params: { period: period }
-    })
+    axios.get('../api/get_stats.php')
     .then(response => {
         console.log('Response:', response.data); // Debug log
         
@@ -12,7 +10,8 @@ function loadStats(period = 'day') {
             const { 
                 totalVisits, 
                 uniqueVisitors,
-                activeVisitors, 
+                activeVisitors,
+                peakHour,
                 departmentStats, 
                 topVisitors 
             } = response.data.data;
@@ -25,6 +24,12 @@ function loadStats(period = 'day') {
             
             // Update active visitors
             document.getElementById('activeVisitors').textContent = activeVisitors;
+            
+            // Update peak hour
+            document.getElementById('avgDuration').innerHTML = `
+                ${peakHour || 'No visits yet'}
+                <small class="text-muted d-block">Peak hour today</small>
+            `;
             
             // Update department stats
             const departmentStatsList = document.getElementById('departmentStats');
@@ -54,7 +59,7 @@ function loadStats(period = 'day') {
                                 <p class="visitor-name">${visitor.user_firstname} ${visitor.user_lastname}</p>
                                 <p class="visitor-details">
                                     <small class="text-muted">
-                                        ${visitor.department_name}<br>
+                                        ${visitor.department_name || 'No Department'}<br>
                                         ID: ${visitor.user_schoolId}
                                     </small>
                                 </p>
@@ -70,8 +75,12 @@ function loadStats(period = 'day') {
     })
     .catch(error => {
         console.error('Error loading stats:', error);
-        const topVisitorsList = document.getElementById('topVisitors');
-        topVisitorsList.innerHTML = '<div class="error-message p-3">Failed to load statistics</div>';
+        // Show error messages in the respective containers
+        document.getElementById('totalVisits').textContent = 'Error';
+        document.getElementById('activeVisitors').textContent = 'Error';
+        document.getElementById('avgDuration').textContent = 'Error';
+        document.getElementById('departmentStats').innerHTML = '<div class="text-danger p-3">Failed to load statistics</div>';
+        document.getElementById('topVisitors').innerHTML = '<div class="text-danger p-3">Failed to load statistics</div>';
     });
 }
 
@@ -128,14 +137,10 @@ document.getElementById('statsPeriod').addEventListener('change', (e) => {
     loadStats(e.target.value);
 });
 
-// Initial load when the document is ready
+// Load initial data when the document is ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Document loaded, initializing stats...'); // Debug log
-    loadStats('day');
+    loadStats();
 });
 
 // Refresh stats every 5 minutes
-setInterval(() => {
-    const period = document.getElementById('statsPeriod').value;
-    loadStats(period);
-}, 300000); 
+setInterval(loadStats, 300000); 

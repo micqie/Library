@@ -15,11 +15,7 @@ body {
     background-size: cover; /* Makes the image cover the whole page */
     background-position: center; /* Centers the image */
     background-repeat: no-repeat; /* Prevents repeating */
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
 }
 
 .container-fluid {
@@ -239,18 +235,11 @@ body {
     margin-bottom: 0;
     border-radius: 8px;
     background: white;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid var(--border-color);
 }
 
 .table {
     margin-bottom: 0;
     width: 100%;
-    max-width: 100%;
-    table-layout: fixed;
-    border-collapse: separate;
-    border-spacing: 0;
 }
 
 .table thead th {
@@ -260,30 +249,12 @@ body {
     padding: 1rem;
     font-size: 0.85rem;
     white-space: nowrap;
-    border-bottom: 2px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 10;
 }
-
-/* Specific column widths for users table */
-.table th:nth-child(1), .table td:nth-child(1) { width: 8%; }  /* ID */
-.table th:nth-child(2), .table td:nth-child(2) { width: 15%; } /* Name */
-.table th:nth-child(3), .table td:nth-child(3) { width: 12%; } /* Department */
-.table th:nth-child(4), .table td:nth-child(4) { width: 12%; } /* Course */
-.table th:nth-child(5), .table td:nth-child(5) { width: 15%; } /* Email */
-.table th:nth-child(6), .table td:nth-child(6) { width: 10%; } /* Contact */
-.table th:nth-child(7), .table td:nth-child(7) { width: 8%; }  /* Status */
-.table th:nth-child(8), .table td:nth-child(8) { width: 20%; } /* Actions */
 
 .table tbody td {
     padding: 1rem;
     vertical-align: middle;
     color: var(--text-dark);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 0;
 }
 
 .table tbody tr {
@@ -635,26 +606,6 @@ body {
     display: block;
 }
 
-/* Hosting Environment Fixes */
-.table-responsive {
-    max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-}
-
-.table {
-    min-width: 800px; /* Ensure minimum width for readability */
-    max-width: 100%;
-}
-
-/* Force table to respect container width */
-.main-content {
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
 /* Additional mobile improvements */
 @media (max-width: 576px) {
     .main-content {
@@ -738,7 +689,6 @@ body {
     .table-responsive {
         -webkit-overflow-scrolling: touch;
         border: 1px solid var(--border-color);
-        margin: 0 -0.5rem; /* Extend to screen edges */
     }
 
     /* Mobile-friendly pagination */
@@ -819,6 +769,44 @@ body {
 .table {
     border-collapse: separate;
     border-spacing: 0;
+}
+
+/* Host environment safeguards: keep layout responsive across different servers/CDNs */
+/* These rules do NOT change colors or spacing intent, they only enforce responsiveness */
+.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: auto; /* prevent overly wide fixed layouts on some hosts */
+}
+
+.table thead th,
+.table tbody td {
+    white-space: nowrap;          /* default: keep cells tidy on desktop */
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+/* Allow wrapping on smaller screens to avoid horizontal growth */
+@media (max-width: 768px) {
+    .table thead th,
+    .table tbody td {
+        white-space: normal;
+        word-break: break-word;
+    }
+}
+
+/* Ensure media never breaks layout on hosted environments */
+img, video {
+    max-width: 100%;
+    height: auto;
 }
 
 .table thead th:first-child {

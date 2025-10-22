@@ -11,7 +11,9 @@ $database = new Database();
 $db = $database->getConnection();
 
 try {
+    date_default_timezone_set('Asia/Manila');
     $today = date('Y-m-d');
+    error_log("Today's date (PHP): " . $today);
 
     $query = "
         SELECT 

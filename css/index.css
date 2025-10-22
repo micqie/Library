@@ -166,8 +166,18 @@ body {
     }
 }
 @media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .content-container,
+    .right-section {
+        max-width: 100%;
+    }
+
     .video-container {
-        height: 250px;
+        height: 240px;
     }
 }
 

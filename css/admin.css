@@ -1,6 +1,11 @@
 :root {
     --primary-green: #004225;
     --light-bg: #f8f9fa;
+    --light-green: #e8f5e8;
+    --text-dark: #333;
+    --border-color: #dee2e6;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
 }
 
 
@@ -10,7 +15,11 @@ body {
     background-size: cover; /* Makes the image cover the whole page */
     background-position: center; /* Centers the image */
     background-repeat: no-repeat; /* Prevents repeating */
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 .container-fluid {
@@ -230,11 +239,18 @@ body {
     margin-bottom: 0;
     border-radius: 8px;
     background: white;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border-color);
 }
 
 .table {
     margin-bottom: 0;
     width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .table thead th {
@@ -244,12 +260,30 @@ body {
     padding: 1rem;
     font-size: 0.85rem;
     white-space: nowrap;
+    border-bottom: 2px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
+
+/* Specific column widths for users table */
+.table th:nth-child(1), .table td:nth-child(1) { width: 8%; }  /* ID */
+.table th:nth-child(2), .table td:nth-child(2) { width: 15%; } /* Name */
+.table th:nth-child(3), .table td:nth-child(3) { width: 12%; } /* Department */
+.table th:nth-child(4), .table td:nth-child(4) { width: 12%; } /* Course */
+.table th:nth-child(5), .table td:nth-child(5) { width: 15%; } /* Email */
+.table th:nth-child(6), .table td:nth-child(6) { width: 10%; } /* Contact */
+.table th:nth-child(7), .table td:nth-child(7) { width: 8%; }  /* Status */
+.table th:nth-child(8), .table td:nth-child(8) { width: 20%; } /* Actions */
 
 .table tbody td {
     padding: 1rem;
     vertical-align: middle;
     color: var(--text-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 0;
 }
 
 .table tbody tr {
@@ -380,6 +414,7 @@ body {
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
+        width: 280px;
     }
 
     .sidebar.show {
@@ -389,41 +424,171 @@ body {
     .main-content {
         margin-left: 0;
         width: 100%;
+        padding: 76px 1rem 1rem 1rem;
+    }
+
+    /* Mobile navbar adjustments */
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        font-size: 1rem;
     }
 
     /* Adjust table for mobile */
     .table-responsive {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        border-radius: 8px;
+        overflow-x: auto;
     }
 
     .status-badge {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
     }
 
     .table thead th {
-        font-size: 0.8rem;
-        padding: 0.75rem;
+        font-size: 0.75rem;
+        padding: 0.6rem 0.4rem;
+        white-space: nowrap;
     }
-    
+
     .table tbody td {
-        font-size: 0.8rem;
-        padding: 0.75rem;
+        font-size: 0.75rem;
+        padding: 0.6rem 0.4rem;
+        white-space: nowrap;
     }
-    
+
     .table-footer {
-        padding: 0.75rem;
+        padding: 0.5rem;
+        flex-direction: column;
+        gap: 0.5rem;
     }
-    
+
     .table-footer .btn-success {
         width: 100%;
-        margin-top: 1rem;
+        margin-top: 0.5rem;
     }
-    
+
     .showing-entries, .pagination-container {
         width: 100%;
         text-align: center;
         justify-content: center;
+        font-size: 0.8rem;
+    }
+
+    /* Dashboard stats mobile adjustments */
+    .dashboard-stats .row {
+        margin: 0;
+        gap: 0.5rem;
+    }
+
+    .dashboard-stats .col-md-4 {
+        margin-bottom: 0.5rem;
+        padding: 0.25rem;
+    }
+
+    .stat-card {
+        min-height: 140px;
+        padding: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .stat-card-header h6 {
+        font-size: 0.7rem;
+        margin: 0;
+        width: 100%;
+    }
+
+    .stat-card .form-select-sm {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+        height: 28px;
+        width: 100%;
+        max-width: 120px;
+    }
+
+    .stat-card-body h3 {
+        font-size: 1.4rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .stat-card-body p {
+        font-size: 0.65rem;
+        margin: 0;
+    }
+
+    /* Filter section mobile adjustments */
+    .filter-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-controls .row {
+        gap: 0.5rem;
+    }
+
+    .filter-controls .col-md-4 {
+        padding: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-section .form-control,
+    .filter-section .form-select {
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .filter-section .btn-primary {
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    /* Main content area mobile adjustments */
+    .main-content .row {
+        margin: 0;
+    }
+
+    .main-content .col-md-9,
+    .main-content .col-md-6 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    /* Stats list mobile adjustments */
+    .stats-list {
+        max-height: 200px;
+    }
+
+    .stat-item {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .visitor-item {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .visitor-name {
+        font-size: 0.8rem;
+    }
+
+    .visitor-details {
+        font-size: 0.7rem;
+    }
+
+    .visit-count {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
     }
 }
 
@@ -436,14 +601,217 @@ body {
     padding: 0.5rem;
     background-color: var(--primary-green);
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     color: white;
     display: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background-color: #003018;
+    transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
     .sidebar-toggle {
         display: block;
+    }
+}
+
+/* Mobile overlay for sidebar */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+.sidebar-overlay.show {
+    display: block;
+}
+
+/* Hosting Environment Fixes */
+.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.table {
+    min-width: 800px; /* Ensure minimum width for readability */
+    max-width: 100%;
+}
+
+/* Force table to respect container width */
+.main-content {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Additional mobile improvements */
+@media (max-width: 576px) {
+    .main-content {
+        padding: 76px 0.5rem 0.5rem 0.5rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.9rem;
+    }
+
+    .stat-card {
+        min-height: 120px;
+        padding: 0.6rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .stat-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card-header h6 {
+        font-size: 0.6rem;
+        margin: 0;
+        width: 100%;
+    }
+
+    .stat-card .form-select-sm {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.3rem;
+        height: 24px;
+        width: 100%;
+        max-width: 100px;
+    }
+
+    .stat-card-body h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .stat-card-body p {
+        font-size: 0.6rem;
+        margin: 0;
+    }
+
+    .filter-section {
+        padding: 0.8rem;
+    }
+
+    .table thead th {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.3rem;
+    }
+
+    .table tbody td {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.3rem;
+    }
+
+    .btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        min-height: 44px; /* Better touch target */
+    }
+
+    /* Improve touch targets */
+    .sidebar .nav-link {
+        min-height: 44px;
+        padding: 0.8rem 1rem;
+    }
+
+    .sidebar-toggle {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.6rem;
+    }
+
+    /* Better mobile table scrolling */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+        border: 1px solid var(--border-color);
+        margin: 0 -0.5rem; /* Extend to screen edges */
+    }
+
+    /* Mobile-friendly pagination */
+    .pagination-container button {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.6rem;
+    }
+
+    .page-number {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Additional mobile layout improvements */
+    .dashboard-stats {
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-stats .row {
+        margin: 0;
+        gap: 0.3rem;
+    }
+
+    .dashboard-stats .col-md-4 {
+        padding: 0.15rem;
+        margin-bottom: 0.3rem;
+    }
+
+    /* Better mobile spacing */
+    .main-content .row {
+        margin: 0;
+        gap: 0.5rem;
+    }
+
+    .main-content .col-md-9,
+    .main-content .col-md-6 {
+        padding: 0.15rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Mobile-friendly stats lists */
+    .stats-list {
+        max-height: 150px;
+        padding: 0.3rem;
+    }
+
+    .stat-item {
+        padding: 0.4rem;
+        font-size: 0.7rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .visitor-item {
+        padding: 0.4rem;
+        font-size: 0.7rem;
+    }
+
+    .visitor-name {
+        font-size: 0.7rem;
+    }
+
+    .visitor-details {
+        font-size: 0.6rem;
+    }
+
+    .visit-count {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.3rem;
     }
 }
 
@@ -572,6 +940,14 @@ body {
     padding: 0.25rem 0.5rem;
     height: auto;
     border-radius: 6px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    min-width: 100px;
+}
+
+.stat-card .form-select-sm:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.2rem rgba(0, 66, 37, 0.15);
 }
 
 /* Ensure the stat card takes full height */
@@ -585,7 +961,7 @@ body {
     .top-visitors-list {
         max-height: 300px;
     }
-    
+
     /* Stack the cards on mobile */
     .col-md-9, .col-md-3 {
         width: 100%;
@@ -645,11 +1021,11 @@ body {
     .col-md-6 {
         margin-bottom: 1.5rem;
     }
-    
+
     .col-md-6:last-child {
         margin-bottom: 0;
     }
-    
+
     .stat-card {
         min-height: 300px;
     }

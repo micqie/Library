@@ -36,7 +36,31 @@ $stmt->execute();
 $admin_user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($admin_user) {
-    if ($data['password'] !== $admin_user['user_password']) {
+    $stored = $admin_user['user_password'];
+    $provided = $data['password'];
+    $isValid = false;
+
+    // Verify hashed password first
+    if (!empty($stored) && str_starts_with($stored, '$')) {
+        $isValid = password_verify($provided, $stored);
+        // Rehash if needed
+        if ($isValid && password_needs_rehash($stored, PASSWORD_DEFAULT)) {
+            $rehash = password_hash($provided, PASSWORD_DEFAULT);
+            $u = $conn->prepare("UPDATE tbl_users SET user_password = :p WHERE user_id = :id");
+            $u->execute([':p' => $rehash, ':id' => $admin_user['user_id']]);
+        }
+    } else {
+        // Legacy plaintext fallback
+        $isValid = hash_equals($stored, $provided);
+        if ($isValid) {
+            // Migrate to hash on successful legacy login
+            $rehash = password_hash($provided, PASSWORD_DEFAULT);
+            $u = $conn->prepare("UPDATE tbl_users SET user_password = :p WHERE user_id = :id");
+            $u->execute([':p' => $rehash, ':id' => $admin_user['user_id']]);
+        }
+    }
+
+    if (!$isValid) {
         echo json_encode(['success' => false, 'message' => 'Incorrect password']);
         exit;
     }
@@ -72,7 +96,26 @@ if ($user['user_status'] == 0) {
     exit;
 }
 
-if ($data['password'] !== $user['user_password']) {
+// Password verification with legacy fallback + migration
+$stored = $user['user_password'];
+$provided = $data['password'];
+$isValid = false;
+if (!empty($stored) && str_starts_with($stored, '$')) {
+    $isValid = password_verify($provided, $stored);
+    if ($isValid && password_needs_rehash($stored, PASSWORD_DEFAULT)) {
+        $rehash = password_hash($provided, PASSWORD_DEFAULT);
+        $u = $conn->prepare("UPDATE tbl_users SET user_password = :p WHERE user_id = :id");
+        $u->execute([':p' => $rehash, ':id' => $user['user_id']]);
+    }
+} else {
+    $isValid = hash_equals($stored, $provided);
+    if ($isValid) {
+        $rehash = password_hash($provided, PASSWORD_DEFAULT);
+        $u = $conn->prepare("UPDATE tbl_users SET user_password = :p WHERE user_id = :id");
+        $u->execute([':p' => $rehash, ':id' => $user['user_id']]);
+    }
+}
+if (!$isValid) {
     echo json_encode(['success' => false, 'message' => 'Incorrect password']);
     exit;
 }

@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Dashboard </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='../css/fallback.css';">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" onerror="this.onerror=null;">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="../css/admin_logs.css">
     <link rel="stylesheet" href="../css/admin.css">
     <link rel="icon" type="image/x-icon" href="../images/favicon-32x32.png">
+    <link rel="stylesheet" href="../css/fallback.css">
     <!-- Add Excel export library -->
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -49,7 +50,7 @@
                                 <i class="bi bi-people me-2"></i> Users
                             </a>
                         </li>
-               
+
                         <li class="nav-item">
                             <a class="nav-link" href="admin_logs.html">
                                 <i class="bi bi-clock-history me-2"></i> Library Logs
@@ -60,7 +61,12 @@
                                 <i class="bi bi-building me-2"></i> Departments
                             </a>
                         </li>
-                     
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin_scanner.html">
+                                <i class="bi bi-qr-code-scan me-2"></i> Scanner
+                            </a>
+                        </li>
+
                     </ul>
                 </div>
             </div>
@@ -93,13 +99,27 @@
                                         <tbody id="departmentVisitsTable">
                                             <!-- Will be populated dynamically -->
                                         </tbody>
+
                                     </table>
+                                    <div class="modal fade" id="visitorModal" tabindex="-1" aria-labelledby="visitorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="visitorModalLabel">Unique Visitors</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="visitorModalBody">
+        <!-- Visitor list will be inserted here -->
+      </div>
+    </div>
+  </div>
+</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Main content area with statistics boxes -->
                 <div class="row">
                     <!-- Left side - Takes 9 columns -->
@@ -135,6 +155,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -145,5 +166,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/admin_dashboard.js"></script>
     <script src="../js/admin_departments.js"></script>
+
 </body>
-</html> 
+</html>

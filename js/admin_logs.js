@@ -231,13 +231,16 @@ function exportToExcel() {
 
 // Add debounce to search input
 let searchTimeout;
-document.getElementById('searchInput').addEventListener('input', function () {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        // Implement search functionality here
-        console.log('Searching:', this.value);
-    }, 300);
-});
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            // Implement search functionality here
+            console.log('Searching:', this.value);
+        }, 300);
+    });
+}
 
 // Event listeners
 document.getElementById('dateFilter').addEventListener('change', function () {
@@ -451,38 +454,44 @@ function loadTodayOnlyLogs() {
 }
 
 // Function to handle batch timeout
-function batchTimeout() {
-    if (!confirm('Are you sure you want to timeout all active users? This action cannot be undone.')) {
-        return;
-    }
+async function batchTimeout() {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to timeout all active users? This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, timeout all',
+        cancelButtonText: 'Cancel'
+    });
 
-    // Show loading state
+    // ✅ This replaces the confirm() logic
+    if (!result.isConfirmed) return;
+
     const tableBody = document.getElementById('logsTableBody');
     tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Processing batch timeout...</td></tr>';
 
-    // Make API request to batch timeout using Axios
-    axios.post('../api/batch_timeout.php', {}, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    })
-        .then(response => {
-            if (response.data.status === 'success') {
-                alert(response.data.message);
-                refreshLogs();
-            } else {
-                throw new Error(response.data.message || 'Unknown error occurred');
+    try {
+        const response = await axios.post('../api/batch_timeout.php', {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
-        })
-        .catch(error => {
-            console.error('Operation failed:', error);
-            alert(`Error: ${error.message}`);
-            tableBody.innerHTML = `
+        });
+
+        if (response.data.status === 'success') {
+            await Swal.fire('Success', response.data.message, 'success');
+            refreshLogs();
+        } else {
+            throw new Error(response.data.message || 'Unknown error occurred');
+        }
+    } catch (error) {
+        console.error('Operation failed:', error);
+        await Swal.fire('Error', `Failed to process batch timeout: ${error.message}`, 'error');
+        tableBody.innerHTML = `
             <tr>
                 <td colspan="9" class="text-center text-danger">
                     Failed to process batch timeout: ${error.message}
                 </td>
             </tr>`;
-        });
+    }
 }

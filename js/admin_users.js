@@ -1,3 +1,26 @@
+
+// Handle sidebar toggle for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('show');
+        });
+    }
+
+    // Hide sidebar when clicking outside on mobile
+    document.addEventListener('click', function (event) {
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        if (window.innerWidth <= 768) {
+            if (sidebar && sidebarToggle && !sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+});
+
 let currentPage = 1;
 const itemsPerPage = 10;
 let userData = [];
@@ -111,8 +134,8 @@ function displayUsers(filteredData = null) {
                 </span>
             </td>
             <td>
-                <button class="btn btn-sm ${user.status === 'active' ? 'btn-danger' : 'btn-success'}" 
-                        onclick="${user.status === 'active' ? 'deactivateUser' : 'activateUser'}('${user.school_id}')" 
+                <button class="btn btn-sm ${user.status === 'active' ? 'btn-danger' : 'btn-success'}"
+                        onclick="${user.status === 'active' ? 'deactivateUser' : 'activateUser'}('${user.school_id}')"
                         title="${user.status === 'active' ? 'Deactivate User' : 'Activate User'}">
                     <i class="bi ${user.status === 'active' ? 'bi-person-x' : 'bi-person-check'}"></i>
                 </button>
@@ -203,7 +226,16 @@ function exportToExcel() {
 
 // Replace deleteUser function with deactivateUser and add activateUser
 async function deactivateUser(schoolId) {
-    if (confirm('Are you sure you want to deactivate this user?')) {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you really want to deactivate this user?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, deactivate',
+        cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
         try {
             const response = await axios.post('../api/update_user_status.php', {
                 school_id: schoolId,
@@ -211,19 +243,27 @@ async function deactivateUser(schoolId) {
             });
 
             if (response.data.success) {
-                alert('User deactivated successfully');
+                await Swal.fire('Success', 'User deactivated successfully.', 'success');
                 fetchUsers();
             } else {
                 throw new Error(response.data.message || 'Failed to deactivate user');
             }
         } catch (error) {
-            alert('Error deactivating user: ' + error.message);
+            Swal.fire('Error', `Error deactivating user: ${error.message}`, 'error');
         }
     }
 }
-
 async function activateUser(schoolId) {
-    if (confirm('Are you sure you want to activate this user?')) {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to activate this user?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, activate',
+        cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
         try {
             const response = await axios.post('../api/update_user_status.php', {
                 school_id: schoolId,
@@ -231,17 +271,16 @@ async function activateUser(schoolId) {
             });
 
             if (response.data.success) {
-                alert('User activated successfully');
+                await Swal.fire('Success', 'User activated successfully.', 'success');
                 fetchUsers();
             } else {
                 throw new Error(response.data.message || 'Failed to activate user');
             }
         } catch (error) {
-            alert('Error activating user: ' + error.message);
+            Swal.fire('Error', `Error activating user: ${error.message}`, 'error');
         }
     }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchUsers();
-}); 
+});

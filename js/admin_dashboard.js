@@ -1,3 +1,25 @@
+// Handle sidebar toggle for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('show');
+        });
+    }
+
+    // Hide sidebar when clicking outside on mobile
+    document.addEventListener('click', function (event) {
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        if (window.innerWidth <= 768) {
+            if (sidebar && sidebarToggle && !sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+});
+
 function loadStats() {
     axios.get('../api/get_stats.php')
         .then(response => {
@@ -123,14 +145,17 @@ async function loadStatsAsync(period = 'today') {
 }
 
 // Period Change
-document.getElementById('statsPeriod').addEventListener('change', (e) => {
-    loadStats(e.target.value);
-});
-
-// Load initial data
 document.addEventListener('DOMContentLoaded', () => {
+    const statsPeriodSelect = document.getElementById('statsPeriod');
+    if (statsPeriodSelect) {
+        statsPeriodSelect.addEventListener('change', (e) => {
+            loadStats(e.target.value);
+        });
+    }
+
+    // Load initial data
     loadStats();
 });
 
 // 5 Minutes
-setInterval(loadStats, 300000); 
+setInterval(loadStats, 300000);

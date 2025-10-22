@@ -25,10 +25,10 @@ try {
         exit;
     }
 
-    $query = "SELECT u.*, d.department_name, c.course_name 
-              FROM tbl_users u 
-              LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id 
-              LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id 
+    $query = "SELECT u.*, d.department_name, c.course_name
+              FROM tbl_users u
+              LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
+              LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
               WHERE u.user_schoolId = :schoolId";
 
     error_log('Executing query for user_id: ' . $_SESSION['user_id']);
@@ -42,6 +42,7 @@ try {
     if ($user) {
         $response = [
             'success' => true,
+            'user_type' => $user['user_typeId'],
             'user' => [
                 'schoolId' => $user['user_schoolId'],
                 'firstname' => $user['user_firstname'],

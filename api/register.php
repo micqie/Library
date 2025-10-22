@@ -37,14 +37,14 @@ try {
     }
 
     $sql = "INSERT INTO tbl_users (
-        user_schoolId, user_lastname, user_firstname, user_middlename, 
-        user_suffix, user_email, user_contact, 
+        user_schoolId, user_lastname, user_firstname, user_middlename,
+        user_suffix, user_email, user_contact,
         user_password, user_typeId, user_status, user_level" .
         (!empty($data['department']) ? ", user_departmentId" : "") .
         (!empty($data['course']) ? ", user_courseId" : "") .
         ") VALUES (
-        :schoolId, :lastname, :firstname, :middlename, 
-        :suffix, :personalEmail, :contact, 
+        :schoolId, :lastname, :firstname, :middlename,
+        :suffix, :personalEmail, :contact,
         :password, :userType, :status, :level" .
         (!empty($data['department']) ? ", :department" : "") .
         (!empty($data['course']) ? ", :course" : "") .
@@ -57,6 +57,9 @@ try {
     $defaultLevel = 10;
     $status = 1;
 
+    // Hash password securely
+    $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+
     $params = [
         ':schoolId' => $data['schoolId'],
         ':lastname' => $data['lastname'],
@@ -65,7 +68,7 @@ try {
         ':suffix' => $data['suffix'] ?? null,
         ':personalEmail' => $data['personalEmail'],
         ':contact' => $data['contact'],
-        ':password' => $data['password'],
+        ':password' => $hashedPassword,
         ':userType' => $userType,
         ':status' => $status,
         ':level' => $defaultLevel

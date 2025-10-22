@@ -103,6 +103,18 @@ body::before {
         max-height: 100px;
         width: 80%;
     }
+
+    #loginForm {
+        padding: 1.25rem;
+    }
+
+    .math-challenge {
+        flex-wrap: wrap;
+    }
+
+    .math-input {
+        width: 60px !important;
+    }
 }
 
 /* Login Form Styles */

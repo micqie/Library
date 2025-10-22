@@ -12,7 +12,7 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 try {
   $query = "INSERT INTO tbl_users (
-                user_schoolId, user_lastname, user_firstname, 
+                user_schoolId, user_lastname, user_firstname,
                 user_middlename, user_suffix, phinmaed_email,
                 user_email, user_contact, user_password,
                 user_courseId, user_departmentId, user_schoolyearId,
@@ -27,7 +27,8 @@ try {
 
   $stmt = $db->prepare($query);
 
-  $defaultPassword = "phinma-coc";
+  // Use a secure default password but hash it; recommend forcing change on first login later
+  $defaultPassword = password_hash("phinma-coc", PASSWORD_DEFAULT);
   $defaultStatus = 1;
   $defaultLevel = 1;
   $defaultTypeId = 1;

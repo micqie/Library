@@ -4,6 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 header("Content-Type: application/json");
+date_default_timezone_set('Asia/Manila'); // Philippines time
 
 require_once 'config/database.php';
 
@@ -23,7 +24,7 @@ if (isset($data['text'])) {
 
         if ($stmt->rowCount() > 0) {
             // Time-out logic
-            $updateSql = "UPDATE lib_logs SET time_out = :time_out, STATUS = '1' 
+            $updateSql = "UPDATE lib_logs SET time_out = :time_out, STATUS = '1'
                           WHERE user_schoolId = :user_schoolId AND log_date = :log_date AND time_out IS NULL";
             $updateStmt = $conn->prepare($updateSql);
             if ($updateStmt->execute(['time_out' => $time, 'user_schoolId' => $text, 'log_date' => $date])) {
@@ -38,7 +39,7 @@ if (isset($data['text'])) {
             }
         } else {
             // Time-in logic
-            $insertSql = "INSERT INTO lib_logs (user_schoolId, time_in, log_date, STATUS) 
+            $insertSql = "INSERT INTO lib_logs (user_schoolId, time_in, log_date, STATUS)
                           VALUES (:user_schoolId, :time_in, :log_date, '0')";
             $insertStmt = $conn->prepare($insertSql);
             if ($insertStmt->execute(['user_schoolId' => $text, 'time_in' => $time, 'log_date' => $date])) {

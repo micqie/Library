@@ -34,14 +34,22 @@ async function loadDepartments() {
             });
         } else {
             console.error('Invalid department data format:', response.data);
-            alert('Failed to load departments. Please try again.');
+            await Swal.fire({
+                icon: 'error',
+                title: 'Load Failed',
+                text: 'Failed to load departments. Please try again.',
+            });
         }
     } catch (error) {
         console.error('Error loading departments:', error);
         if (error.response) {
             console.error('Error response:', error.response.data);
         }
-        alert('Failed to load departments. Please check your connection and try again.');
+        await Swal.fire({
+            icon: 'error',
+            title: 'Network Error',
+            text: 'Failed to load departments. Please check your connection and try again.',
+        });
     }
 }
 

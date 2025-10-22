@@ -1,3 +1,25 @@
+// Handle sidebar toggle for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('show');
+        });
+    }
+
+    // Hide sidebar when clicking outside on mobile
+    document.addEventListener('click', function (event) {
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        if (window.innerWidth <= 768) {
+            if (sidebar && sidebarToggle && !sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+});
+
 async function loadDepartmentVisits(startDate = '', endDate = '') {
     try {
         const visitsTableBody = document.getElementById('departmentVisitsTable');
@@ -12,9 +34,6 @@ async function loadDepartmentVisits(startDate = '', endDate = '') {
 
         visitsTableBody.innerHTML = '';
 
-        // Debug: Log the response
-        console.log('API Response:', response.data);
-
         if (!response.data || response.data.length === 0) {
             visitsTableBody.innerHTML = `
                 <tr>
@@ -25,6 +44,19 @@ async function loadDepartmentVisits(startDate = '', endDate = '') {
 
         response.data.forEach((visit, index) => {
             const row = document.createElement('tr');
+            const visitors = (visit.visitor_list || '').split('|').filter(Boolean);
+
+            // Attach modal data
+            row.setAttribute('data-department', visit.department_name);
+            row.setAttribute('data-visitors', JSON.stringify(visitors));
+
+            // Add click event to row
+            row.addEventListener('click', () => {
+                showVisitorsModal(row);
+            });
+
+            row.style.cursor = 'pointer'; // Visual cue
+
             row.innerHTML = `
                 <td>
                     <span class="badge ${index < 3 ? 'bg-success' : 'bg-secondary'}">#${index + 1}</span>
@@ -46,7 +78,6 @@ async function loadDepartmentVisits(startDate = '', endDate = '') {
         });
     } catch (error) {
         console.error('Error fetching department visits:', error);
-        console.error('Error details:', error.response?.data);
 
         const visitsTableBody = document.getElementById('departmentVisitsTable');
         visitsTableBody.innerHTML = `
@@ -58,6 +89,29 @@ async function loadDepartmentVisits(startDate = '', endDate = '') {
             </tr>
         `;
     }
+}
+
+function showVisitorsModal(row) {
+    const departmentName = row.getAttribute('data-department');
+    const visitorData = JSON.parse(row.getAttribute('data-visitors') || '[]');
+
+    const modalTitle = document.getElementById('visitorModalLabel');
+    const modalBody = document.getElementById('visitorModalBody');
+
+    modalTitle.textContent = `Unique Visitors - ${departmentName}`;
+
+    if (visitorData.length === 0) {
+        modalBody.innerHTML = `<p class="text-muted">No visitors found for this department.</p>`;
+    } else {
+        modalBody.innerHTML = `
+            <ul class="list-group">
+                ${visitorData.map(visitor => `<li class="list-group-item">${visitor}</li>`).join('')}
+            </ul>
+        `;
+    }
+
+    const modal = new bootstrap.Modal(document.getElementById('visitorModal'));
+    modal.show();
 }
 
 function filterVisits() {
@@ -74,4 +128,4 @@ function filterVisits() {
 
 document.addEventListener('DOMContentLoaded', () => {
     loadDepartmentVisits();
-}); 
+});

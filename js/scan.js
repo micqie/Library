@@ -151,7 +151,14 @@ function createUserCard(userData, isTimeout = false) {
         </div>
     `;
 
-    document.getElementById('activeUsers').appendChild(card);
+    // Insert new card at the top (newest first)
+    const activeUsersContainer = document.getElementById('activeUsers');
+    const firstCard = activeUsersContainer.firstChild;
+    if (firstCard) {
+        activeUsersContainer.insertBefore(card, firstCard);
+    } else {
+        activeUsersContainer.appendChild(card);
+    }
 
     setTimeout(() => {
         card.classList.add('fade-out');

@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila'); // Set timezone to Philippines
 require 'config/database.php';
 
 header('Content-Type: application/json');

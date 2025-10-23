@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 04, 2025 at 07:51 AM
+-- Generation Time: Oct 23, 2025 at 06:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -102,7 +102,34 @@ INSERT INTO `lib_logs` (`log_id`, `user_schoolId`, `time_in`, `time_out`, `log_d
 (119, '12345', '01:23:46', '01:53:46', '2025-04-04'),
 (120, '12345', '09:45:32', '09:46:34', '2025-04-04'),
 (121, '02-2122-020202', '09:46:08', '12:06:30', '2025-04-04'),
-(122, '54321', '12:03:55', '12:06:30', '2025-04-04');
+(122, '54321', '12:03:55', '12:06:30', '2025-04-04'),
+(123, 'mckenzie123@gmail.com', '14:40:31', '14:41:35', '2025-04-04'),
+(124, '12345', '14:43:02', '14:48:16', '2025-04-04'),
+(125, '54321', '14:43:05', '14:48:16', '2025-04-04'),
+(126, '02-2122-020202', '14:43:10', '14:48:16', '2025-04-04'),
+(127, '02-2122-030303', '14:43:18', '14:48:16', '2025-04-04'),
+(128, '12345', '14:36:14', '22:10:34', '2025-04-09'),
+(129, '54321', '14:36:17', '23:59:59', '2025-04-09'),
+(130, '02-2122-020202', '14:36:31', '23:59:59', '2025-04-09'),
+(131, '12345', '22:10:36', '23:59:59', '2025-05-03'),
+(132, 'mckenzie25@gmail.com', '20:09:08', '20:10:29', '2025-06-24'),
+(133, '00-0000-00001', '04:43:35', '04:47:23', '2025-07-19'),
+(134, '54321', '05:10:38', '05:13:05', '2025-07-19'),
+(135, '12345', '05:10:44', '05:13:53', '2025-07-19'),
+(136, '54321', '05:13:50', '05:22:21', '2025-07-19'),
+(137, '54321', '05:22:24', '05:25:14', '2025-07-19'),
+(138, '12345', '05:22:32', '05:25:12', '2025-07-19'),
+(139, 'mckenzie25@gmail.com', '05:35:03', '05:39:53', '2025-07-19'),
+(140, '54321', '05:39:37', '05:48:22', '2025-07-19'),
+(141, '12345', '05:39:40', '05:48:25', '2025-07-19'),
+(142, '02-2122-020202', '05:40:07', '05:48:38', '2025-07-19'),
+(143, '12345', '14:55:39', '14:56:50', '2025-07-19'),
+(144, '12345', '18:04:09', '18:06:43', '2025-07-19'),
+(145, '12345', '18:15:24', '18:16:43', '2025-07-19'),
+(146, '12345', '18:20:44', '18:22:28', '2025-07-19'),
+(147, '02-2122-020202', '19:26:31', '19:31:02', '2025-10-20'),
+(148, '54321', '19:30:48', '19:38:15', '2025-10-20'),
+(150, '54321', '18:35:11', '18:36:16', '2025-10-23');
 
 -- --------------------------------------------------------
 
@@ -198,12 +225,12 @@ INSERT INTO `tbl_users` (`user_id`, `user_schoolId`, `user_lastname`, `user_firs
 (2, '12345', 'Doe', 'John', 'Michael', NULL, 'johndoe@phinma.edu', 'johndoe@gmail.com', '09123456789', 'password123', 1, 1, 2024, 2, 1, 1),
 (3, '54321', 'Sy', 'Henry ', '', '', 'henry@phinmaed.com', 'hen@gmail.com', '0905067432', 'Password123', NULL, NULL, NULL, 2, 1, 10),
 (6, '98765', 'Lago', 'Mckenzie ', 'Dusil', '', 'mckenzie@phinmaed.com', 'mckenzie@gmail.com', '213123123', 'Password123', NULL, NULL, NULL, 2, 1, 10),
-(8, '022122', 'test', 'test', '', '', 'test@phinmaed.com', 'test@gmail.com', '0905067498', 'Password123', NULL, NULL, NULL, 2, 1, 10),
-(14, 'visitor@gmail.com', 'Test', 'Visitor', 'Middle', '', 'visitor@phinmaed.com', 'visitor@gmail.com', 'visitor@gmail.com', 'Password123', 6, 2, NULL, 2, 1, 10),
 (15, 'visitor2@gmail.com', 'Two', 'Visitor', 'Middle', '', 'visitor2@phinmaed.com', 'visitor2@gmail.com', 'visitor2@gmail.com', 'Password123', 10, 4, NULL, 2, 1, 10),
 (16, '02-2122-030303', 'Cubillan', 'Hannah', 'Dapanas', '', 'cubillan@phinmaed.com', 'cubillan@gmail.com', '09161616161', 'Password123', 19, 6, NULL, 2, 1, 10),
 (17, '02-2122-040404', 'Last', 'Student', 'Middle', '', 'student@phinmaed.com', 'student@gmail.com', '0900000005', 'Password123', 9, 3, NULL, 2, 1, 10),
-(23, '00-0000-00001', 'Library', 'Admin', NULL, NULL, 'admin@phinmaed.com', 'admin@gmail.com', '09000000001', 'admin123', NULL, NULL, NULL, 5, 1, 80);
+(23, '00-0000-00001', 'Library', 'Admin', NULL, NULL, 'admin@phinmaed.com', 'admin@gmail.com', '09000000001', '$2y$10$/8QPM9EF0L/Sts.G6fnKpuG27LwyIUuCV3n9qClVSSbkw8j1PmbFy', NULL, NULL, NULL, 5, 1, 80),
+(24, 'mckenzie123@gmail.com', 'Lago', 'Mckenzie ', '', '', '', 'mckenzie123@gmail.com', '0291290129', 'Password123', 15, 5, NULL, 2, 1, 10),
+(25, 'mckenzie25@gmail.com', 'test', 'Mckenzie ', '', '', '', 'mckenzie25@gmail.com', '090909090', 'Mckenzie123', 18, 5, NULL, 2, 1, 10);
 
 -- --------------------------------------------------------
 
@@ -277,13 +304,13 @@ ALTER TABLE `tbl_usertype`
 -- AUTO_INCREMENT for table `lib_logs`
 --
 ALTER TABLE `lib_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- Constraints for dumped tables

@@ -1,6 +1,7 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Disable error reporting for production
+error_reporting(0);
+ini_set('display_errors', 0);
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -16,24 +17,24 @@ try {
     error_log("Today's date (PHP): " . $today);
 
     $query = "
-        SELECT 
+        SELECT
             COUNT(*) as total_visits,
             COUNT(DISTINCT user_schoolId) as unique_visitors,
             (
-                SELECT COUNT(*) 
-                FROM lib_logs 
-                WHERE time_out IS NULL 
+                SELECT COUNT(*)
+                FROM lib_logs
+                WHERE time_out IS NULL
                 AND log_date = :today
             ) as active_visitors,
             (
                 SELECT TIME_FORMAT(time_in, '%h:00 %p')
-                FROM lib_logs 
+                FROM lib_logs
                 WHERE log_date = :today
                 GROUP BY HOUR(time_in)
                 ORDER BY COUNT(*) DESC
                 LIMIT 1
             ) as peak_hour
-        FROM lib_logs 
+        FROM lib_logs
         WHERE log_date = :today
     ";
 
@@ -44,7 +45,7 @@ try {
 
     // Get department stats for today
     $deptQuery = "
-        SELECT 
+        SELECT
             d.department_name,
             COUNT(l.log_id) as total_visits,
             COUNT(DISTINCT l.user_schoolId) as unique_visitors
@@ -64,7 +65,7 @@ try {
 
     // Get top visitors for today
     $visitorQuery = "
-        SELECT 
+        SELECT
             u.user_firstname,
             u.user_lastname,
             u.user_schoolId,

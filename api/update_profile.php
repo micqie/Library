@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila'); // Set timezone to Philippines
 session_start();
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
@@ -24,7 +25,7 @@ try {
     $database = new Database();
     $db = $database->getConnection();
 
-    $query = "UPDATE tbl_users 
+    $query = "UPDATE tbl_users
               SET user_firstname = :firstname,
                   user_lastname = :lastname,
                   user_email = :personal_email,

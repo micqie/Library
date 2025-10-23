@@ -1,6 +1,57 @@
 // Test if script is loading
 console.log('register.js script loaded successfully');
 
+// Store all courses for filtering - make it global and persistent
+if (!window.allCourses) {
+    window.allCourses = [];
+}
+
+// Make filter function globally accessible
+window.filterCoursesByDepartment = function() {
+    console.log('=== FILTER FUNCTION CALLED ===');
+    const departmentSelect = document.getElementById('department');
+    const courseSelect = document.getElementById('course');
+    const selectedDepartmentId = departmentSelect ? departmentSelect.value : 'NO_ELEMENT';
+
+    console.log('Department select element:', departmentSelect);
+    console.log('Course select element:', courseSelect);
+    console.log('Filtering courses for department:', selectedDepartmentId);
+    console.log('All courses available:', window.allCourses);
+    console.log('All courses length:', window.allCourses.length);
+
+    // Clear current options except the first one
+    courseSelect.innerHTML = '<option value="">Select Course</option>';
+
+    if (selectedDepartmentId && selectedDepartmentId !== '') {
+        console.log('Looking for courses with department ID:', selectedDepartmentId);
+
+        // Filter courses by department from stored data
+        const filteredCourses = window.allCourses.filter(course => {
+            return course.course_departmentId == selectedDepartmentId;
+        });
+
+        console.log('Filtered courses:', filteredCourses);
+        console.log('Filtered courses count:', filteredCourses.length);
+
+        // Add filtered courses to dropdown
+        filteredCourses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course.course_id;
+            option.textContent = course.course_name;
+            courseSelect.appendChild(option);
+        });
+    } else {
+        console.log('No department selected, showing all courses');
+        // If no department selected, show all courses
+        window.allCourses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course.course_id;
+            option.textContent = course.course_name;
+            courseSelect.appendChild(option);
+        });
+    }
+};
+
 // Captcha functionality
 let currentCaptcha = {};
 

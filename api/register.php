@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila'); // Set timezone to Philippines
 header('Content-Type: application/json');
 require_once 'config/database.php';
 
@@ -75,17 +76,43 @@ try {
         if (strpos($data['personalEmail'], '@phinmaed.com') !== false) {
             $phinmaedEmail = $data['personalEmail'];
         }
+        // If it's not a phinmaed email (like gmail.com), leave phinmaedEmail empty
     } else {
-        // User provided a separate school ID, generate phinmaed email
-        $phinmaedEmail = $data['schoolId'] . '@phinmaed.com';
+        // User provided a separate school ID, check if it's a phinmaed email
+        if (strpos($data['schoolId'], '@phinmaed.com') !== false) {
+            $phinmaedEmail = $data['schoolId'];
+        }
+        // If school ID is not a phinmaed email, leave phinmaedEmail empty
+    }
+
+    // Convert names to proper case (Title Case)
+    function toCamelCase($str) {
+        // Remove extra spaces and trim
+        $str = trim(preg_replace('/\s+/', ' ', $str));
+
+        // Handle special cases like "Mc", "Mac", "O'", "De", "La", "Le", "Van", "Von"
+        $specialPrefixes = ['Mc', 'Mac', 'O\'', 'De', 'La', 'Le', 'Van', 'Von'];
+
+        // Convert to lowercase first
+        $str = strtolower($str);
+
+        // Capitalize first letter of each word
+        $str = ucwords($str);
+
+        // Handle special prefixes
+        foreach ($specialPrefixes as $prefix) {
+            $str = preg_replace('/\b' . preg_quote($prefix, '/') . '\b/i', $prefix, $str);
+        }
+
+        return $str;
     }
 
     $params = [
         ':schoolId' => $data['schoolId'],
-        ':lastname' => $data['lastname'],
-        ':firstname' => $data['firstname'],
-        ':middlename' => $data['middlename'] ?? null,
-        ':suffix' => $data['suffix'] ?? null,
+        ':lastname' => toCamelCase($data['lastname']),
+        ':firstname' => toCamelCase($data['firstname']),
+        ':middlename' => !empty($data['middlename']) ? toCamelCase($data['middlename']) : null,
+        ':suffix' => !empty($data['suffix']) ? toCamelCase($data['suffix']) : null,
         ':phinmaedEmail' => $phinmaedEmail,
         ':personalEmail' => $data['personalEmail'],
         ':contact' => $data['contact'],

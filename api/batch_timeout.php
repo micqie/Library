@@ -1,6 +1,7 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Disable error reporting for production
+error_reporting(0);
+ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/../logs/php-error.log');
 
@@ -20,9 +21,9 @@ try {
 
     $currentTime = date('H:i:s');
 
-    $query = "UPDATE lib_logs 
+    $query = "UPDATE lib_logs
               SET time_out = :time_out
-              WHERE time_out IS NULL 
+              WHERE time_out IS NULL
               AND log_date = CURDATE()";
 
     $stmt = $conn->prepare($query);

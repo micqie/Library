@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila'); // Set timezone to Philippines
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -12,11 +13,16 @@ try {
         throw new Exception("Database connection failed");
     }
 
-    $query = "SELECT 
+    $query = "SELECT
+        u.user_id,
         u.user_schoolId,
         u.user_firstname,
         u.user_lastname,
+        u.user_middlename,
+        u.user_suffix,
+        u.phinmaed_email,
         u.user_email,
+        u.user_contact,
         ut.user_type as role,
         d.department_name,
         c.course_name,

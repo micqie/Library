@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila'); // Set timezone to Philippines
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET");
@@ -32,8 +33,8 @@ try {
 
     if (!empty($search)) {
         $searchCondition = "AND (
-            LOWER(u.user_schoolId) LIKE :search 
-            OR LOWER(u.user_firstname) LIKE :search 
+            LOWER(u.user_schoolId) LIKE :search
+            OR LOWER(u.user_firstname) LIKE :search
             OR LOWER(u.user_lastname) LIKE :search
             OR LOWER(u.user_middlename) LIKE :search
             OR LOWER(CONCAT(u.user_firstname, ' ', u.user_lastname)) LIKE :search
@@ -47,11 +48,11 @@ try {
         $whereClause .= " $searchCondition";
     }
 
-    $query = "SELECT 
-                l.*, 
-                u.user_firstname, 
-                u.user_middlename, 
-                u.user_lastname, 
+    $query = "SELECT
+                l.*,
+                u.user_firstname,
+                u.user_middlename,
+                u.user_lastname,
                 u.user_suffix,
                 d.department_name,
                 c.course_name

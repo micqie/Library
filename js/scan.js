@@ -264,7 +264,7 @@ document.addEventListener('visibilitychange', function () {
 // Manual Entry
 async function handleManualEntry(schoolId) {
     try {
-        const response = await axios.post('./api/time_in.php', {
+        const response = await axios.post('../api/time_in.php', {
             user_schoolId: schoolId,
             is_manual: true
         });
@@ -290,7 +290,7 @@ schoolIdInput.addEventListener('keypress', function (e) {
 // Keep the original handleScan function for QR scanning
 async function handleScan(schoolId) {
     try {
-        const response = await axios.post('./api/time_in.php', {
+        const response = await axios.post('../api/time_in.php', {
             user_schoolId: schoolId,
             is_manual: false
         });

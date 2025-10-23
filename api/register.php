@@ -19,13 +19,21 @@ try {
         'firstname',
         'personalEmail',
         'contact',
-        'password'
+        'password',
+        'captcha_answer',
+        'captcha_correct'
     ];
 
     foreach ($required_fields as $field) {
         if (empty($data[$field])) {
             throw new Exception("$field is required");
         }
+    }
+
+    // Validate captcha
+    if ($data['captcha_answer'] != $data['captcha_correct']) {
+        echo json_encode(['success' => false, 'message' => 'Security check failed. Please try again.']);
+        exit;
     }
 
     // Check if school ID already exists
@@ -38,13 +46,13 @@ try {
 
     $sql = "INSERT INTO tbl_users (
         user_schoolId, user_lastname, user_firstname, user_middlename,
-        user_suffix, user_email, user_contact,
+        user_suffix, phinmaed_email, user_email, user_contact,
         user_password, user_typeId, user_status, user_level" .
         (!empty($data['department']) ? ", user_departmentId" : "") .
         (!empty($data['course']) ? ", user_courseId" : "") .
         ") VALUES (
         :schoolId, :lastname, :firstname, :middlename,
-        :suffix, :personalEmail, :contact,
+        :suffix, :phinmaedEmail, :personalEmail, :contact,
         :password, :userType, :status, :level" .
         (!empty($data['department']) ? ", :department" : "") .
         (!empty($data['course']) ? ", :course" : "") .
@@ -60,12 +68,16 @@ try {
     // Hash password securely
     $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
+    // Generate phinmaed email based on school ID
+    $phinmaedEmail = $data['schoolId'] . '@phinmaed.com';
+
     $params = [
         ':schoolId' => $data['schoolId'],
         ':lastname' => $data['lastname'],
         ':firstname' => $data['firstname'],
         ':middlename' => $data['middlename'] ?? null,
         ':suffix' => $data['suffix'] ?? null,
+        ':phinmaedEmail' => $phinmaedEmail,
         ':personalEmail' => $data['personalEmail'],
         ':contact' => $data['contact'],
         ':password' => $hashedPassword,
@@ -81,9 +93,11 @@ try {
         $params[':course'] = $data['course'];
     }
 
-    $stmt->execute($params);
-
-    echo json_encode(['success' => true, 'message' => 'Registration successful']);
+    if ($stmt->execute($params)) {
+        echo json_encode(['success' => true, 'message' => 'Registration successful']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to insert user data']);
+    }
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
 }

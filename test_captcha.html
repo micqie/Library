@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captcha Test</title>
+</head>
+<body>
+    <h1>Captcha Test</h1>
+    <div>
+        <canvas id="captchaCanvas" width="200" height="60" style="border: 2px solid #ccc;"></canvas>
+        <button onclick="testCaptcha()">Generate Captcha</button>
+    </div>
+    <div>
+        <input type="text" id="captchaAnswer" placeholder="Enter captcha">
+        <button onclick="checkCaptcha()">Check</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        console.log('Test script loaded');
+
+        let currentCaptcha = {};
+
+        function testCaptcha() {
+            console.log('testCaptcha called');
+            const canvas = document.getElementById('captchaCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Generate random text
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let captchaText = '';
+            for (let i = 0; i < 5; i++) {
+                captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            currentCaptcha = { text: captchaText, answer: captchaText };
+            console.log('Generated:', captchaText);
+
+            // Draw background
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw text
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#333';
+            ctx.fillText(captchaText, canvas.width/2, canvas.height/2);
+        }
+
+        function checkCaptcha() {
+            const userAnswer = document.getElementById('captchaAnswer').value;
+            const result = document.getElementById('result');
+
+            if (userAnswer.toLowerCase() === currentCaptcha.answer.toLowerCase()) {
+                result.textContent = 'Correct!';
+                result.style.color = 'green';
+            } else {
+                result.textContent = 'Incorrect!';
+                result.style.color = 'red';
+            }
+        }
+
+        // Auto-generate on load
+        window.addEventListener('load', function() {
+            console.log('Page loaded, generating captcha');
+            testCaptcha();
+        });
+    </script>
+</body>
+</html>

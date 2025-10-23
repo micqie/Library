@@ -242,24 +242,26 @@ if (searchInput) {
     });
 }
 
-// Event listeners
-document.getElementById('dateFilter').addEventListener('change', function () {
-    const filterValue = this.value;
-    switch (filterValue) {
-        case 'recent':
-            loadTodayLogs(); // This function already loads recent records
-            break;
-        case 'today':
-            loadTodayOnlyLogs();
-            break;
-        case 'all':
-            refreshLogs();
-            break;
-    }
-});
-
 // Update the initial load function
 document.addEventListener('DOMContentLoaded', () => {
+    // Event listeners
+    const dateFilter = document.getElementById('dateFilter');
+    if (dateFilter) {
+        dateFilter.addEventListener('change', function () {
+            const filterValue = this.value;
+            switch (filterValue) {
+                case 'recent':
+                    loadTodayLogs(); // This function already loads recent records
+                    break;
+                case 'today':
+                    loadTodayOnlyLogs();
+                    break;
+                case 'all':
+                    refreshLogs();
+                    break;
+            }
+        });
+    }
     // Get current date in local timezone
     const now = new Date();
     const currentDate = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
@@ -290,23 +292,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Add status filter event listener
-    document.getElementById('statusFilter').addEventListener('change', function () {
-        currentPage = 1; // Reset to first page when filter changes
-        displayCurrentPage();
-        updatePagination();
-    });
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', function () {
+            currentPage = 1; // Reset to first page when filter changes
+            displayCurrentPage();
+            updatePagination();
+        });
+    }
 
     // Add department filter event listener
-    document.getElementById('departmentFilter').addEventListener('change', function () {
-        currentPage = 1; // Reset to first page when filter changes
-        displayCurrentPage();
-        updatePagination();
-    });
-});
-
-// Handle sidebar toggle for mobile
-document.getElementById('sidebarToggle')?.addEventListener('click', function () {
-    document.querySelector('.sidebar').classList.toggle('show');
+    const departmentFilter = document.getElementById('departmentFilter');
+    if (departmentFilter) {
+        departmentFilter.addEventListener('change', function () {
+            currentPage = 1; // Reset to first page when filter changes
+            displayCurrentPage();
+            updatePagination();
+        });
+    }
+    // Handle sidebar toggle for mobile
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('show');
+            }
+        });
+    }
 });
 
 // Hide sidebar when clicking outside on mobile
@@ -314,7 +327,7 @@ document.addEventListener('click', function (event) {
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.getElementById('sidebarToggle');
 
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 768 && sidebar && sidebarToggle) {
         if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
             sidebar.classList.remove('show');
         }

@@ -25,13 +25,13 @@ body {
 
 }
 .clock {
-    font-size: 25px;
+    font-size: 35px;
     font-weight: bold;
     margin: 0;
     letter-spacing: 0.5px;
 }
 .date {
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     opacity: 0.9;
     margin: 0;
     font-weight: 500;

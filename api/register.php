@@ -68,8 +68,17 @@ try {
     // Hash password securely
     $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
-    // Generate phinmaed email based on school ID
-    $phinmaedEmail = $data['schoolId'] . '@phinmaed.com';
+    // Generate phinmaed email only if user is using a phinmaed account
+    $phinmaedEmail = '';
+    if (isset($data['setAsSchoolId']) && $data['setAsSchoolId']) {
+        // User is using email as school ID, check if it's a phinmaed email
+        if (strpos($data['personalEmail'], '@phinmaed.com') !== false) {
+            $phinmaedEmail = $data['personalEmail'];
+        }
+    } else {
+        // User provided a separate school ID, generate phinmaed email
+        $phinmaedEmail = $data['schoolId'] . '@phinmaed.com';
+    }
 
     $params = [
         ':schoolId' => $data['schoolId'],

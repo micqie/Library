@@ -10,21 +10,22 @@ try {
         throw new Exception("Database connection failed");
     }
 
-    $query = "SELECT course_id, course_name, course_departmentId, course_status FROM tbl_courses ORDER BY course_name";
+    $query = "SELECT user_typeId, user_type, user_defaultLevel FROM tbl_usertype ORDER BY user_type";
     $stmt = $db->prepare($query);
     $stmt->execute();
 
-    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $usertypes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if ($courses === false) {
-        throw new Exception("Failed to fetch courses");
+    if ($usertypes === false) {
+        throw new Exception("Failed to fetch user types");
     }
 
-    echo json_encode($courses);
+    echo json_encode($usertypes);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
         'error' => true,
-        'message' => 'Failed to fetch courses: ' . $e->getMessage()
+        'message' => 'Failed to fetch user types: ' . $e->getMessage()
     ]);
 }
+

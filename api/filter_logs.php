@@ -34,7 +34,7 @@ try {
         throw new Exception('Database connection failed');
     }
 
-    $query = "SELECT 
+    $query = "SELECT
                 l.log_id,
                 l.user_schoolId,
                 l.time_in,

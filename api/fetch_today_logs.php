@@ -7,7 +7,7 @@ try {
     $db = $database->getConnection();
 
     // SQL Query for recent logs
-    $query = "SELECT 
+    $query = "SELECT
                 l.log_id,
                 l.user_schoolId,
                 l.time_in,

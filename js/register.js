@@ -6,6 +6,11 @@ if (!window.allCourses) {
     window.allCourses = [];
 }
 
+// Track active department ids to hide inactive ones on public forms
+if (!window.activeDepartmentIds) {
+    window.activeDepartmentIds = [];
+}
+
 // Make filter function globally accessible
 window.filterCoursesByDepartment = function() {
     console.log('=== FILTER FUNCTION CALLED ===');
@@ -242,7 +247,13 @@ async function loadDepartments() {
             const departmentSelect = document.getElementById('department');
             departmentSelect.innerHTML = '<option value="">Select Department</option>';
 
-            response.data.forEach(dept => {
+            const activeDepartments = response.data.filter(
+                dept => dept.department_status === undefined || dept.department_status == 1
+            );
+
+            window.activeDepartmentIds = activeDepartments.map(d => d.department_id);
+
+            activeDepartments.forEach(dept => {
                 const option = document.createElement('option');
                 option.value = dept.department_id;
                 option.textContent = dept.department_name;
@@ -273,6 +284,15 @@ async function loadDepartments() {
 async function loadCourses() {
     try {
         console.log('Fetching courses...');
+        // Ensure we know which departments are active
+        if (!window.activeDepartmentIds || window.activeDepartmentIds.length === 0) {
+            const deptResponse = await axios.get('./api/get_departments.php');
+            const activeDepartments = (deptResponse.data || []).filter(
+                dept => dept.department_status === undefined || dept.department_status == 1
+            );
+            window.activeDepartmentIds = activeDepartments.map(d => d.department_id);
+        }
+
         const response = await axios.get('./api/get_courses.php');
         console.log('Courses response:', response.data);
 
@@ -281,10 +301,14 @@ async function loadCourses() {
             courseSelect.innerHTML = '<option value="">Select Course</option>';
 
             // Store all courses for filtering
-            window.allCourses = response.data;
-            console.log('Courses stored:', window.allCourses.length);
+            const activeCourseList = response.data.filter(course =>
+                window.activeDepartmentIds.includes(Number(course.course_departmentId)) &&
+                (course.course_status === undefined || course.course_status == 1)
+            );
+            window.allCourses = activeCourseList;
+            console.log('Courses stored (active departments only):', window.allCourses.length);
 
-            response.data.forEach(course => {
+            activeCourseList.forEach(course => {
                 const option = document.createElement('option');
                 option.value = course.course_id;
                 option.textContent = course.course_name;

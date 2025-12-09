@@ -30,7 +30,7 @@ if (!$conn) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT * FROM tbl_users WHERE user_schoolId = :student_id AND user_typeId = 5");
+$stmt = $conn->prepare("SELECT *, must_change_password FROM tbl_users WHERE user_schoolId = :student_id AND user_typeId = 5");
 $stmt->bindParam(':student_id', $data['student_id']);
 $stmt->execute();
 
@@ -66,21 +66,25 @@ if ($admin_user) {
         exit;
     }
 
-    session_start();
-    $_SESSION['user_id'] = $admin_user['user_schoolId'];
-    $_SESSION['user_name'] = $admin_user['user_firstname'] . ' ' . $admin_user['user_lastname'];
-    $_SESSION['user_type'] = $admin_user['user_typeId'];
-    $_SESSION['user_level'] = $admin_user['user_level'];
+session_start();
+$_SESSION['user_id'] = $admin_user['user_schoolId'];
+$_SESSION['user_name'] = $admin_user['user_firstname'] . ' ' . $admin_user['user_lastname'];
+$_SESSION['user_type'] = $admin_user['user_typeId'];
+$_SESSION['user_level'] = $admin_user['user_level'];
 
-    echo json_encode([
-        'success' => true,
-        'redirectUrl' => './users/admin_dashboard.html',
-        'user_type' => $admin_user['user_typeId']
-    ]);
-    exit;
+// Check if password change is required
+$mustChangePassword = isset($admin_user['must_change_password']) && $admin_user['must_change_password'] == 1;
+
+echo json_encode([
+    'success' => true,
+    'redirectUrl' => $mustChangePassword ? './change_password.html' : './users/admin_dashboard.html',
+    'user_type' => $admin_user['user_typeId'],
+    'must_change_password' => $mustChangePassword
+]);
+exit;
 }
 
-$stmt = $conn->prepare("SELECT * FROM tbl_users WHERE user_schoolId = :student_id");
+$stmt = $conn->prepare("SELECT *, must_change_password FROM tbl_users WHERE user_schoolId = :student_id");
 $stmt->bindParam(':student_id', $data['student_id']);
 $stmt->execute();
 
@@ -127,7 +131,20 @@ $_SESSION['user_name'] = $user['user_firstname'] . ' ' . $user['user_lastname'];
 $_SESSION['user_type'] = $user['user_typeId'];
 $_SESSION['user_level'] = $user['user_level'];
 
-// Check user type and set redirect URL
+// Check if password change is required (admin-created users)
+$mustChangePassword = isset($user['must_change_password']) && $user['must_change_password'] == 1;
+
+if ($mustChangePassword) {
+    echo json_encode([
+        'success' => true,
+        'redirectUrl' => './change_password.html',
+        'user_type' => $user['user_typeId'],
+        'must_change_password' => true
+    ]);
+    exit;
+}
+
+// Check user type and set redirect URL (for users who don't need to change password)
 $redirectUrl = '';
 switch ($user['user_typeId']) {
     case 1: // Visitor
@@ -138,6 +155,9 @@ switch ($user['user_typeId']) {
         break;
     case 5: // Admin-Library
         $redirectUrl = './users/admin_dashboard.html';
+        break;
+    case 6: // Scanner
+        $redirectUrl = './users/admin_scanner.html';
         break;
     default:
         $redirectUrl = './users/user_dashboard.html';

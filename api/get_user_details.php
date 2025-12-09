@@ -44,6 +44,7 @@ try {
         $response = [
             'success' => true,
             'user_type' => $user['user_typeId'],
+            'user_typeId' => $user['user_typeId'],
             'user' => [
                 'schoolId' => $user['user_schoolId'],
                 'firstname' => $user['user_firstname'],

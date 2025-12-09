@@ -79,6 +79,14 @@
                 <div class="row">
                     <!-- Table Section - Takes full width -->
                     <div class="col-12">
+                        <!-- Add User Button -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2>Users Management</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="bi bi-person-plus me-2"></i>Add New User
+                            </button>
+                        </div>
+
                         <!-- Filter Section -->
                         <div class="filter-section">
                             <!-- Filter Controls -->
@@ -170,6 +178,286 @@
             </div>
         </div>
     </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content add-user-modal">
+                <div class="modal-header add-user-header">
+                    <div class="d-flex align-items-center">
+                        <div class="modal-icon-wrapper">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title mb-0" id="addUserModalLabel">Add New User</h5>
+                            <small class="text-light opacity-75">Create a new user account</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body add-user-body">
+                    <form id="addUserForm" novalidate>
+                        <div id="addUserErrorMessage" class="alert alert-danger" style="display: none;" role="alert"></div>
+
+                        <!-- Account Information Section -->
+                        <div class="form-section mb-3">
+                            <div class="section-header">
+                                <i class="bi bi-key-fill me-2"></i>
+                                <span>Account Information</span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label for="addUser_schoolId" class="form-label small fw-semibold">
+                                        <i class="bi bi-person-badge me-1"></i>School ID / Username <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="addUser_schoolId" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="addUser_password" class="form-label small fw-semibold">
+                                        <i class="bi bi-lock-fill me-1"></i>Password <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="password" class="form-control form-control-sm" id="addUser_password" required>
+                                    <small class="text-muted small"><i class="bi bi-info-circle me-1"></i>User must change on first login</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Information Section -->
+                        <div class="form-section mb-3">
+                            <div class="section-header">
+                                <i class="bi bi-person-fill me-2"></i>
+                                <span>Personal Information</span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <label for="addUser_firstname" class="form-label small fw-semibold">
+                                        First Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="addUser_firstname" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="addUser_middlename" class="form-label small fw-semibold">
+                                        Middle Name
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="addUser_middlename">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="addUser_lastname" class="form-label small fw-semibold">
+                                        Last Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="addUser_lastname" required>
+                                </div>
+                            </div>
+                            <div class="row g-2 mt-1">
+                                <div class="col-md-6">
+                                    <label for="addUser_suffix" class="form-label small fw-semibold">
+                                        Suffix
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="addUser_suffix" placeholder="Jr., Sr., III">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="addUser_contact" class="form-label small fw-semibold">
+                                        <i class="bi bi-telephone-fill me-1"></i>Contact <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control form-control-sm" id="addUser_contact" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <div class="form-section mb-3">
+                            <div class="section-header">
+                                <i class="bi bi-envelope-fill me-2"></i>
+                                <span>Contact Information</span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label for="addUser_email" class="form-label small fw-semibold">
+                                        <i class="bi bi-envelope me-1"></i>Email <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="email" class="form-control form-control-sm" id="addUser_email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="addUser_phinmaed_email" class="form-label small fw-semibold">
+                                        <i class="bi bi-envelope-check me-1"></i>PHINMAED Email
+                                    </label>
+                                    <input type="email" class="form-control form-control-sm" id="addUser_phinmaed_email">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role & Assignment Section -->
+                        <div class="form-section mb-3">
+                            <div class="section-header">
+                                <i class="bi bi-briefcase-fill me-2"></i>
+                                <span>Role & Assignment</span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <label for="addUser_typeId" class="form-label small fw-semibold">
+                                        <i class="bi bi-shield-check me-1"></i>User Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select form-select-sm" id="addUser_typeId" required>
+                                        <option value="">Select User Type</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="addUser_departmentId" class="form-label small fw-semibold">
+                                        <i class="bi bi-building me-1"></i>Department
+                                    </label>
+                                    <select class="form-select form-select-sm" id="addUser_departmentId">
+                                        <option value="">Select Department</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="addUser_courseId" class="form-label small fw-semibold">
+                                        <i class="bi bi-book me-1"></i>Course
+                                    </label>
+                                    <select class="form-select form-select-sm" id="addUser_courseId">
+                                        <option value="">Select Course</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-2 mt-1">
+                                <div class="col-md-6">
+                                    <label for="addUser_schoolyearId" class="form-label small fw-semibold">
+                                        <i class="bi bi-calendar me-1"></i>School Year
+                                    </label>
+                                    <input type="number" class="form-control form-control-sm" id="addUser_schoolyearId" placeholder="e.g., 2024">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer add-user-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" id="submitAddUserBtn" onclick="submitAddUser()">
+                        <i class="bi bi-check-lg me-1"></i>Add User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Add User Modal Styling */
+        .add-user-modal {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 66, 37, 0.15);
+        }
+
+        .add-user-header {
+            background: linear-gradient(135deg, #004225 0%, #155f37 100%);
+            color: white;
+            border-bottom: 3px solid #006633;
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+
+        .add-user-body {
+            background: #f8fffa;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid #004225;
+            box-shadow: 0 2px 8px rgba(0, 66, 37, 0.08);
+        }
+
+        .section-header {
+            color: #004225;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e8f5e8;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-header i {
+            color: #155f37;
+        }
+
+        .add-user-body .form-label {
+            color: #333;
+            margin-bottom: 0.35rem;
+        }
+
+        .add-user-body .form-control,
+        .add-user-body .form-select {
+            border: 1.5px solid #dee2e6;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .add-user-body .form-control:focus,
+        .add-user-body .form-select:focus {
+            border-color: #004225;
+            box-shadow: 0 0 0 0.2rem rgba(0, 66, 37, 0.15);
+        }
+
+        .add-user-footer {
+            background: #f8fffa;
+            border-top: 2px solid #e8f5e8;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .add-user-footer .btn-success {
+            background-color: #004225;
+            border-color: #004225;
+            font-weight: 500;
+        }
+
+        .add-user-footer .btn-success:hover {
+            background-color: #003018;
+            border-color: #003018;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 66, 37, 0.2);
+        }
+
+        .add-user-footer .btn-outline-secondary:hover {
+            background-color: #e8f5e8;
+            border-color: #004225;
+            color: #004225;
+        }
+
+        #addUserErrorMessage {
+            border-left: 4px solid #dc3545;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .form-text {
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            margin-top: 0.25rem;
+        }
+
+        .form-text i {
+            font-size: 0.7rem;
+        }
+    </style>
+
     <script src="../js/admin_users.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/admin_dashboard.js"></script>

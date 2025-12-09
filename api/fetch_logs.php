@@ -15,13 +15,13 @@ try {
     // Build the date filter condition
     switch ($filter) {
         case 'today':
-            $dateFilter = "DATE(l.time_in) = CURDATE()";
+            $dateFilter = "l.log_date = CURDATE()";
             break;
         case 'week':
-            $dateFilter = "YEARWEEK(l.time_in, 1) = YEARWEEK(CURDATE(), 1)";
+            $dateFilter = "YEARWEEK(l.log_date, 1) = YEARWEEK(CURDATE(), 1)";
             break;
         case 'month':
-            $dateFilter = "YEAR(l.time_in) = YEAR(CURDATE()) AND MONTH(l.time_in) = MONTH(CURDATE())";
+            $dateFilter = "YEAR(l.log_date) = YEAR(CURDATE()) AND MONTH(l.log_date) = MONTH(CURDATE())";
             break;
         default:
             $dateFilter = "1=1"; // All time
@@ -31,28 +31,31 @@ try {
     $searchCondition = "";
     if (!empty($search)) {
         $searchCondition = "AND (
-            u.user_schoolId LIKE :search 
-            OR u.user_firstname LIKE :search 
+            u.user_schoolId LIKE :search
+            OR u.user_firstname LIKE :search
             OR u.user_lastname LIKE :search
             OR u.user_middlename LIKE :search
         )";
     }
 
-    $query = "SELECT 
-                l.*, 
-                u.user_firstname, 
-                u.user_middlename, 
-                u.user_lastname, 
+    $query = "SELECT
+                l.log_id,
+                l.user_schoolId,
+                l.time_in,
+                l.time_out,
+                l.log_date,
+                u.user_firstname,
+                u.user_middlename,
+                u.user_lastname,
                 u.user_suffix,
                 d.department_name,
-                c.course_name,
-                DATE(l.time_in) as log_date
+                c.course_name
             FROM lib_logs l
             JOIN tbl_users u ON l.user_schoolId = u.user_schoolId
             LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
             LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
             WHERE $dateFilter $searchCondition
-            ORDER BY l.time_in DESC";
+            ORDER BY l.log_date DESC, l.time_in DESC";
 
     $stmt = $db->prepare($query);
 

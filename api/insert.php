@@ -1,3 +1,4 @@
+
 <?php
 
 header("Access-Control-Allow-Origin: *");
@@ -17,7 +18,6 @@ if (isset($data['text'])) {
     $time = date("H:i:s");
 
     try {
-        // Check if user already has time-in today and not timed out
         $sql = "SELECT * FROM lib_logs WHERE user_schoolId = :user_schoolId AND log_date = :log_date AND time_out IS NULL";
         $stmt = $conn->prepare($sql);
         $stmt->execute(['user_schoolId' => $text, 'log_date' => $date]);

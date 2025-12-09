@@ -167,6 +167,7 @@ INSERT INTO `tbl_courses` (`course_id`, `course_name`, `course_departmentId`) VA
 (17, 'Bachelor of Science in Medical Technology', 5),
 (18, 'Bachelor of Science in Psychology', 5),
 (19, 'Bachelor of Science in Information Technology in Business Informatics, Computer Security, Digital Arts and Systems Development', 6);
+(20, 'SOG', 7);
 
 -- --------------------------------------------------------
 

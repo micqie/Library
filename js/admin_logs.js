@@ -4,10 +4,38 @@ function formatDate(dateString) {
     return date.toLocaleDateString();
 }
 
-// Function to format time
+// Function to format time (12-hour format with AM/PM - matching scanner)
 function formatTime(timeString) {
-    if (!timeString) return '-';
-    return timeString;
+    if (!timeString || timeString === null || timeString === '') return '-';
+
+    // Convert to string if it's not already
+    timeString = String(timeString).trim();
+
+    // If it's already formatted with AM/PM, return as is
+    if (timeString.includes('AM') || timeString.includes('PM')) {
+        return timeString;
+    }
+
+    // Handle TIME format from database (HH:MM:SS or HH:MM)
+    const timeParts = timeString.split(':');
+    if (timeParts.length < 2) return timeString; // Invalid format
+
+    const hours = parseInt(timeParts[0], 10);
+    const minutes = parseInt(timeParts[1], 10);
+    const seconds = timeParts.length > 2 ? parseInt(timeParts[2], 10) : 0;
+
+    // Validate parsed values
+    if (isNaN(hours) || isNaN(minutes)) return timeString;
+
+    // Convert to 12-hour format
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+
+    // Always include seconds if they exist in the original time string (matching scanner format)
+    const hasSeconds = timeParts.length > 2 && !isNaN(parseInt(timeParts[2], 10));
+    const formattedSeconds = hasSeconds ? `:${seconds.toString().padStart(2, '0')}` : '';
+
+    return `${displayHours}:${minutes.toString().padStart(2, '0')}${formattedSeconds} ${ampm}`;
 }
 
 // Function to calculate duration

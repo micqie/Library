@@ -1,3 +1,5 @@
+
+
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -35,11 +37,13 @@ try {
             exit;
         }
 
+
+
         // Check if user has an active time-in (no time-out)
-        $active_query = "SELECT *, TIMESTAMPDIFF(SECOND, time_in, CURRENT_TIMESTAMP) as time_diff 
-                       FROM lib_logs 
-                       WHERE user_schoolId = :user_schoolId 
-                       AND time_out IS NULL 
+        $active_query = "SELECT *, TIMESTAMPDIFF(SECOND, time_in, CURRENT_TIMESTAMP) as time_diff
+                       FROM lib_logs
+                       WHERE user_schoolId = :user_schoolId
+                       AND time_out IS NULL
                        ORDER BY log_id DESC LIMIT 1";
         $active_stmt = $db->prepare($active_query);
         $active_stmt->bindParam(":user_schoolId", $schoolId);
@@ -60,18 +64,24 @@ try {
             }
 
             // User has active time-in and enough time has passed, update with time-out
-            $update_query = "UPDATE lib_logs 
-                           SET time_out = CURRENT_TIME() 
+
+            date_default_timezone_set("Asia/Manila");
+            $currentDate = date("Y-m-d");
+            $currentTime = date("H:i:s");
+
+            $update_query = "UPDATE lib_logs
+                           SET time_out = :currentTime
                            WHERE log_id = :log_id";
             $update_stmt = $db->prepare($update_query);
             $update_stmt->bindParam(":log_id", $active_record['log_id']);
+            $update_stmt->bindParam(":currentTime", $currentTime);
 
             if ($update_stmt->execute()) {
                 // Get user details with time-out time
                 $user_query = "SELECT u.*, d.department_name, c.course_name, l.time_in, l.time_out, l.log_id
-                             FROM tbl_users u 
-                             LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id 
-                             LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id 
+                             FROM tbl_users u
+                             LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
+                             LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
                              INNER JOIN lib_logs l ON u.user_schoolId = l.user_schoolId
                              WHERE l.log_id = :log_id";
                 $user_stmt = $db->prepare($user_query);
@@ -90,8 +100,8 @@ try {
             }
         } else {
             // Check last record to see if it was a timeout
-            $last_record_query = "SELECT * FROM lib_logs 
-                                WHERE user_schoolId = :user_schoolId 
+            $last_record_query = "SELECT * FROM lib_logs
+                                WHERE user_schoolId = :user_schoolId
                                 ORDER BY log_id DESC LIMIT 1";
             $last_record_stmt = $db->prepare($last_record_query);
             $last_record_stmt->bindParam(":user_schoolId", $schoolId);
@@ -99,19 +109,26 @@ try {
             $last_record = $last_record_stmt->fetch(PDO::FETCH_ASSOC);
 
             // Create new time-in record if last record has a timeout or no records exist
+
+            date_default_timezone_set("Asia/Manila");
+            $currentDate = date("Y-m-d");
+            $currentTime = date("H:i:s");
+
             if (!$last_record || $last_record['time_out'] !== null) {
-                $query = "INSERT INTO lib_logs (user_schoolId, time_in) VALUES (:user_schoolId, CURRENT_TIME())";
+                $query = "INSERT INTO lib_logs (user_schoolId, time_in, log_date) VALUES (:user_schoolId, :currentTime, :currentDate)";
                 $stmt = $db->prepare($query);
                 $stmt->bindParam(":user_schoolId", $schoolId);
+                $stmt->bindParam(":currentDate", $currentDate);
+                $stmt->bindParam(":currentTime", $currentTime);
 
                 if ($stmt->execute()) {
                     $log_id = $db->lastInsertId();
 
                     // Get user details with the new time-in
                     $user_query = "SELECT u.*, d.department_name, c.course_name, l.time_in, l.log_id
-                                 FROM tbl_users u 
-                                 LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id 
-                                 LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id 
+                                 FROM tbl_users u
+                                 LEFT JOIN tbl_departments d ON u.user_departmentId = d.department_id
+                                 LEFT JOIN tbl_courses c ON u.user_courseId = c.course_id
                                  INNER JOIN lib_logs l ON u.user_schoolId = l.user_schoolId
                                  WHERE l.log_id = :log_id";
                     $user_stmt = $db->prepare($user_query);
